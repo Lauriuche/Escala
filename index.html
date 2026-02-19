@@ -15,8 +15,8 @@
         
         :root {
             --cell-width: 95px;
-            --name-col-width: 160px;
-            --role-col-width: 140px;
+            --name-col-width: 200px; /* Aumentado para nomes maiores */
+            --role-col-width: 150px;
         }
 
         body { 
@@ -177,7 +177,24 @@
         .active-dsr { border-color: #2563eb; background-color: #2563eb; color: white; }
         .active-bh { border-color: #ea580c; background-color: #fff7ed; color: #ea580c; }
 
-        .exporting .table-wrapper { max-height: none !important; overflow: visible !important; }
+        /* Estilos especiais para evitar cortes na exportação */
+        .exporting .table-wrapper {
+            max-height: none !important;
+            overflow: visible !important;
+            width: auto !important;
+        }
+        .exporting .sticky-col-1, 
+        .exporting .sticky-col-2,
+        .exporting thead tr th {
+            position: static !important;
+            width: auto !important;
+            min-width: 0 !important;
+        }
+        .exporting .truncate-cell {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -185,7 +202,7 @@
     <!-- Navegação -->
     <nav class="bg-white border-b border-slate-200 px-6 py-4 flex flex-wrap justify-between items-center sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <div class="bg-blue-600 p-2.5 rounded-2xl shadow-lg">
+            <div class="bg-blue-600 p-2 rounded-xl shadow-lg">
                 <i data-lucide="cloud-lightning" class="text-white w-6 h-6"></i>
             </div>
             <div>
@@ -256,13 +273,13 @@
 
     <!-- Modal Turno -->
     <div id="shiftModal" class="fixed inset-0 z-[100] hidden bg-slate-900/70 backdrop-blur-md items-center justify-center p-4">
-        <div class="bg-white rounded-[40px] w-full max-w-sm shadow-2xl p-8 space-y-6 animate-in zoom-in duration-200">
+        <div class="bg-white rounded-[40px] w-full max-w-sm shadow-2xl p-8 space-y-6 animate-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start">
                 <div>
                     <h3 id="modalEmpName" class="text-xl font-black text-slate-900"></h3>
                     <p id="modalDateLabel" class="text-blue-600 font-bold text-[10px] uppercase mt-1"></p>
                 </div>
-                <button onclick="closeModal('shiftModal')" class="p-2 bg-slate-100 rounded-full text-slate-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <button onclick="closeModal('shiftModal')" class="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
 
             <div class="space-y-6">
@@ -489,7 +506,6 @@
             }
 
             setLoading(true);
-            // CORREÇÃO CRÍTICA: Indicar colunas de conflito para evitar o erro de Duplicate Key
             const { error } = await sbClient.from('shifts').upsert(upserts, { onConflict: 'employee_id, day_key' });
             setLoading(false);
 
@@ -547,7 +563,7 @@
                     }
                     cells += `<td class="day-col ${bgClass}"><div class="cell-interactive" onclick="openShiftModal('${emp.id}', ${d})">${content}</div></td>`;
                 }
-                return `<tr><td class="sticky-col-1 border-b border-slate-100 p-4 bg-white"><span class="font-bold text-slate-900 text-[12px] truncate-cell">${emp.name}</span></td><td class="sticky-col-2 border-b border-slate-100 p-4 bg-white border-r-2"><span class="text-[10px] font-bold text-slate-400 uppercase truncate-cell">${emp.role}</span></td>${cells}</tr>`;
+                return `<tr><td class="sticky-col-1 border-b border-slate-100 p-4 bg-white"><span class="font-bold text-slate-900 text-[15px] truncate-cell">${emp.name}</span></td><td class="sticky-col-2 border-b border-slate-100 p-4 bg-white border-r-2"><span class="text-[11px] font-bold text-slate-400 uppercase truncate-cell">${emp.role}</span></td>${cells}</tr>`;
             }).join('');
             lucide.createIcons();
         }
@@ -576,6 +592,7 @@
             const emp = employees.find(e => String(e.id) === String(empId));
             const key = `${y}-${m}-${day}`;
             const shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false, tipoFolga: null };
+            
             editingContext = { empId, day, month: m, year: y };
             document.getElementById('modalEmpName').innerText = emp.name;
             document.getElementById('modalDateLabel').innerText = `DIA ${String(day).padStart(2, '0')} • ESCALA CLOUD`;
@@ -608,8 +625,8 @@
             list.innerHTML = employees.map(emp => `
                 <div class="bg-white p-5 rounded-3xl border flex justify-between items-center group shadow-sm hover:border-indigo-400">
                     <div class="truncate mr-2">
-                        <h4 class="font-black text-slate-800 text-xs truncate">${emp.name}</h4>
-                        <p class="text-[8px] text-slate-400 uppercase font-black tracking-widest truncate">${emp.role || 'Sem Cargo'}</p>
+                        <h4 class="font-black text-slate-800 text-[14px] truncate">${emp.name}</h4>
+                        <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest truncate">${emp.role || 'Sem Cargo'}</p>
                     </div>
                     <div class="flex gap-1">
                         <button onclick="openEditEmployeeModal('${emp.id}')" class="p-2 text-slate-300 hover:text-indigo-500 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
@@ -651,24 +668,61 @@
             container.appendChild(t);
             setTimeout(() => t.remove(), 4000);
         }
+
         async function exportAndShare() {
             const area = document.getElementById('capture-area');
-            document.body.classList.add('exporting');
-            setLoading(true, "A preparar imagem...");
+            const mainBody = document.body;
+            
+            // Adiciona classe para transformar a tabela numa versão plana (não sticky)
+            mainBody.classList.add('exporting');
+            setLoading(true, "A preparar imagem de alta resolução...");
+            
             try {
-                const canvas = await html2canvas(area, { scale: 3, useCORS: true, backgroundColor: "#ffffff" });
+                // Captura a tabela forçando uma renderização completa
+                const canvas = await html2canvas(area, { 
+                    scale: 3, 
+                    useCORS: true, 
+                    backgroundColor: "#ffffff",
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        // Garante que o clone está visível e expandido
+                        const clonedArea = clonedDoc.getElementById('capture-area');
+                        clonedArea.style.maxHeight = 'none';
+                        clonedArea.style.overflow = 'visible';
+                        clonedArea.style.width = 'auto';
+                        
+                        // Remove sticky de todos os elementos no clone para evitar sobreposições
+                        const stickies = clonedDoc.querySelectorAll('.sticky-col-1, .sticky-col-2, thead tr th');
+                        stickies.forEach(s => {
+                            s.style.position = 'static';
+                            s.style.width = 'auto';
+                        });
+                    }
+                });
+                
                 canvas.toBlob(async (blob) => {
-                    const file = new File([blob], `Escala.jpg`, { type: 'image/jpeg' });
+                    const monthName = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
+                    const file = new File([blob], `Escala_${monthName}.jpg`, { type: 'image/jpeg' });
+
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share({ files: [file], title: 'Escala' });
+                        await navigator.share({
+                            files: [file],
+                            title: `Escala ${monthName}`,
+                            text: `Segue a escala de trabalho do mês de ${monthName}.`
+                        });
                     } else {
                         const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a'); a.download = `Escala.jpg`; a.href = url; a.click();
+                        const a = document.createElement('a'); a.download = `Escala_${monthName}.jpg`; a.href = url; a.click();
+                        showToast("Imagem descarregada.");
                     }
                 }, 'image/jpeg', 0.95);
-            } catch (err) { console.error(err); }
-            setLoading(false);
-            document.body.classList.remove('exporting');
+            } catch (err) { 
+                console.error(err);
+                showToast("Erro ao gerar imagem.");
+            } finally {
+                setLoading(false);
+                mainBody.classList.remove('exporting');
+            }
         }
     </script>
 </body>
