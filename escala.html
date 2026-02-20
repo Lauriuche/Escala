@@ -177,6 +177,10 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .modal-active { display: flex !important; animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes modalIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Classe Auxiliar para Exportação (Captura Total) */
+        .capture-mode { overflow: visible !important; max-height: none !important; width: fit-content !important; }
+        .capture-mode table { width: fit-content !important; }
     </style>
 </head>
 <body class="antialiased">
@@ -598,71 +602,91 @@
         async function handleClearEmployeeMonth(empId) { setLoading(true); const p = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`; await sbClient.from('shifts').delete().eq('employee_id', empId).like('day_key', `${p}%`); await loadAllData(); setLoading(false); }
         async function handleDeleteShiftRecord() { const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`; await sbClient.from('shifts').delete().match({ employee_id: editingContext.empId, day_key: key }); closeModal('shiftModal'); await loadAllData(); showToast("Limpo"); }
 
-        // --- FUNÇÕES DE EXPORTAÇÃO CORRIGIDAS PARA ESCALA COMPLETA ---
+        // --- FUNÇÕES DE EXPORTAÇÃO TÉCNICA (SEM CORTES) ---
         async function exportJPG() {
-            const area = document.getElementById('capture-container');
+            const table = document.getElementById('mainTable');
+            const container = document.getElementById('capture-container');
             setLoading(true, "Gerando JPG Completo...");
             
-            // html2canvas captura o scrollWidth/Height para garantir que nada seja cortado
-            const canvas = await html2canvas(area, {
+            // Forçamos a largura total da tabela para a captura
+            const fullWidth = table.scrollWidth;
+            const fullHeight = table.scrollHeight;
+
+            const canvas = await html2canvas(container, {
                 scale: 2,
                 useCORS: true,
-                width: area.scrollWidth,
-                height: area.scrollHeight,
-                windowWidth: area.scrollWidth,
+                width: fullWidth,
+                height: fullHeight,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: fullWidth + 100, // Margem de segurança
                 onclone: (clonedDoc) => {
-                    const clonedArea = clonedDoc.getElementById('capture-container');
-                    clonedArea.style.maxHeight = 'none';
-                    clonedArea.style.overflow = 'visible';
-                    // Remove sticky para evitar que as colunas fixas "vagem" na imagem
-                    clonedDoc.querySelectorAll('.sticky-col-name, thead tr th').forEach(el => {
+                    const clonedContainer = clonedDoc.getElementById('capture-container');
+                    clonedContainer.style.maxHeight = 'none';
+                    clonedContainer.style.overflow = 'visible';
+                    clonedContainer.style.width = fullWidth + 'px';
+                    
+                    // Removemos o 'sticky' para evitar sobreposição ou espaços em branco
+                    clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(el => {
                         el.style.position = 'static';
+                        el.style.backgroundColor = 'inherit';
                     });
+                    
+                    // Ajuste de bordas no clone para garantir consistência
+                    clonedDoc.querySelector('table').style.borderCollapse = 'collapse';
                 }
             });
 
             canvas.toBlob(async (blob) => {
-                const file = new File([blob], `Escala.jpg`, { type: 'image/jpeg' });
-                if (navigator.share) await navigator.share({ files: [file], title: `Escala Mensal` });
-                else { const a = document.createElement('a'); a.download = `Escala.jpg`; a.href = URL.createObjectURL(blob); a.click(); }
+                const file = new File([blob], `Escala_Completa.jpg`, { type: 'image/jpeg' });
+                if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                    await navigator.share({ files: [file], title: `Escala Mensal` });
+                } else {
+                    const a = document.createElement('a'); a.download = `Escala_Completa.jpg`; a.href = URL.createObjectURL(blob); a.click();
+                }
                 setLoading(false);
             }, 'image/jpeg', 0.95);
         }
 
         async function exportPDF() {
-            const element = document.getElementById('capture-container');
+            const table = document.getElementById('mainTable');
+            const container = document.getElementById('capture-container');
             const monthText = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
-            const yearText = document.getElementById('yearSelect').value;
             
             setLoading(true, "Gerando PDF Completo...");
             
+            const fullWidth = table.scrollWidth;
+
+            // Criamos um elemento temporário para o PDF que não tenha restrições de scroll
             const opt = {
-                margin: 5,
-                filename: `Escala_${monthText}_${yearText}.pdf`,
+                margin: [10, 10],
+                filename: `Escala_${monthText}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { 
                     scale: 2, 
                     useCORS: true, 
-                    logging: false,
-                    width: element.scrollWidth,
+                    width: fullWidth,
                     onclone: (clonedDoc) => {
-                        const clonedArea = clonedDoc.getElementById('capture-container');
-                        clonedArea.style.maxHeight = 'none';
-                        clonedArea.style.overflow = 'visible';
-                        clonedDoc.querySelectorAll('.sticky-col-name, thead tr th').forEach(el => {
+                        const clonedContainer = clonedDoc.getElementById('capture-container');
+                        clonedContainer.style.maxHeight = 'none';
+                        clonedContainer.style.overflow = 'visible';
+                        clonedContainer.style.width = fullWidth + 'px';
+                        clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(el => {
                             el.style.position = 'static';
                         });
                     }
                 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                // Usamos formato A3 ou maior se necessário, ou deixamos o jsPDF calcular
+                jsPDF: { unit: 'pt', format: [fullWidth + 60, table.scrollHeight + 100], orientation: 'landscape' }
             };
 
-            html2pdf().set(opt).from(element).save().then(() => {
+            html2pdf().set(opt).from(container).save().then(() => {
                 setLoading(false);
                 showToast("PDF Gerado");
             }).catch(err => {
                 setLoading(false);
-                showToast("Erro ao gerar PDF");
+                showToast("Erro no PDF");
+                console.error(err);
             });
         }
     </script>
