@@ -107,7 +107,10 @@
         .cell-violation-11h { background-color: #fff7ed !important; border: 2px solid var(--violation-inter-11h) !important; }
         .cell-violation-intra { background-color: #fef2f2 !important; border: 2px solid var(--violation-intra) !important; }
 
-        /* Popups */
+        /* Estilos dos Membros - CAIXA ALTA E NEGRITO */
+        .emp-name-heavy { font-weight: 950 !important; text-transform: uppercase !important; letter-spacing: -0.02em; color: #000; }
+        
+        /* Popups de Erro */
         .error-note-trigger {
             position: absolute; top: 2px; right: 2px; 
             background: white; border-radius: 4px; padding: 2px;
@@ -135,14 +138,13 @@
         @media (hover: hover) { .error-note-trigger:hover + .error-note-popup { display: block; } }
         .error-note-popup.is-visible { display: block !important; pointer-events: auto; }
 
-        /* Estilos dos Membros */
-        .emp-name-heavy { font-weight: 950 !important; text-transform: uppercase !important; letter-spacing: -0.02em; color: #000; }
+        /* Estilos de Célula */
         .cell-interactive { cursor: pointer; height: var(--row-height); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .time-text { font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.1; }
         .time-subtext { font-size: 9px; font-weight: 600; color: #64748b; }
         .msg-error-cell { font-size: 7.5px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; margin-bottom: 2px; }
 
-        /* Nota Beta com Brilho */
+        /* Nota Beta com Brilho e Dobra */
         .beta-note-container {
             display: inline-block;
             margin: 20px auto;
@@ -222,6 +224,7 @@
 
         <main id="panel-scale" class="py-6 space-y-4">
             <div class="content-container">
+                <!-- Contentor que será capturado -->
                 <div id="capture-container" class="table-container no-scrollbar">
                     <table id="mainTable">
                         <thead>
@@ -287,7 +290,10 @@
     <div id="shiftModal" class="fixed inset-0 z-[100] hidden bg-slate-900/70 backdrop-blur-md items-center justify-center p-4">
         <div class="bg-white rounded-[40px] w-full max-w-sm shadow-2xl p-8 space-y-6">
             <div class="flex justify-between items-start">
-                <div><h3 id="modalEmpName" class="text-xl font-black text-slate-900 leading-none uppercase"></h3><p id="modalDateLabel" class="text-blue-600 font-bold text-[10px] uppercase mt-1"></p></div>
+                <div>
+                    <h3 id="modalEmpName" class="text-xl font-black text-slate-900 leading-none uppercase"></h3>
+                    <p id="modalDateLabel" class="text-blue-600 font-bold text-[10px] uppercase mt-1"></p>
+                </div>
                 <button onclick="closeModal('shiftModal')" class="p-2 bg-slate-100 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
             
@@ -592,10 +598,29 @@
         async function handleClearEmployeeMonth(empId) { setLoading(true); const p = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`; await sbClient.from('shifts').delete().eq('employee_id', empId).like('day_key', `${p}%`); await loadAllData(); setLoading(false); }
         async function handleDeleteShiftRecord() { const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`; await sbClient.from('shifts').delete().match({ employee_id: editingContext.empId, day_key: key }); closeModal('shiftModal'); await loadAllData(); showToast("Limpo"); }
 
-        // --- FUNÇÕES DE EXPORTAÇÃO ---
+        // --- FUNÇÕES DE EXPORTAÇÃO CORRIGIDAS PARA ESCALA COMPLETA ---
         async function exportJPG() {
-            const area = document.getElementById('capture-container'); setLoading(true, "Gerando JPG...");
-            const canvas = await html2canvas(area, { scale: 2, useCORS: true });
+            const area = document.getElementById('capture-container');
+            setLoading(true, "Gerando JPG Completo...");
+            
+            // html2canvas captura o scrollWidth/Height para garantir que nada seja cortado
+            const canvas = await html2canvas(area, {
+                scale: 2,
+                useCORS: true,
+                width: area.scrollWidth,
+                height: area.scrollHeight,
+                windowWidth: area.scrollWidth,
+                onclone: (clonedDoc) => {
+                    const clonedArea = clonedDoc.getElementById('capture-container');
+                    clonedArea.style.maxHeight = 'none';
+                    clonedArea.style.overflow = 'visible';
+                    // Remove sticky para evitar que as colunas fixas "vagem" na imagem
+                    clonedDoc.querySelectorAll('.sticky-col-name, thead tr th').forEach(el => {
+                        el.style.position = 'static';
+                    });
+                }
+            });
+
             canvas.toBlob(async (blob) => {
                 const file = new File([blob], `Escala.jpg`, { type: 'image/jpeg' });
                 if (navigator.share) await navigator.share({ files: [file], title: `Escala Mensal` });
@@ -609,13 +634,26 @@
             const monthText = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
             const yearText = document.getElementById('yearSelect').value;
             
-            setLoading(true, "Gerando PDF...");
+            setLoading(true, "Gerando PDF Completo...");
             
             const opt = {
                 margin: 5,
                 filename: `Escala_${monthText}_${yearText}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false,
+                    width: element.scrollWidth,
+                    onclone: (clonedDoc) => {
+                        const clonedArea = clonedDoc.getElementById('capture-container');
+                        clonedArea.style.maxHeight = 'none';
+                        clonedArea.style.overflow = 'visible';
+                        clonedDoc.querySelectorAll('.sticky-col-name, thead tr th').forEach(el => {
+                            el.style.position = 'static';
+                        });
+                    }
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
             };
 
