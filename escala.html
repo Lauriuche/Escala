@@ -177,10 +177,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .modal-active { display: flex !important; animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes modalIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Classe Auxiliar para Exportação (Captura Total) */
-        .capture-mode { overflow: visible !important; max-height: none !important; width: fit-content !important; }
-        .capture-mode table { width: fit-content !important; }
     </style>
 </head>
 <body class="antialiased">
@@ -193,7 +189,13 @@
                         <i data-lucide="cloud" class="text-white w-5 h-5"></i>
                     </div>
                     <div>
-                        <h1 class="font-black text-xl text-slate-900 tracking-tighter leading-none uppercase text-blue-600">EscalaPro</h1>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-black text-xl text-slate-900 tracking-tighter leading-none uppercase text-blue-600">EscalaPro</h1>
+                            <!-- Botão Instalar App -->
+                            <button id="btnInstall" onclick="installApp()" class="hidden bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1 rounded-full text-[9px] font-black uppercase flex items-center gap-1 active:scale-95 transition-all">
+                                <i data-lucide="download" class="w-3 h-3"></i> Instalar App
+                            </button>
+                        </div>
                         <p id="connection-status" class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Sincronizando...</p>
                     </div>
                 </div>
@@ -228,7 +230,6 @@
 
         <main id="panel-scale" class="py-6 space-y-4">
             <div class="content-container">
-                <!-- Contentor que será capturado -->
                 <div id="capture-container" class="table-container no-scrollbar">
                     <table id="mainTable">
                         <thead>
@@ -248,7 +249,6 @@
                 </div>
             </div>
 
-            <!-- LEGENDA COMPLETA -->
             <div class="content-container pt-4 pb-2 border-t border-slate-100">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Legenda do Sistema</h4>
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -262,7 +262,6 @@
                     <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#fef2f2] border-2 border-[#ef4444]"></span> <span class="text-[9px] font-bold uppercase text-slate-600">Intrajornada</span></div>
                 </div>
                 
-                <!-- OPÇÕES DE EXPORTAÇÃO -->
                 <div class="mt-8 flex flex-wrap justify-end gap-3">
                     <button onclick="exportJPG()" class="flex items-center gap-2 bg-slate-100 text-slate-600 px-6 py-3 rounded-full font-black text-[10px] uppercase shadow-sm hover:bg-slate-200 transition-all">
                         <i data-lucide="image" class="w-3.5 h-3.5"></i> Exportar JPG
@@ -290,17 +289,19 @@
         </footer>
     </div>
 
-    <!-- MODAIS -->
+    <!-- Overlay Carregamento -->
+    <div id="loadingOverlay" class="fixed inset-0 z-[700] flex flex-col items-center justify-center bg-white text-slate-900 p-6">
+        <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+        <p id="loadingText" class="font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">Sincronizando Cloud...</p>
+    </div>
+
+    <!-- MODAIS E TOAST -->
     <div id="shiftModal" class="fixed inset-0 z-[100] hidden bg-slate-900/70 backdrop-blur-md items-center justify-center p-4">
         <div class="bg-white rounded-[40px] w-full max-w-sm shadow-2xl p-8 space-y-6">
             <div class="flex justify-between items-start">
-                <div>
-                    <h3 id="modalEmpName" class="text-xl font-black text-slate-900 leading-none uppercase"></h3>
-                    <p id="modalDateLabel" class="text-blue-600 font-bold text-[10px] uppercase mt-1"></p>
-                </div>
+                <div><h3 id="modalEmpName" class="text-xl font-black text-slate-900 leading-none uppercase"></h3><p id="modalDateLabel" class="text-blue-600 font-bold text-[10px] uppercase mt-1"></p></div>
                 <button onclick="closeModal('shiftModal')" class="p-2 bg-slate-100 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-            
             <div class="space-y-6">
                 <div id="timeInputArea" class="space-y-2">
                     <div class="flex justify-between px-2 text-[9px] font-bold text-slate-400 uppercase"><span>Entrada</span><span>Almoço</span><span>Saída</span></div>
@@ -310,7 +311,6 @@
                         <input type="time" id="field-out" class="bg-transparent font-black text-lg outline-none w-24 text-right">
                     </div>
                 </div>
-
                 <div class="space-y-3">
                     <label class="text-[9px] font-black text-slate-400 uppercase">Tipo de Registo</label>
                     <div class="flex bg-slate-100 p-1 rounded-xl gap-1">
@@ -320,12 +320,10 @@
                         <button onclick="setEditMode('FERIAS')" id="btn-mode-vacation" class="flex-1 py-3 rounded-lg text-[10px] font-black uppercase transition-all">Férias</button>
                     </div>
                 </div>
-
                 <div class="space-y-3 bg-slate-50 p-4 rounded-2xl">
                     <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="field-repeat" class="w-5 h-5 rounded"><span class="text-[10px] font-bold uppercase text-slate-600">Replicar horários</span></label>
                     <label id="label-propagate" class="hidden flex items-center gap-3 cursor-pointer"><input type="checkbox" id="field-propagate" class="w-5 h-5 rounded"><span class="text-[10px] font-bold uppercase text-blue-600">Ciclo 6x1</span></label>
                 </div>
-
                 <div class="flex gap-3">
                     <button onclick="handleDeleteShiftRecord()" class="px-5 bg-red-50 text-red-500 rounded-2xl border border-red-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     <button onclick="saveShift()" class="flex-1 bg-slate-900 text-white font-black py-5 rounded-2xl uppercase tracking-widest text-sm">Sincronizar</button>
@@ -349,18 +347,12 @@
         </div>
     </div>
 
-    <!-- Overlay Carregamento -->
-    <div id="loadingOverlay" class="fixed inset-0 z-[700] flex flex-col items-center justify-center bg-white text-slate-900 p-6">
-        <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-        <p id="loadingText" class="font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">Sincronizando Cloud...</p>
-    </div>
-
     <div id="toastContainer" class="fixed bottom-10 right-10 z-[800] space-y-4 pointer-events-none"></div>
 
     <script>
         const SUPABASE_URL = 'https://cjcnqvdrztnhepxtlgju.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_3amBXdvUsQWYvf2qP4Ljbg_d3GDqglr';
-        var sbClient;
+        var sbClient, deferredPrompt;
 
         const RULES = { WORK_BASE_MINS: 440, MAX_CONSECUTIVE: 6, INTER_DAILY_MIN_HOURS: 11, INTER_DSR_MIN_HOURS: 36, INTRA_MIN_HOURS: 1 };
         const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -368,18 +360,43 @@
         let employees = [], shifts = {}; 
         let currentMode = 'TRABALHO', editingEmployeeId = null, editingContext = null;
 
+        // --- FUNCIONALIDADES PWA ---
+        function setupPWA() {
+            const manifest = { name: "EscalaPro Cloud", short_name: "EscalaPro", start_url: ".", display: "standalone", background_color: "#ffffff", theme_color: "#f07556", icons: [{ src: "https://cdn-icons-png.flaticon.com/512/2693/2693507.png", sizes: "512x512", type: "image/png" }] };
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(blob); document.head.appendChild(link);
+            
+            if ('serviceWorker' in navigator) {
+                const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request)));`;
+                const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            document.getElementById('btnInstall').classList.remove('hidden');
+        });
+
+        async function installApp() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') document.getElementById('btnInstall').classList.add('hidden');
+            deferredPrompt = null;
+        }
+
         window.onload = async () => {
+            setupPWA();
             setupSelectors();
             await initSupabase();
             lucide.createIcons();
-            
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.error-note-trigger')) {
-                    document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible'));
-                }
+                if (!e.target.closest('.error-note-trigger')) document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible'));
             });
         };
 
+        // --- SUPABASE & DATA ---
         async function initSupabase() {
             try {
                 const lib = window.supabase || supabase;
@@ -602,48 +619,24 @@
         async function handleClearEmployeeMonth(empId) { setLoading(true); const p = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`; await sbClient.from('shifts').delete().eq('employee_id', empId).like('day_key', `${p}%`); await loadAllData(); setLoading(false); }
         async function handleDeleteShiftRecord() { const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`; await sbClient.from('shifts').delete().match({ employee_id: editingContext.empId, day_key: key }); closeModal('shiftModal'); await loadAllData(); showToast("Limpo"); }
 
-        // --- FUNÇÕES DE EXPORTAÇÃO TÉCNICA (SEM CORTES) ---
+        // --- FUNÇÕES DE EXPORTAÇÃO ---
         async function exportJPG() {
             const table = document.getElementById('mainTable');
             const container = document.getElementById('capture-container');
             setLoading(true, "Gerando JPG Completo...");
-            
-            // Forçamos a largura total da tabela para a captura
-            const fullWidth = table.scrollWidth;
-            const fullHeight = table.scrollHeight;
-
+            const fullWidth = table.scrollWidth, fullHeight = table.scrollHeight;
             const canvas = await html2canvas(container, {
-                scale: 2,
-                useCORS: true,
-                width: fullWidth,
-                height: fullHeight,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: fullWidth + 100, // Margem de segurança
+                scale: 2, useCORS: true, width: fullWidth, height: fullHeight, scrollX: 0, scrollY: 0, windowWidth: fullWidth + 100,
                 onclone: (clonedDoc) => {
                     const clonedContainer = clonedDoc.getElementById('capture-container');
-                    clonedContainer.style.maxHeight = 'none';
-                    clonedContainer.style.overflow = 'visible';
-                    clonedContainer.style.width = fullWidth + 'px';
-                    
-                    // Removemos o 'sticky' para evitar sobreposição ou espaços em branco
-                    clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(el => {
-                        el.style.position = 'static';
-                        el.style.backgroundColor = 'inherit';
-                    });
-                    
-                    // Ajuste de bordas no clone para garantir consistência
-                    clonedDoc.querySelector('table').style.borderCollapse = 'collapse';
+                    clonedContainer.style.maxHeight = 'none'; clonedContainer.style.overflow = 'visible'; clonedContainer.style.width = fullWidth + 'px';
+                    clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(el => { el.style.position = 'static'; el.style.backgroundColor = 'inherit'; });
                 }
             });
-
             canvas.toBlob(async (blob) => {
                 const file = new File([blob], `Escala_Completa.jpg`, { type: 'image/jpeg' });
-                if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
-                    await navigator.share({ files: [file], title: `Escala Mensal` });
-                } else {
-                    const a = document.createElement('a'); a.download = `Escala_Completa.jpg`; a.href = URL.createObjectURL(blob); a.click();
-                }
+                if (navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent)) await navigator.share({ files: [file], title: `Escala Mensal` });
+                else { const a = document.createElement('a'); a.download = `Escala_Completa.jpg`; a.href = URL.createObjectURL(blob); a.click(); }
                 setLoading(false);
             }, 'image/jpeg', 0.95);
         }
@@ -652,42 +645,21 @@
             const table = document.getElementById('mainTable');
             const container = document.getElementById('capture-container');
             const monthText = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
-            
             setLoading(true, "Gerando PDF Completo...");
-            
             const fullWidth = table.scrollWidth;
-
-            // Criamos um elemento temporário para o PDF que não tenha restrições de scroll
             const opt = {
-                margin: [10, 10],
-                filename: `Escala_${monthText}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
+                margin: [10, 10], filename: `Escala_${monthText}.pdf`, image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { 
-                    scale: 2, 
-                    useCORS: true, 
-                    width: fullWidth,
+                    scale: 2, useCORS: true, width: fullWidth,
                     onclone: (clonedDoc) => {
                         const clonedContainer = clonedDoc.getElementById('capture-container');
-                        clonedContainer.style.maxHeight = 'none';
-                        clonedContainer.style.overflow = 'visible';
-                        clonedContainer.style.width = fullWidth + 'px';
-                        clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(el => {
-                            el.style.position = 'static';
-                        });
+                        clonedContainer.style.maxHeight = 'none'; clonedContainer.style.overflow = 'visible'; clonedContainer.style.width = fullWidth + 'px';
+                        clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(el => { el.style.position = 'static'; });
                     }
                 },
-                // Usamos formato A3 ou maior se necessário, ou deixamos o jsPDF calcular
                 jsPDF: { unit: 'pt', format: [fullWidth + 60, table.scrollHeight + 100], orientation: 'landscape' }
             };
-
-            html2pdf().set(opt).from(container).save().then(() => {
-                setLoading(false);
-                showToast("PDF Gerado");
-            }).catch(err => {
-                setLoading(false);
-                showToast("Erro no PDF");
-                console.error(err);
-            });
+            html2pdf().set(opt).from(container).save().then(() => { setLoading(false); showToast("PDF Gerado"); }).catch(err => { setLoading(false); showToast("Erro no PDF"); });
         }
     </script>
 </body>
