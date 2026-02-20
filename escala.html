@@ -16,6 +16,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Biblioteca para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Supabase Lib -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -98,23 +100,20 @@
         .sun-col .time-text { color: white !important; }
         .sun-col .time-subtext { color: rgba(255, 255, 255, 0.85) !important; }
 
-        /* Cores de Alertas */
+        /* Alertas */
         .cell-violation { background-color: #fef08a !important; border: 2px solid #eab308 !important; }
         .cell-violation-sun { background-color: var(--sun-red) !important; border: 2.5px solid #fef08a !important; }
         .cell-violation-36h { background-color: #f3e8ff !important; border: 2px solid var(--violation-inter-36h) !important; }
         .cell-violation-11h { background-color: #fff7ed !important; border: 2px solid var(--violation-inter-11h) !important; }
         .cell-violation-intra { background-color: #fef2f2 !important; border: 2px solid var(--violation-intra) !important; }
 
-        /* Ícone de Nota de Erro */
+        /* Popups */
         .error-note-trigger {
             position: absolute; top: 2px; right: 2px; 
             background: white; border-radius: 4px; padding: 2px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.15); cursor: pointer;
             z-index: 50; transition: transform 0.2s;
         }
-        .error-note-trigger:hover { transform: scale(1.1); }
-
-        /* Popup de Nota Estilo "Post-it" */
         .error-note-popup {
             position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
             width: 150px; background: #fffde7; border: 1px solid #fbc02d;
@@ -124,46 +123,58 @@
             text-align: left; line-height: 1.3; margin-bottom: 8px;
             animation: popIn 0.2s ease-out;
         }
-        
         @keyframes popIn {
             from { opacity: 0; transform: translateX(-50%) translateY(5px) scale(0.95); }
             to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
         }
-
         .error-note-popup::after {
             content: ''; position: absolute; top: 100%; left: 50%; 
             transform: translateX(-50%); border-width: 6px; border-style: solid;
             border-color: #fbc02d transparent transparent transparent;
         }
-
-        /* Desktop: Mostrar no Hover */
-        @media (hover: hover) {
-            .error-note-trigger:hover + .error-note-popup { display: block; }
-        }
-
-        /* Classe para forçar exibição no clique (Mobile) */
+        @media (hover: hover) { .error-note-trigger:hover + .error-note-popup { display: block; } }
         .error-note-popup.is-visible { display: block !important; pointer-events: auto; }
 
+        /* Estilos dos Membros */
+        .emp-name-heavy { font-weight: 950 !important; text-transform: uppercase !important; letter-spacing: -0.02em; color: #000; }
+        .cell-interactive { cursor: pointer; height: var(--row-height); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .time-text { font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.1; }
+        .time-subtext { font-size: 9px; font-weight: 600; color: #64748b; }
+        .msg-error-cell { font-size: 7.5px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; margin-bottom: 2px; }
+
+        /* Nota Beta com Brilho */
+        .beta-note-container {
+            display: inline-block;
+            margin: 20px auto;
+            position: relative;
+            background: #ffffff;
+            padding: 18px 24px 18px 30px;
+            border: 1px solid #e2e8f0;
+            max-width: 280px;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.15), 0 0 5px rgba(37, 99, 235, 0.1);
+        }
+        .beta-note-container::before {
+            content: ""; position: absolute; top: -1px; left: -1px; width: 0; height: 0;
+            border-style: solid; border-width: 20px 20px 0 0;
+            border-color: #f1f5f9 #ffffff transparent transparent; z-index: 2;
+        }
+        .beta-note-container::after {
+            content: ""; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px;
+            background: transparent; box-shadow: 1px 1px 2px rgba(0,0,0,0.08); z-index: 1;
+        }
+        .beta-note-text { color: #2563eb; font-size: 10px; font-weight: 800; line-height: 1.4; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Badges */
         .badge-dsr { background: #2563eb; color: white; font-size: 11px; font-weight: 900; padding: 4px 2px; width: 90%; border-radius: 6px; text-align: center; }
         .badge-bh { background: #f97316; color: white; font-size: 11px; font-weight: 900; padding: 4px 2px; width: 90%; border-radius: 6px; text-align: center; }
         .badge-vacation { background: #10b981; color: white; font-size: 11px; font-weight: 900; padding: 4px 2px; width: 90%; border-radius: 6px; text-align: center; }
 
-        .cell-interactive { cursor: pointer; height: var(--row-height); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-
-        .time-text { font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.1; }
-        .time-subtext { font-size: 9px; font-weight: 600; color: #64748b; }
-        
-        .msg-error-cell { font-size: 7.5px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; margin-bottom: 2px; }
-
         .btn-clear-row { color: #94a3b8; transition: all 0.2s; padding: 6px; border-radius: 8px; }
         .btn-clear-row:hover { color: #ef4444; background-color: #fef2f2; }
-
-        .modal-active { display: flex !important; animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes modalIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .nav-active { color: #2563eb !important; background-color: white !important; box-shadow: 0 4px 12px -2px rgba(0,0,0,0.05); }
         .toolbar-pill { background-color: #f1f5f9; padding: 4px; border-radius: 14px; display: flex; align-items: center; gap: 2px; border: 1px solid #e2e8f0; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .modal-active { display: flex !important; animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="antialiased">
@@ -243,9 +254,14 @@
                     <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#f3e8ff] border-2 border-[#a855f7]"></span> <span class="text-[9px] font-bold uppercase text-slate-600">Inter. 36h</span></div>
                     <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#fef2f2] border-2 border-[#ef4444]"></span> <span class="text-[9px] font-bold uppercase text-slate-600">Intrajornada</span></div>
                 </div>
-                <div class="mt-6 flex justify-end">
-                    <button onclick="exportAndShare()" class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-black text-[10px] uppercase shadow-lg">
-                        <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Exportar Escala
+                
+                <!-- OPÇÕES DE EXPORTAÇÃO -->
+                <div class="mt-8 flex flex-wrap justify-end gap-3">
+                    <button onclick="exportJPG()" class="flex items-center gap-2 bg-slate-100 text-slate-600 px-6 py-3 rounded-full font-black text-[10px] uppercase shadow-sm hover:bg-slate-200 transition-all">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i> Exportar JPG
+                    </button>
+                    <button onclick="exportPDF()" class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-black text-[10px] uppercase shadow-lg hover:bg-green-700 transition-all">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Exportar PDF
                     </button>
                 </div>
             </div>
@@ -253,17 +269,16 @@
 
         <main id="panel-admin" class="hidden py-6">
             <div class="content-container">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-black uppercase tracking-tighter text-slate-900">Membros da Equipa</h2>
-                    <button onclick="openAddEmployeeModal()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-md">Adicionar Membro</button>
-                </div>
                 <div id="employeeList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
         </main>
      
         <footer class="mt-auto py-8 border-t border-slate-200">
             <div class="content-container text-center">
-                <p class="text-[9px] text-slate-400 uppercase tracking-[0.2em]">© 2026 lauriuche.inc | Todos os direitos reservados.</p>
+                <div class="beta-note-container">
+                    <p class="beta-note-text">Página em fase Beta com funcionalidades futuras em desenvolvimento</p>
+                </div>
+                <p class="text-[9px] text-slate-400 uppercase tracking-[0.2em] mt-4">© 2026 lauriuche.inc | Todos os direitos reservados.</p>
             </div>
         </footer>
     </div>
@@ -297,12 +312,12 @@
                 </div>
 
                 <div class="space-y-3 bg-slate-50 p-4 rounded-2xl">
-                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="field-repeat" class="w-5 h-5 rounded"><span class="text-[10px] font-bold uppercase text-slate-600">Replicar horários no mês</span></label>
-                    <label id="label-propagate" class="hidden flex items-center gap-3 cursor-pointer"><input type="checkbox" id="field-propagate" class="w-5 h-5 rounded"><span class="text-[10px] font-bold uppercase text-blue-600">Ciclo Automático 6x1</span></label>
+                    <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" id="field-repeat" class="w-5 h-5 rounded"><span class="text-[10px] font-bold uppercase text-slate-600">Replicar horários</span></label>
+                    <label id="label-propagate" class="hidden flex items-center gap-3 cursor-pointer"><input type="checkbox" id="field-propagate" class="w-5 h-5 rounded"><span class="text-[10px] font-bold uppercase text-blue-600">Ciclo 6x1</span></label>
                 </div>
 
                 <div class="flex gap-3">
-                    <button onclick="handleDeleteShiftRecord()" class="px-5 bg-red-50 text-red-500 rounded-2xl border border-red-100"><i data-lucide="trash-2"></i></button>
+                    <button onclick="handleDeleteShiftRecord()" class="px-5 bg-red-50 text-red-500 rounded-2xl border border-red-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     <button onclick="saveShift()" class="flex-1 bg-slate-900 text-white font-black py-5 rounded-2xl uppercase tracking-widest text-sm">Sincronizar</button>
                 </div>
             </div>
@@ -314,8 +329,8 @@
         <div class="bg-white rounded-[40px] w-full max-w-md p-10 shadow-2xl space-y-6">
             <h3 id="employeeModalTitle" class="text-xl font-black text-slate-900 uppercase">Membro da Equipa</h3>
             <div class="space-y-4">
-                <input type="text" id="new-emp-name" placeholder="NOME COMPLETO" class="w-full p-4 bg-slate-50 rounded-2xl font-bold outline-none border-2 border-transparent focus:border-blue-500 uppercase">
-                <input type="text" id="new-emp-role" placeholder="CARGO / POSTO" class="w-full p-4 bg-slate-50 rounded-2xl font-bold outline-none border-2 border-transparent focus:border-blue-500 uppercase">
+                <input type="text" id="new-emp-name" placeholder="NOME COMPLETO" class="w-full p-4 bg-slate-50 rounded-2xl font-black outline-none border-2 border-transparent focus:border-blue-500 uppercase">
+                <input type="text" id="new-emp-role" placeholder="CARGO / POSTO" class="w-full p-4 bg-slate-50 rounded-2xl font-black outline-none border-2 border-transparent focus:border-blue-500 uppercase">
             </div>
             <div class="flex gap-4 pt-2">
                 <button onclick="closeModal('employeeModal')" class="flex-1 font-bold text-slate-400">Cancelar</button>
@@ -327,7 +342,7 @@
     <!-- Overlay Carregamento -->
     <div id="loadingOverlay" class="fixed inset-0 z-[700] flex flex-col items-center justify-center bg-white text-slate-900 p-6">
         <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-        <p id="loadingText" class="font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">Ligando à Cloud...</p>
+        <p id="loadingText" class="font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">Sincronizando Cloud...</p>
     </div>
 
     <div id="toastContainer" class="fixed bottom-10 right-10 z-[800] space-y-4 pointer-events-none"></div>
@@ -348,7 +363,6 @@
             await initSupabase();
             lucide.createIcons();
             
-            // Fecha popups ao clicar fora
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.error-note-trigger')) {
                     document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible'));
@@ -397,25 +411,16 @@
         function getEmployeeViolations(empId, month, year, dMax) {
             let violations = {};
             let streak = [];
-
             for (let d = 1; d <= dMax; d++) {
-                const dayKey = `${year}-${month}-${d}`;
-                const shift = shifts[empId]?.[dayKey];
+                const dayKey = `${year}-${month}-${d}`, shift = shifts[empId]?.[dayKey];
                 const isDsr = shift && shift.isFolga && (shift.tipoFolga === 'DSR' || shift.tipoFolga === 'FERIAS');
-
                 if (isDsr) {
-                    if (streak.length > 6) streak.forEach(day => {
-                        if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalho por mais de 6 dias consecutivos.', suggestion: 'Conceder folga/DSR.' };
-                    });
+                    if (streak.length > 6) streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalho por mais de 6 dias.', suggestion: 'Conceder folga.' }; });
                     streak = [];
-                } else {
-                    streak.push(d);
-                }
+                } else streak.push(d);
 
                 if (shift && !shift.isFolga) {
-                    if (shift.lunch && parseFloat(shift.lunch) < RULES.INTRA_MIN_HOURS) {
-                        violations[d] = { type: 'intra', msg: 'Intervalo intrajornada inferior a 1h.', suggestion: 'Aumentar pausa para 1h.' };
-                    }
+                    if (shift.lunch && parseFloat(shift.lunch) < RULES.INTRA_MIN_HOURS) violations[d] = { type: 'intra', msg: 'Almoço inferior a 1h.', suggestion: 'Aumentar pausa.' };
                     if (d > 1) {
                         let lastDay = d - 1, gapDays = 0;
                         while(lastDay >= 1 && shifts[empId]?.[`${year}-${month}-${lastDay}`]?.isFolga) { lastDay--; gapDays++; }
@@ -425,48 +430,40 @@
                                 const [hOut, mOut] = lastShift.out.split(':').map(Number);
                                 const [hIn, mIn] = shift.in.split(':').map(Number);
                                 const gap = ((24 * 60) - (hOut * 60 + mOut) + (gapDays * 24 * 60) + (hIn * 60 + mIn)) / 60;
-                                
                                 if (gapDays > 0 && gap < RULES.INTER_DSR_MIN_HOURS) {
                                     const nextValid = (hOut + 12 + (gapDays > 0 ? 24 : 0)) % 24;
                                     violations[d] = { type: '36h', msg: `Descanso semanal insuficiente (${gap.toFixed(1)}h).`, suggestion: `Entrar após as ${String(Math.ceil(nextValid)).padStart(2,'0')}:00.` };
                                 } else if (gapDays === 0 && gap < RULES.INTER_DAILY_MIN_HOURS) {
                                     const nextValid = (hOut + 11) % 24;
-                                    violations[d] = { type: '11h', msg: `Descanso diário insuficiente (${gap.toFixed(1)}h).`, suggestion: `Entrar após as ${String(Math.ceil(nextValid)).padStart(2,'0')}:00.` };
+                                    violations[d] = { type: '11h', msg: `Descanso insuficiente (${gap.toFixed(1)}h).`, suggestion: `Entrar após as ${String(Math.ceil(nextValid)).padStart(2,'0')}:00.` };
                                 }
                             }
                         }
                     }
                 }
             }
-            if (streak.length > 6) streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalho por mais de 6 dias.', suggestion: 'Conceder folga.' }; });
             return violations;
         }
 
         function toggleErrorNote(event, el) {
-            event.stopPropagation(); // Impede de abrir o modal de turno
+            event.stopPropagation();
             const popup = el.nextElementSibling;
             const isVisible = popup.classList.contains('is-visible');
-            
-            // Fecha todos os outros
             document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible'));
-            
-            // Alterna o atual
             if (!isVisible) popup.classList.add('is-visible');
         }
 
         function renderScale() {
             const body = document.getElementById('scaleBody'), month = document.getElementById('monthSelect').value, year = document.getElementById('yearSelect').value;
             const dMax = new Date(year, parseInt(month) + 1, 0).getDate();
-            if (employees.length === 0) { body.innerHTML = `<tr><td colspan="40" class="p-12 text-center text-slate-300 font-bold uppercase text-[10px]">Vazio</td></tr>`; return; }
+            if (employees.length === 0) { body.innerHTML = `<tr><td colspan="40" class="p-12 text-center text-slate-300 font-bold uppercase text-[10px]">Sem dados</td></tr>`; return; }
             
             body.innerHTML = employees.map(emp => {
                 const violations = getEmployeeViolations(emp.id, month, year, dMax);
                 let cells = '';
                 for (let d = 1; d <= dMax; d++) {
                     const key = `${year}-${month}-${d}`, shift = shifts[emp.id]?.[key], isSun = new Date(year, parseInt(month), d).getDay() === 0;
-                    let content = '<span class="opacity-10 text-[10px]">--:--</span>';
-                    let bg = isSun ? "sun-col" : "";
-                    let note = "";
+                    let content = '<span class="opacity-10 text-[10px]">--:--</span>', bg = isSun ? "sun-col" : "", note = "";
 
                     if (shift) {
                         if (shift.isFolga) {
@@ -475,12 +472,10 @@
                         } else {
                             const v = violations[d];
                             if (v) {
-                                const isInter = v.type === '36h' || v.type === '11h';
-                                const isIntra = v.type === 'intra';
-                                if (isInter) {
+                                if (v.type === '36h' || v.type === '11h') {
                                     bg += v.type === '36h' ? " cell-violation-36h" : " cell-violation-11h";
                                     content = `<div class="msg-error-cell ${v.type==='36h'?'text-purple-700':'text-orange-700'}">INTERJORNADA</div><div class="time-text">${shift.in}</div>`;
-                                } else if (isIntra) {
+                                } else if (v.type === 'intra') {
                                     bg += " cell-violation-intra";
                                     content = `<div class="msg-error-cell text-red-600">INTRAJORNADA</div><div class="time-text">${shift.in}</div>`;
                                 } else {
@@ -488,21 +483,15 @@
                                     content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`;
                                 }
                                 note = `<div class="error-note-trigger" onclick="toggleErrorNote(event, this)"><i data-lucide="sticky-note" class="w-2.5 h-2.5 text-slate-500"></i></div>
-                                        <div class="error-note-popup">
-                                            <div class="text-blue-600 mb-1">ALERTA LEGAL:</div>
-                                            <div>${v.msg}</div>
-                                            <div class="mt-1 pt-1 border-t border-slate-300 text-green-600 italic">SUGESTÃO: ${v.suggestion}</div>
-                                        </div>`;
-                            } else {
-                                content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`;
-                            }
+                                        <div class="error-note-popup"><div class="text-blue-600 mb-1 font-black">ALERTA LEGAL:</div><div>${v.msg}</div><div class="mt-1 pt-1 border-t border-slate-300 text-green-600 italic">SUGESTÃO: ${v.suggestion}</div></div>`;
+                            } else { content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`; }
                         }
                     }
                     cells += `<td class="day-col ${bg}"><div class="cell-interactive" onclick="openShiftModal('${emp.id}', ${d})">${note}${content}</div></td>`;
                 }
                 return `<tr>
-                    <td class="sticky-col-name p-2"><span class="emp-name-clickable text-[11px]" onclick="openEditEmployeeModal('${emp.id}')">${emp.name}</span></td>
-                    <td class="col-role p-2"><span class="text-[10px] font-bold text-slate-400 uppercase truncate">${emp.role || '---'}</span></td>
+                    <td class="sticky-col-name p-2"><span class="emp-name-clickable text-[11px] emp-name-heavy" onclick="openEditEmployeeModal('${emp.id}')">${emp.name.toUpperCase()}</span></td>
+                    <td class="col-role p-2"><span class="text-[10px] font-black text-slate-400 uppercase truncate">${emp.role || '---'}</span></td>
                     <td class="col-action p-2 text-center"><button onclick="handleClearEmployeeMonth('${emp.id}')" class="btn-clear-row"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
                     ${cells}
                 </tr>`;
@@ -529,19 +518,6 @@
         function showToast(m) { const c = document.getElementById('toastContainer'), t = document.createElement('div'); t.className = "bg-slate-900 text-white px-6 py-3 rounded-2xl text-[10px] font-black shadow-2xl"; t.innerText = m.toUpperCase(); c.appendChild(t); setTimeout(() => t.remove(), 3000); }
         function setLoading(s, t = "Sincronizando...") { document.getElementById('loadingOverlay').classList.toggle('hidden', !s); document.getElementById('loadingText').innerText = t; }
 
-        function setEditMode(m) {
-            currentMode = m;
-            document.getElementById('timeInputArea').classList.toggle('hidden', m !== 'TRABALHO');
-            document.getElementById('label-propagate').classList.toggle('hidden', m !== 'DSR');
-            ['work', 'dsr', 'bh', 'vacation'].forEach(k => {
-                const b = document.getElementById(`btn-mode-${k}`);
-                b.className = (m === (k==='work'?'TRABALHO':k==='vacation'?'FERIAS':k.toUpperCase())) 
-                            ? 'flex-1 py-3 rounded-lg text-[10px] font-black uppercase bg-slate-900 text-white' 
-                            : 'flex-1 py-3 rounded-lg text-[10px] font-black uppercase bg-white text-slate-400';
-            });
-            if(m === 'TRABALHO') calculateAutoOut();
-        }
-
         function calculateAutoOut() {
             const v = document.getElementById('field-in').value, l = parseFloat(document.getElementById('field-lunch').value || 0);
             if(v) { 
@@ -551,11 +527,22 @@
             }
         }
 
+        function setEditMode(m) {
+            currentMode = m;
+            document.getElementById('timeInputArea').classList.toggle('hidden', m !== 'TRABALHO');
+            document.getElementById('label-propagate').classList.toggle('hidden', m !== 'DSR');
+            ['work', 'dsr', 'bh', 'vacation'].forEach(k => {
+                const b = document.getElementById(`btn-mode-${k}`);
+                b.className = (m === (k==='work'?'TRABALHO':k==='vacation'?'FERIAS':k.toUpperCase())) ? 'flex-1 py-3 rounded-lg text-[10px] font-black uppercase bg-slate-900 text-white' : 'flex-1 py-3 rounded-lg text-[10px] font-black uppercase bg-white text-slate-400';
+            });
+            if(m === 'TRABALHO') calculateAutoOut();
+        }
+
         async function saveEmployee() {
-            const name = document.getElementById('new-emp-name').value.trim(), role = document.getElementById('new-emp-role').value.trim();
-            if (!name) return showToast("Nome necessário");
+            const nameInput = document.getElementById('new-emp-name').value.trim().toUpperCase(), roleInput = document.getElementById('new-emp-role').value.trim().toUpperCase();
+            if (!nameInput) return showToast("Nome necessário");
             setLoading(true);
-            const p = { name, role };
+            const p = { name: nameInput, role: roleInput };
             if (editingEmployeeId) await sbClient.from('employees').update(p).eq('id', editingEmployeeId);
             else await sbClient.from('employees').insert([p]);
             closeModal('employeeModal'); await loadAllData(); setLoading(false);
@@ -564,30 +551,24 @@
         async function saveShift() {
             const { empId, day, month, year } = editingContext;
             const repeat = document.getElementById('field-repeat').checked, propagate = document.getElementById('field-propagate').checked;
-            const isF = (currentMode !== 'TRABALHO');
-            const data = { in: document.getElementById('field-in').value, out: document.getElementById('field-out').value, lunch: document.getElementById('field-lunch').value, isFolga: isF, tipoFolga: isF ? currentMode : null };
-            
+            const isF = (currentMode !== 'TRABALHO'), data = { in: document.getElementById('field-in').value, out: document.getElementById('field-out').value, lunch: document.getElementById('field-lunch').value, isFolga: isF, tipoFolga: isF ? currentMode : null };
             let ups = [{ employee_id: empId, day_key: `${year}-${month}-${day}`, shift_data: data }];
             if (repeat) {
                 const dMax = new Date(year, parseInt(month) + 1, 0).getDate();
-                for (let d = day + 1; d <= dMax; d++) {
-                    if (!shifts[empId]?.[`${year}-${month}-${d}`]?.isFolga) ups.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: data });
-                }
+                for (let d = day + 1; d <= dMax; d++) if (!shifts[empId]?.[`${year}-${month}-${d}`]?.isFolga) ups.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: data });
             }
             if (currentMode === 'DSR' && propagate) {
                 const dMax = new Date(year, parseInt(month) + 1, 0).getDate();
                 for (let d = day + 7; d <= dMax; d += 7) ups.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: { ...data, isFolga: true, tipoFolga: 'DSR' } });
             }
-            setLoading(true);
-            await sbClient.from('shifts').upsert(ups, { onConflict: 'employee_id, day_key' });
-            await loadAllData(); closeModal('shiftModal'); setLoading(false); showToast("Gravado");
+            setLoading(true); await sbClient.from('shifts').upsert(ups, { onConflict: 'employee_id, day_key' });
+            await loadAllData(); closeModal('shiftModal'); setLoading(false); showToast("Sincronizado");
         }
 
         function openShiftModal(empId, d) { 
-            const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`;
-            const shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
+            const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`, emp = employees.find(e => e.id === empId), shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
             editingContext = { empId, day: d, month: document.getElementById('monthSelect').value, year: document.getElementById('yearSelect').value }; 
-            document.getElementById('modalEmpName').innerText = employees.find(e => e.id === empId).name; 
+            document.getElementById('modalEmpName').innerText = emp.name.toUpperCase(); 
             document.getElementById('modalDateLabel').innerText = `DIA ${d} • GESTÃO DE TURNO`; 
             document.getElementById('field-in').value = shift.in; document.getElementById('field-out').value = shift.out; document.getElementById('field-lunch').value = shift.lunch; 
             document.getElementById('field-repeat').checked = false; document.getElementById('field-propagate').checked = false;
@@ -595,8 +576,25 @@
             openModal('shiftModal'); 
         }
 
-        async function exportAndShare() {
-            const area = document.getElementById('capture-container'); setLoading(true, "A gerar imagem...");
+        function renderEmployees() {
+            const list = document.getElementById('employeeList');
+            list.innerHTML = employees.map(emp => `
+                <div class="bg-white p-4 rounded-3xl border flex justify-between items-center group shadow-sm hover:border-blue-500">
+                    <div><h4 class="font-black text-slate-900 text-sm leading-tight uppercase emp-name-heavy">${emp.name.toUpperCase()}</h4><p class="text-[9px] text-slate-400 font-black uppercase mt-1">${emp.role || 'Geral'}</p></div>
+                    <div class="flex gap-1"><button onclick="openEditEmployeeModal('${emp.id}')" class="p-3 text-blue-600 hover:bg-blue-50 rounded-xl"><i data-lucide="edit-2" class="w-4 h-4"></i></button></div>
+                </div>`).join(''); lucide.createIcons();
+        }
+
+        function openAddEmployeeModal() { editingEmployeeId = null; document.getElementById('employeeModalTitle').innerText = "Novo Membro"; document.getElementById('new-emp-name').value = ""; document.getElementById('new-emp-role').value = ""; openModal('employeeModal'); }
+        function openEditEmployeeModal(id) { const emp = employees.find(e => String(e.id) === String(id)); editingEmployeeId = id; document.getElementById('new-emp-name').value = emp.name.toUpperCase(); document.getElementById('new-emp-role').value = emp.role; openModal('employeeModal'); }
+
+        async function handleClearMonth() { if(!confirm("Limpar horários do mês?")) return; setLoading(true); const p = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`; await sbClient.from('shifts').delete().like('day_key', `${p}%`); await loadAllData(); setLoading(false); }
+        async function handleClearEmployeeMonth(empId) { setLoading(true); const p = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`; await sbClient.from('shifts').delete().eq('employee_id', empId).like('day_key', `${p}%`); await loadAllData(); setLoading(false); }
+        async function handleDeleteShiftRecord() { const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`; await sbClient.from('shifts').delete().match({ employee_id: editingContext.empId, day_key: key }); closeModal('shiftModal'); await loadAllData(); showToast("Limpo"); }
+
+        // --- FUNÇÕES DE EXPORTAÇÃO ---
+        async function exportJPG() {
+            const area = document.getElementById('capture-container'); setLoading(true, "Gerando JPG...");
             const canvas = await html2canvas(area, { scale: 2, useCORS: true });
             canvas.toBlob(async (blob) => {
                 const file = new File([blob], `Escala.jpg`, { type: 'image/jpeg' });
@@ -606,39 +604,28 @@
             }, 'image/jpeg', 0.95);
         }
 
-        function renderEmployees() {
-            const list = document.getElementById('employeeList');
-            list.innerHTML = employees.map(emp => `
-                <div class="bg-white p-4 rounded-3xl border flex justify-between items-center group shadow-sm hover:border-blue-500 transition-all">
-                    <div><h4 class="font-extrabold text-slate-900 text-sm leading-tight uppercase">${emp.name}</h4><p class="text-[9px] text-slate-400 font-bold uppercase mt-1">${emp.role || 'Geral'}</p></div>
-                    <div class="flex gap-1">
-                        <button onclick="openEditEmployeeModal('${emp.id}')" class="p-3 text-blue-600 hover:bg-blue-50 rounded-xl"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                    </div>
-                </div>`).join(''); lucide.createIcons();
-        }
+        async function exportPDF() {
+            const element = document.getElementById('capture-container');
+            const monthText = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
+            const yearText = document.getElementById('yearSelect').value;
+            
+            setLoading(true, "Gerando PDF...");
+            
+            const opt = {
+                margin: 5,
+                filename: `Escala_${monthText}_${yearText}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
 
-        function openAddEmployeeModal() { editingEmployeeId = null; document.getElementById('employeeModalTitle').innerText = "Novo Membro"; document.getElementById('new-emp-name').value = ""; document.getElementById('new-emp-role').value = ""; openModal('employeeModal'); }
-        function openEditEmployeeModal(id) { const emp = employees.find(e => String(e.id) === String(id)); editingEmployeeId = id; document.getElementById('new-emp-name').value = emp.name; document.getElementById('new-emp-role').value = emp.role; openModal('employeeModal'); }
-
-        async function handleClearMonth() {
-            if(!confirm("Apagar todos os horários deste mês?")) return;
-            setLoading(true);
-            const p = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`;
-            await sbClient.from('shifts').delete().like('day_key', `${p}%`);
-            await loadAllData(); setLoading(false);
-        }
-        
-        async function handleClearEmployeeMonth(empId) {
-            setLoading(true);
-            const p = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`;
-            await sbClient.from('shifts').delete().eq('employee_id', empId).like('day_key', `${p}%`);
-            await loadAllData(); setLoading(false);
-        }
-
-        async function handleDeleteShiftRecord() {
-            const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`;
-            await sbClient.from('shifts').delete().match({ employee_id: editingContext.empId, day_key: key });
-            closeModal('shiftModal'); await loadAllData(); showToast("Limpo");
+            html2pdf().set(opt).from(element).save().then(() => {
+                setLoading(false);
+                showToast("PDF Gerado");
+            }).catch(err => {
+                setLoading(false);
+                showToast("Erro ao gerar PDF");
+            });
         }
     </script>
 </body>
