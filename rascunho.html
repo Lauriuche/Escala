@@ -58,7 +58,7 @@
             max-height: calc(100vh - 300px);
             border-radius: 16px;
             background: white;
-            box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px -3px rgba(0,0,0,0);
             border: 1px solid var(--header-gray);
             position: relative;
         }
@@ -603,7 +603,7 @@
                     cells += `<td class="day-col ${bg}"><div class="cell-interactive" onclick="openShiftModal('${emp.id}', ${d})">${content}</div></td>`;
                 }
                 return `<tr>
-                    <td class="sticky-col-name p-2"><span class="emp-name-clickable text-[13px] truncate-cell leading-none uppercase" onclick="openEditEmployeeModal('${emp.id}')">${emp.name}</span></td>
+                    <td class="sticky-col-name p-2"><span class="emp-name-clickable text-[12px] truncate-cell leading-none uppercase" onclick="openEditEmployeeModal('${emp.id}')">${emp.name}</span></td>
                     <td class="col-role p-2"><span class="text-[12px] font-bold text-slate-400 uppercase truncate-cell">${emp.role || '---'}</span></td>
                     <td class="col-action p-2 text-center">
                         <button onclick="handleClearEmployeeMonth('${emp.id}')" class="btn-clear-row">
