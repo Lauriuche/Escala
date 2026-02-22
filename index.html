@@ -23,7 +23,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         
         :root {
-            --cell-width: 130px; 
+            --cell-width: 75px; 
             --name-col-width: 190px; 
             --role-col-width: 120px; 
             --action-col-width: 45px;
@@ -33,6 +33,9 @@
             --header-gray: #64748b;
             --mirror-green: rgba(204, 255, 205, 1); /* Verde Neon Clarinho */
             --page-padding: 1rem; 
+            --violation-inter-36h: #a855f7; 
+            --violation-inter-11h: #f97316; 
+            --violation-intra: #ef4444;
         }
         @media (min-width: 768px) { :root { --page-padding: 2rem; } }
 
@@ -61,45 +64,69 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        table { border-collapse: separate; border-spacing: 0; width: max-content; background-color: white; }
+        /* Tabela Fixed para garantir que as larguras não colapsam */
+        table { border-collapse: separate; border-spacing: 0; width: max-content; background-color: white; table-layout: fixed; }
 
-        /* Colunas Fixas e Sombras */
-        .sticky-col-name { 
-            position: sticky; left: 0; z-index: 45; background-color: white !important;
+        /* Colunas Fixas e Sombras (Largura Totalmente Reforçada) */
+        .sticky-col-name, .sticky-header-name { 
+            position: sticky; left: 0; 
             width: var(--name-col-width); min-width: var(--name-col-width); max-width: var(--name-col-width);
+        }
+        .sticky-col-name { 
+            z-index: 45; background-color: white !important;
             vertical-align: middle; background-clip: padding-box;
             box-shadow: inset -1px 0 0 #e2e8f0;
         }
+        .sticky-header-name { 
+            z-index: 60 !important; 
+            border-right: 1px solid rgba(255,255,255,0.2) !important; 
+        }
 
-        .col-mirror { 
-            position: sticky; left: var(--name-col-width); z-index: 44;
+        .col-mirror, .sticky-header-mirror { 
+            position: sticky; left: var(--name-col-width); 
             width: var(--mirror-col-width); min-width: var(--mirror-col-width); max-width: var(--mirror-col-width);
             background-color: var(--mirror-green) !important; color: #065f46 !important;
-            text-align: center; box-shadow: inset -1px 0 0 rgba(0,0,0,0.05);
+            text-align: center; 
+        }
+        .col-mirror { 
+            z-index: 44;
+            box-shadow: inset -1px 0 0 rgba(0,0,0,0.05);
+        }
+        .sticky-header-mirror { 
+            z-index: 59 !important; 
+        }
+
+        .col-role { 
+            width: var(--role-col-width); min-width: var(--role-col-width); max-width: var(--role-col-width); 
+        }
+        .col-action { 
+            width: var(--action-col-width); min-width: var(--action-col-width); max-width: var(--action-col-width); 
         }
 
         /* Cabeçalhos unificados */
         thead tr th { 
             position: sticky; top: 0; z-index: 20; background-color: var(--header-gray) !important; 
-            border-bottom: 1px solid rgba(0,0,0,0.1); padding: 6px 8px; color: white; height: 38px; font-weight: 800; font-size: 10px; text-transform: uppercase;
+            border-bottom: 1px solid rgba(0,0,0,0.1); padding: 6px 8px; color: white; height: 38px; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
         thead tr:nth-child(2) th { top: 38px; height: 34px; font-size: 11px; }
 
-        .sticky-header-name { z-index: 60 !important; left: 0; position: sticky; border-right: 1px solid rgba(255,255,255,0.2) !important; }
-        .sticky-header-mirror { z-index: 59 !important; left: var(--name-col-width); position: sticky; background-color: var(--mirror-green) !important; color: #065f46 !important; }
-
-        .day-col { width: var(--cell-width); min-width: var(--cell-width); text-align: center; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background: white; }
+        .day-col { 
+            width: var(--cell-width); min-width: var(--cell-width); max-width: var(--cell-width); 
+            text-align: center; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background: white; 
+        }
         
         .sun-col { background-color: #fff1f0 !important; color: #f07556 !important; } 
         thead th.sun-col-header { background-color: var(--header-gray) !important; color: #fecaca !important; }
 
         .emp-name-heavy { font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: -0.01em; color: #000; font-size: 12px; }
 
-        /* Estilos do Espelho e Tabela (Mesmo peso e fonte) */
-        .mirror-time-in, .time-text { font-size: 13px; font-weight: 900; line-height: 1.1; color: #0f172a; }
-        .mirror-time-out, .time-subtext { font-size: 9px; font-weight: 700; color: #64748b; margin-top: 1px; }
-        .mirror-time-in { color: #065f46 !important; }
-        .mirror-time-out { color: rgba(6, 95, 70, 0.6) !important; }
+        /* Estilos do Espelho */
+        .mirror-time-in { font-size: 13px; font-weight: 900; line-height: 1.1; color: #065f46 !important; }
+        .mirror-time-out { font-size: 9px; font-weight: 700; color: rgba(6, 95, 70, 0.6) !important; margin-top: 1px; }
+
+        /* Estilos da Tabela (Retrocedido para o tamanho legível normal) */
+        .time-text { font-size: 12px; font-weight: 800; line-height: 1.1; color: #0f172a; }
+        .time-subtext { font-size: 8.5px; font-weight: 600; color: #64748b; margin-top: 1px; }
 
         .inline-input { width: 100%; border: 2px solid #2563eb; background: white; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; text-align: center; padding: 6px 4px; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
@@ -119,13 +146,19 @@
         .cell-interactive:hover { background-color: rgba(37, 99, 235, 0.05); }
         .msg-error-cell { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; margin-bottom: 2px; }
 
+        /* Estilo para destacar células com erros usando Box-Shadow Interno */
+        .cell-violation { background-color: #fef08a !important; box-shadow: inset 0 0 0 2px #eab308 !important; }
+        .cell-violation-36h { background-color: #f3e8ff !important; box-shadow: inset 0 0 0 1.5px var(--violation-inter-36h) !important; }
+        .cell-violation-11h { background-color: #fff7ed !important; box-shadow: inset 0 0 0 1.5px var(--violation-inter-11h) !important; }
+        .cell-violation-intra { background-color: #fef2f2 !important; box-shadow: inset 0 0 0 1.5px var(--violation-intra) !important; }
+
         .modal-active { display: flex !important; animation: modalIn 0.2s ease-out; }
         @keyframes modalIn { from { opacity: 0; transform: translateY(15px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         
         #passwordModal input { letter-spacing: 0.5em; text-align: center; }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body class="antialiased flex flex-col min-h-screen relative">
 
     <!-- CABEÇALHO GERAL -->
     <header class="bg-white border-b border-slate-200 py-3 sticky top-0 z-50 shadow-sm">
@@ -146,8 +179,8 @@
                     <i data-lucide="shield-check" class="w-3 h-3"></i> Modo Admin
                 </div>
                 <div class="flex bg-slate-50 p-1 rounded-lg border border-slate-200">
-                    <select id="monthSelect" onchange="initCalendar()" class="bg-transparent font-bold text-sm px-2 outline-none text-slate-700 cursor-pointer"></select>
-                    <select id="yearSelect" onchange="initCalendar()" class="bg-transparent font-bold text-sm px-2 outline-none text-slate-700 border-l border-slate-200 cursor-pointer"></select>
+                    <select id="monthSelect" onchange="window.initCalendar()" class="bg-transparent font-bold text-sm px-2 outline-none text-slate-700 cursor-pointer"></select>
+                    <select id="yearSelect" onchange="window.initCalendar()" class="bg-transparent font-bold text-sm px-2 outline-none text-slate-700 border-l border-slate-200 cursor-pointer"></select>
                 </div>
             </div>
         </div>
@@ -163,17 +196,17 @@
                 </div>
                 
                 <div class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner">
-                    <button onclick="switchPanel('scale')" id="nav-scale" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200/50">
+                    <button onclick="window.switchPanel('scale')" id="nav-scale" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200/50">
                         <i data-lucide="calendar-days" class="w-4 h-4"></i> Escala Mês
                     </button>
-                    <button onclick="handleAdminPanelAccess()" id="nav-admin" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all text-slate-500 hover:text-slate-800 bg-transparent border border-transparent">
+                    <button onclick="window.handleAdminPanelAccess()" id="nav-admin" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all text-slate-500 hover:text-slate-800 bg-transparent border border-transparent">
                         <i data-lucide="users" class="w-4 h-4"></i> Gerenciador
                     </button>
                 </div>
             </div>
             
             <div id="actions-scale" class="flex items-center">
-                <button onclick="protectAction(handleClearMonth)" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all hover:bg-red-50">
+                <button onclick="window.protectAction(() => window.handleClearMonth())" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all hover:bg-red-50">
                     <i data-lucide="calendar-off" class="w-4 h-4"></i> Limpar Mês Inteiro
                 </button>
             </div>
@@ -210,15 +243,15 @@
             <div class="flex flex-wrap gap-4">
                 <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#ccffcd] border border-green-200"></span> <span class="text-[10px] font-bold uppercase text-slate-600">Espelho Hoje</span></div>
                 <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#fff1f0] border border-red-200"></span> <span class="text-[10px] font-bold uppercase text-slate-600">Domingo</span></div>
-                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-blue-600 shadow-sm"></span> <span class="text-[10px] font-bold uppercase text-slate-600">Folga/DSR</span></div>
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-blue-600 shadow-sm"></span> <span class="text-[10px] font-bold uppercase text-slate-600">DSR / Folga</span></div>
                 <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#fef08a] border-2 border-[#eab308]"></span> <span class="text-[10px] font-bold uppercase text-slate-600">Erros Jornada</span></div>
             </div>
             
             <div class="mt-8 flex flex-wrap justify-end gap-3 pt-6 border-t border-slate-200">
-                <button onclick="exportJPG()" class="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-8 py-3.5 rounded-xl font-black text-[11px] uppercase shadow-sm active:scale-95 transition-all hover:bg-slate-50">
+                <button onclick="window.exportJPG()" class="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-8 py-3.5 rounded-xl font-black text-[11px] uppercase shadow-sm active:scale-95 transition-all hover:bg-slate-50">
                     <i data-lucide="image" class="w-4 h-4"></i> Exportar JPG
                 </button>
-                <button onclick="exportPDF()" class="flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-xl font-black text-[11px] uppercase shadow-lg shadow-blue-600/30 active:scale-95 transition-all hover:bg-blue-700">
+                <button onclick="window.exportPDF()" class="flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-xl font-black text-[11px] uppercase shadow-lg shadow-blue-600/30 active:scale-95 transition-all hover:bg-blue-700">
                     <i data-lucide="file-text" class="w-4 h-4"></i> Exportar PDF
                 </button>
             </div>
@@ -228,7 +261,6 @@
     <!-- 2. ABA: GERENCIADOR DE COLABORADORES (ADMIN) -->
     <main id="panel-admin" class="hidden py-8 flex-1 bg-slate-50/50">
         <div class="content-container max-w-5xl mx-auto">
-            
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Gerenciador</h2>
@@ -242,7 +274,7 @@
                 <div class="flex flex-col sm:flex-row gap-4">
                     <input type="text" id="admin-new-name" placeholder="NOME DO COLABORADOR..." class="flex-[2] bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black uppercase outline-none focus:border-blue-500 transition-colors">
                     <input type="text" id="admin-new-role" placeholder="POSTO / CARGO (OPCIONAL)" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold uppercase outline-none focus:border-blue-500 transition-colors">
-                    <button onclick="protectAction(adminAddNewEmployee)" class="bg-blue-600 text-white font-black uppercase text-sm px-8 py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30 whitespace-nowrap flex items-center gap-2 justify-center">
+                    <button onclick="window.protectAction(() => window.adminAddNewEmployee())" class="bg-blue-600 text-white font-black uppercase text-sm px-8 py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30 whitespace-nowrap flex items-center gap-2 justify-center">
                         <i data-lucide="user-plus" class="w-4 h-4"></i> Guardar
                     </button>
                 </div>
@@ -263,6 +295,16 @@
         </div>
     </footer>
 
+    <!-- POPUP GLOBAL DE VIOLAÇÕES -->
+    <div id="globalViolationPopup" class="fixed hidden z-[999] bg-[#fffde7] border border-[#fbc02d] rounded-xl p-4 shadow-2xl max-w-xs transition-opacity duration-200 opacity-0 transform -translate-y-2 pointer-events-auto text-left">
+        <button onclick="document.getElementById('globalViolationPopup').classList.add('hidden')" class="absolute top-3 right-3 text-slate-400 hover:text-slate-800"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <div class="text-blue-600 mb-2 font-black text-[11px] uppercase tracking-widest flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Alerta Legal</div>
+        <div id="violationMsg" class="text-slate-700 mb-3 leading-snug text-xs font-bold"></div>
+        <div class="pt-2 border-t border-amber-200 text-green-700 italic font-bold leading-snug text-[11px]">
+            Sugestão de Resolução:<br><span id="violationSug" class="font-medium text-slate-600"></span>
+        </div>
+    </div>
+
     <!-- MODAIS DE SISTEMA -->
     
     <!-- Modal Senha -->
@@ -274,10 +316,10 @@
                 <h3 class="text-xl font-black uppercase text-slate-900 leading-none">Acesso Restrito</h3>
                 <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Introduza a Senha Admin (123)</p>
             </div>
-            <input type="password" id="adminPasswordInput" onkeyup="if(event.key==='Enter') checkAdminPassword()" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 outline-none focus:border-blue-500 font-black text-2xl text-center tracking-[0.5em] text-slate-700 transition-colors">
+            <input type="password" id="adminPasswordInput" onkeyup="if(event.key==='Enter') window.checkAdminPassword()" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 outline-none focus:border-blue-500 font-black text-2xl text-center tracking-[0.5em] text-slate-700 transition-colors">
             <div class="flex gap-3">
-                <button onclick="closeModal('passwordModal')" class="flex-1 py-4 font-black text-slate-400 uppercase text-xs hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-200">Cancelar</button>
-                <button onclick="checkAdminPassword()" class="flex-[2] py-4 bg-blue-600 text-white font-black rounded-2xl uppercase text-xs shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-colors">Confirmar</button>
+                <button onclick="window.closeModal('passwordModal')" class="flex-1 py-4 font-black text-slate-400 uppercase text-xs hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-200">Cancelar</button>
+                <button onclick="window.checkAdminPassword()" class="flex-[2] py-4 bg-blue-600 text-white font-black rounded-2xl uppercase text-xs shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-colors">Confirmar</button>
             </div>
         </div>
     </div>
@@ -290,27 +332,27 @@
                     <h3 id="modalEmpName" class="text-xl font-black text-slate-900 leading-none uppercase truncate max-w-[220px]">NOME</h3>
                     <p id="modalDateLabel" class="text-blue-600 font-bold text-[11px] uppercase mt-1.5"></p>
                 </div>
-                <button onclick="closeModal('shiftModal')" class="p-2.5 bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="window.closeModal('shiftModal')" class="p-2.5 bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <div class="space-y-5">
-                <!-- BLOCO HORÁRIOS: Entrada, Almoço, Saída -->
+                <!-- AQUI ESTÁ O AJUSTE PARA OS CAMPOS DE HORA NÃO SEREM CORTADOS -->
                 <div id="timeInputArea">
                     <label class="block text-left text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Registo de Horas</label>
-                    <div class="flex items-center bg-slate-50 p-2.5 rounded-2xl border-2 border-slate-200 justify-between">
-                        <input type="time" id="field-in" oninput="calculateAutoOut()" onkeyup="if(event.key==='Enter') saveShift()" class="bg-transparent font-black text-xl outline-none w-24 text-slate-800">
-                        <div class="flex flex-col items-center">
+                    <div class="flex items-center bg-slate-50 p-2.5 rounded-2xl border-2 border-slate-200 justify-between gap-1">
+                        <input type="time" id="field-in" oninput="window.calculateAutoOut()" onkeyup="if(event.key==='Enter') window.saveShift()" class="bg-transparent font-black text-lg outline-none w-[105px] text-center text-slate-800 px-1">
+                        <div class="flex flex-col items-center shrink-0">
                             <span class="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Pausa(h)</span>
-                            <input type="number" id="field-lunch" step="0.5" value="2" oninput="calculateAutoOut()" onkeyup="if(event.key==='Enter') saveShift()" class="bg-transparent font-black text-lg outline-none w-14 text-center text-blue-600 bg-white rounded-md border border-slate-200">
+                            <input type="number" id="field-lunch" step="0.5" value="2" oninput="window.calculateAutoOut()" onkeyup="if(event.key==='Enter') window.saveShift()" class="bg-transparent font-black text-lg outline-none w-16 text-center text-blue-600 bg-white rounded-md border border-slate-200">
                         </div>
-                        <input type="time" id="field-out" onkeyup="if(event.key==='Enter') saveShift()" class="bg-transparent font-black text-xl outline-none w-24 text-right text-slate-800">
+                        <input type="time" id="field-out" onkeyup="if(event.key==='Enter') window.saveShift()" class="bg-transparent font-black text-lg outline-none w-[105px] text-center text-slate-800 px-1">
                     </div>
                 </div>
                 
                 <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
-                    <button onclick="setEditMode('TRABALHO')" id="btn-mode-work" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm">Trabalho</button>
-                    <button onclick="setEditMode('DSR')" id="btn-mode-dsr" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all">Folga/DSR</button>
-                    <button onclick="setEditMode('FERIAS')" id="btn-mode-vacation" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all">Férias</button>
+                    <button onclick="window.setEditMode('TRABALHO')" id="btn-mode-work" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm">Trabalho</button>
+                    <button onclick="window.setEditMode('DSR')" id="btn-mode-dsr" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all">Folga/DSR</button>
+                    <button onclick="window.setEditMode('FERIAS')" id="btn-mode-vacation" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all">Férias</button>
                 </div>
                 
                 <div class="space-y-3 bg-slate-50 p-4 rounded-2xl text-left border border-slate-200">
@@ -325,8 +367,8 @@
                 </div>
                 
                 <div class="flex gap-3 pt-2">
-                    <button onclick="handleDeleteShiftRecord()" class="px-6 bg-white border-2 border-red-100 hover:border-red-500 text-red-500 hover:bg-red-50 rounded-2xl transition-colors" title="Apagar este dia"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                    <button onclick="saveShift()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-sm shadow-lg shadow-blue-600/30 transition-colors">Guardar Turno</button>
+                    <button onclick="window.handleDeleteShiftRecord()" class="px-6 bg-white border-2 border-red-100 hover:border-red-500 text-red-500 hover:bg-red-50 rounded-2xl transition-colors" title="Apagar este dia"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    <button onclick="window.saveShift()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-sm shadow-lg shadow-blue-600/30 transition-colors">Guardar Turno</button>
                 </div>
             </div>
         </div>
@@ -377,6 +419,36 @@
             el.className = `text-[9px] font-bold uppercase tracking-widest mt-1 transition-colors ${colorClass}`;
         }
 
+        // NOVO: Função Global de exibição de nota de violação
+        function showViolation(element, msg, suggestion) {
+            const popup = document.getElementById('globalViolationPopup');
+            document.getElementById('violationMsg').innerText = msg;
+            document.getElementById('violationSug').innerText = suggestion;
+            
+            const rect = element.getBoundingClientRect();
+            
+            let top = rect.bottom + window.scrollY + 8;
+            let left = rect.left + window.scrollX - 100;
+            
+            if (left < 10) left = 10;
+            if (left + 220 > window.innerWidth) left = window.innerWidth - 230;
+            
+            popup.style.top = top + 'px';
+            popup.style.left = left + 'px';
+            
+            popup.classList.remove('hidden');
+            setTimeout(() => popup.classList.remove('opacity-0'), 10);
+
+            const hidePopup = (e) => {
+                if(!popup.contains(e.target) && e.target !== element) {
+                    popup.classList.add('opacity-0');
+                    setTimeout(() => popup.classList.add('hidden'), 200);
+                    document.removeEventListener('click', hidePopup);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', hidePopup), 10);
+        }
+
         // --- 2. CACHE & INICIALIZAÇÃO ---
         function loadCachedData() {
             try {
@@ -386,7 +458,7 @@
                 if (cachedShifts) shifts = JSON.parse(cachedShifts);
                 if (employees.length > 0) {
                     document.getElementById('empTotalCount').innerText = employees.length;
-                    initCalendar(); 
+                    window.initCalendar(); 
                 }
             } catch(e) { console.error("Erro cache", e); }
         }
@@ -409,12 +481,12 @@
         }
 
         window.onload = async () => { 
-            setupSelectors(); 
-            loadCachedData(); 
+            window.setupSelectors(); 
+            window.loadCachedData(); 
             lucide.createIcons(); 
             
-            updateStatus("Sincronizando...", "text-amber-500");
-            await initSupabaseBackground(); 
+            window.updateStatus("Sincronizando...", "text-amber-500");
+            await window.initSupabaseBackground(); 
             
             document.addEventListener('click', (e) => { 
                 if (!e.target.closest('.error-note-trigger')) document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible')); 
@@ -432,40 +504,40 @@
                 s.classList.remove('hidden'); a.classList.add('hidden'); 
                 ns.classList.remove(...inactiveClasses); ns.classList.add(...activeClasses);
                 na.classList.remove(...activeClasses); na.classList.add(...inactiveClasses);
-                initCalendar();
+                window.initCalendar();
             } else { 
                 s.classList.add('hidden'); a.classList.remove('hidden'); 
                 ns.classList.remove(...activeClasses); ns.classList.add(...inactiveClasses);
                 na.classList.remove(...inactiveClasses); na.classList.add(...activeClasses);
-                renderEmployeesAdmin();
+                window.renderEmployeesAdmin();
             } 
         }
 
         function checkAdminPassword() {
             const input = document.getElementById('adminPasswordInput');
             if (input.value === ADMIN_PASSWORD) {
-                isAdmin = true; closeModal('passwordModal'); input.value = "";
+                isAdmin = true; window.closeModal('passwordModal'); input.value = "";
                 document.getElementById('admin-indicator').classList.remove('hidden');
                 document.getElementById('admin-indicator').classList.add('flex');
                 if (pendingAction) { pendingAction(); pendingAction = null; }
-                showToast("Acesso Liberado");
-            } else { showToast("Senha Incorreta"); input.value = ""; input.focus(); }
+                window.showToast("Acesso Liberado");
+            } else { window.showToast("Senha Incorreta"); input.value = ""; input.focus(); }
         }
-        function protectAction(action) { if (isAdmin) { action(); } else { pendingAction = action; openModal('passwordModal'); } }
-        function handleAdminPanelAccess() { protectAction(() => switchPanel('admin')); }
+        function protectAction(action) { if (isAdmin) { action(); } else { pendingAction = action; window.openModal('passwordModal'); } }
+        function handleAdminPanelAccess() { window.protectAction(() => window.switchPanel('admin')); }
 
         // --- 4. COMUNICAÇÃO COM BASE DE DADOS ---
         async function initSupabaseBackground() {
             try {
                 const lib = window.supabase || supabase;
                 sbClient = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                await loadAllData(true); 
-            } catch(e) { updateStatus("Erro de Conexão", "text-red-500"); }
+                await window.loadAllData(true); 
+            } catch(e) { window.updateStatus("Erro de Conexão", "text-red-500"); }
         }
 
         async function loadAllData(silent = false) {
             if(!sbClient) return;
-            if(!silent) setLoading(true, "A Sincronizar...");
+            if(!silent) window.setLoading(true, "A Sincronizar...");
             
             try {
                 const { data: empData } = await sbClient.from('employees').select('*').order('name');
@@ -479,20 +551,20 @@
                     shifts[item.employee_id][item.day_key] = item.shift_data; 
                 });
 
-                saveToCache();
+                window.saveToCache();
                 
-                if(!document.getElementById('panel-scale').classList.contains('hidden')) initCalendar();
-                if(!document.getElementById('panel-admin').classList.contains('hidden')) renderEmployeesAdmin();
+                if(!document.getElementById('panel-scale').classList.contains('hidden')) window.initCalendar();
+                if(!document.getElementById('panel-admin').classList.contains('hidden')) window.renderEmployeesAdmin();
                 
-                updateStatus("Cloud Sincronizada", "text-green-500");
+                window.updateStatus("Cloud Sincronizada", "text-green-500");
             } catch(error) {
                 console.error("Falha ao carregar", error);
-                updateStatus("Falha na Leitura", "text-red-500");
+                window.updateStatus("Falha na Leitura", "text-red-500");
             }
-            if(!silent) setLoading(false);
+            if(!silent) window.setLoading(false);
         }
 
-        // --- 5. RENDERIZAÇÃO DA TABELA (ESCALA) ---
+        // --- 5. VALIDAÇÕES LEGAIS E RENDERIZAÇÃO DA TABELA ---
         function initCalendar() {
             const mSelect = document.getElementById('monthSelect'); if(!mSelect) return;
             const m = parseInt(mSelect.value), y = parseInt(document.getElementById('yearSelect').value), dMax = new Date(y, m + 1, 0).getDate();
@@ -504,7 +576,46 @@
                 const thW = document.createElement('th'); thW.className = `day-col weekday-label ${isSun ? 'sun-col-header' : ''}`; thW.innerText = WEEKDAYS[date.getDay()]; rowW.appendChild(thW);
                 const thN = document.createElement('th'); thN.className = `day-col day-label ${isSun ? 'sun-col-header' : ''}`; thN.innerText = String(d).padStart(2, '0'); rowN.appendChild(thN);
             }
-            renderScale();
+            window.renderScale();
+        }
+
+        function getEmployeeViolations(empId, month, year, dMax) {
+            let violations = {}; let streak = [];
+            for (let d = 1; d <= dMax; d++) {
+                const dayKey = `${year}-${month}-${d}`, shift = shifts[empId]?.[dayKey];
+                const isDsr = shift && shift.isFolga && (shift.tipoFolga === 'DSR' || shift.tipoFolga === 'FERIAS');
+                
+                if (isDsr) {
+                    if (streak.length > 6) streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos sem folga.', suggestion: 'Conceder DSR.' }; });
+                    streak = [];
+                } else {
+                    streak.push(d);
+                }
+                
+                if (shift && !shift.isFolga) {
+                    if (shift.lunch && parseFloat(shift.lunch) < RULES.INTRA_MIN_HOURS) violations[d] = { type: 'intra', msg: 'A pausa de almoço é inferior a 1h.', suggestion: 'Aumentar a pausa.' };
+                    if (d > 1) {
+                        let lastDay = d - 1, gapDays = 0;
+                        while(lastDay >= 1 && shifts[empId]?.[`${year}-${month}-${lastDay}`]?.isFolga) { lastDay--; gapDays++; }
+                        if (lastDay >= 1) {
+                            const lastShift = shifts[empId]?.[`${year}-${month}-${lastDay}`];
+                            if (lastShift && !lastShift.isFolga && lastShift.out && shift.in) {
+                                const [hOut, mOut] = lastShift.out.split(':').map(Number), [hIn, mIn] = shift.in.split(':').map(Number);
+                                const gap = ((24 * 60) - (hOut * 60 + mOut) + (gapDays * 24 * 60) + (hIn * 60 + mIn)) / 60;
+                                if (gapDays > 0 && gap < RULES.INTER_DSR_MIN_HOURS) {
+                                    const nextValid = (hOut + 12) % 24;
+                                    violations[d] = { type: '36h', msg: `Descanso semanal insuficiente (${gap.toFixed(1)}h).`, suggestion: `Atrasar entrada para as ${String(Math.ceil(nextValid)).padStart(2,'0')}:00.` };
+                                } else if (gapDays === 0 && gap < RULES.INTER_DAILY_MIN_HOURS) {
+                                    const nextValid = (hOut + 11) % 24;
+                                    violations[d] = { type: '11h', msg: `Interjornada insuficiente (${gap.toFixed(1)}h).`, suggestion: `Atrasar entrada para as ${String(Math.ceil(nextValid)).padStart(2,'0')}:00.` };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (streak.length > 6) { streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos sem folga.', suggestion: 'Agendar um DSR o mais rápido possível.' }; }); }
+            return violations;
         }
 
         function renderScale() {
@@ -514,11 +625,12 @@
             const dMax = new Date(year, month + 1, 0).getDate(), today = new Date(), isThisMonth = (today.getMonth() === month && today.getFullYear() === year), todayDay = today.getDate();
             
             if (employees.length === 0 && !isAddingInline) {
-                body.innerHTML = `<tr><td class="sticky-col-name py-2 border-b-0"><div class="btn-circular-add" onclick="protectAction(startAddInline)"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="p-8 text-center text-slate-400 font-black uppercase text-xs">Sem colaboradores registados. Adicione no "+" ou no Gerenciador.</td></tr>`;
+                body.innerHTML = `<tr><td class="sticky-col-name py-2 border-b-0"><div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="p-8 text-center text-slate-400 font-black uppercase text-xs">Sem colaboradores registados. Adicione no "+" ou no Gerenciador.</td></tr>`;
                 lucide.createIcons(); return;
             }
 
             let htmlRows = employees.map(emp => {
+                const violations = getEmployeeViolations(emp.id, month, year, dMax);
                 let mirrorContent = '<span class="opacity-30">---</span>';
                 if (isThisMonth) {
                     const mShift = shifts[emp.id]?.[`${year}-${month}-${todayDay}`];
@@ -533,24 +645,35 @@
                 let daysCells = '';
                 for (let d = 1; d <= dMax; d++) {
                     const key = `${year}-${month}-${d}`, shift = shifts[emp.id]?.[key], isSun = new Date(year, month, d).getDay() === 0;
-                    let content = '<span class="opacity-10 text-[10px]">--:--</span>', bg = isSun ? "sun-col" : "";
+                    let content = '<span class="opacity-10 text-[10px]">--:--</span>', bg = isSun ? "sun-col" : "", note = "";
                     
                     if (shift) {
                         if (shift.isFolga) {
                             const b = shift.tipoFolga === 'FERIAS' ? 'badge-vacation' : (shift.tipoFolga === 'BH' ? 'badge-bh' : 'badge-dsr');
                             content = `<div class="${b}">${shift.tipoFolga || 'DSR'}</div>`;
                         } else {
-                            content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`;
+                            const v = violations[d];
+                            if (v) {
+                                if (v.type === '36h' || v.type === '11h') { bg += v.type==='36h' ? " cell-violation-36h" : " cell-violation-11h"; content = `<div class="msg-error-cell ${v.type==='36h'?'text-purple-700':'text-orange-700'}">ERRO</div><div class="time-text">${shift.in}</div>`; }
+                                else if (v.type === 'intra') { bg += " cell-violation-intra"; content = `<div class="msg-error-cell text-red-600">PAUSA</div><div class="time-text">${shift.in}</div>`; }
+                                else { bg += " cell-violation"; content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`; }
+                                
+                                note = `<div class="error-note-trigger absolute top-1 right-1 z-10 cursor-pointer bg-white/80 rounded-full p-0.5 shadow-sm hover:scale-110 transition-transform" title="Aviso Legal" onclick="event.stopPropagation(); window.showViolation(this, '${v.msg}', '${v.suggestion}')">
+                                            <i data-lucide="alert-triangle" class="w-3 h-3 text-red-500 hover:text-red-700"></i>
+                                        </div>`;
+                            } else {
+                                content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`;
+                            }
                         }
                     }
-                    daysCells += `<td class="day-col ${bg}"><div class="cell-interactive" onclick="protectAction(() => openShiftModal('${emp.id}', ${d}))">${content}</div></td>`;
+                    daysCells += `<td class="day-col ${bg}"><div class="cell-interactive" onclick="window.protectAction(() => window.openShiftModal('${emp.id}', ${d}))">${note}${content}</div></td>`;
                 }
                 
                 return `<tr>
-                    <td id="name-cell-${emp.id}" class="sticky-col-name py-1 px-3"><span class="emp-name-heavy cursor-pointer hover:text-blue-600 transition-colors block truncate w-full" title="Editar Nome" onclick="protectAction(() => startNameEditInline('${emp.id}', '${emp.name}'))">${emp.name.toUpperCase()}</span></td>
+                    <td id="name-cell-${emp.id}" class="sticky-col-name py-1 px-3"><span class="emp-name-heavy cursor-pointer hover:text-blue-600 transition-colors block truncate w-full" title="Editar Nome" onclick="window.protectAction(() => window.startNameEditInline('${emp.id}', '${emp.name}'))">${emp.name.toUpperCase()}</span></td>
                     <td class="col-mirror py-1 px-2"><div class="flex flex-col items-center justify-center h-full">${mirrorContent}</div></td>
-                    <td class="col-role py-1 px-2 text-center"><div id="role-cell-${emp.id}" class="text-[11px] font-black text-slate-400 uppercase truncate cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors" title="Editar Posto" onclick="protectAction(() => startRoleEdit('${emp.id}', '${emp.role || ''}'))">${emp.role || '---'}</div></td>
-                    <td class="col-action py-1 px-2 text-center"><button onclick="protectAction(() => handleClearEmployeeMonth('${emp.id}', '${emp.name}'))" class="text-slate-300 hover:text-red-500 cursor-pointer transition-colors p-2 rounded-lg hover:bg-red-50" title="Apagar todos os turnos de ${emp.name} neste mês"><i data-lucide="eraser" class="w-4 h-4 mx-auto"></i></button></td>
+                    <td class="col-role py-1 px-2 text-center"><div id="role-cell-${emp.id}" class="text-[11px] font-black text-slate-400 uppercase truncate cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors" title="Editar Posto" onclick="window.protectAction(() => window.startRoleEdit('${emp.id}', '${emp.role || ''}'))">${emp.role || '---'}</div></td>
+                    <td class="col-action py-1 px-2 text-center"><button onclick="window.protectAction(() => window.handleClearEmployeeMonth('${emp.id}', '${emp.name}'))" class="text-slate-300 hover:text-red-500 cursor-pointer transition-colors p-2 rounded-lg hover:bg-red-50" title="Apagar todos os turnos de ${emp.name} neste mês"><i data-lucide="eraser" class="w-4 h-4 mx-auto"></i></button></td>
                     ${daysCells}
                 </tr>`;
             }).join('');
@@ -558,13 +681,13 @@
             if (isAddingInline) {
                 let emptyCells = ''; for(let d=1; d<=dMax; d++) emptyCells += `<td class="day-col border-b border-slate-200"></td>`;
                 htmlRows += `<tr class="bg-blue-50/50">
-                    <td class="sticky-col-name py-2 px-3"><input type="text" id="input-name-new" class="inline-input border-blue-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="NOME E ENTER..." onblur="if(!this.value) { isAddingInline=false; renderScale(); }" onkeyup="if(event.key==='Enter') saveNewMemberInline()"></td>
+                    <td class="sticky-col-name py-2 px-3"><input type="text" id="input-name-new" class="inline-input border-blue-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="NOME E ENTER..." onblur="if(!this.value) { isAddingInline=false; window.renderScale(); }" onkeyup="if(event.key==='Enter') window.saveNewMemberInline()"></td>
                     <td class="col-mirror"></td><td class="col-role border-b border-slate-200"></td><td class="col-action border-b border-slate-200"></td>
                     ${emptyCells}
                 </tr>`;
             }
 
-            htmlRows += `<tr><td class="sticky-col-name py-3 border-b-0"><div class="btn-circular-add mx-auto" onclick="protectAction(startAddInline)" title="Adicionar Novo Colaborador"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="border-b-0"></td></tr>`;
+            htmlRows += `<tr><td class="sticky-col-name py-3 border-b-0"><div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())" title="Adicionar Novo Colaborador"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="border-b-0"></td></tr>`;
             body.innerHTML = htmlRows; lucide.createIcons();
         }
 
@@ -581,8 +704,8 @@
                         <input type="text" id="admin-edit-role-${emp.id}" value="${emp.role || ''}" class="w-full text-[10px] text-slate-500 font-bold uppercase outline-none bg-transparent border-b-2 border-transparent focus:border-blue-500 transition-colors px-1" placeholder="SEM POSTO (CLIQUE PARA EDITAR)">
                     </div>
                     <div class="flex gap-2 shrink-0">
-                        <button onclick="protectAction(() => saveAdminEmployeeEdit('${emp.id}'))" class="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all" title="Gravar Edição"><i data-lucide="save" class="w-4 h-4"></i></button>
-                        <button onclick="protectAction(() => removeEmployee('${emp.id}', '${emp.name}'))" class="w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition-all" title="Apagar Membro Permanentemente"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <button onclick="window.protectAction(() => window.saveAdminEmployeeEdit('${emp.id}'))" class="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all" title="Gravar Edição"><i data-lucide="save" class="w-4 h-4"></i></button>
+                        <button onclick="window.protectAction(() => window.removeEmployee('${emp.id}', '${emp.name}'))" class="w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition-all" title="Apagar Membro Permanentemente"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
                 </div>`).join(''); 
             lucide.createIcons(); 
@@ -594,48 +717,46 @@
             const name = nameInput.value.trim().toUpperCase();
             const role = roleInput.value.trim().toUpperCase();
             
-            if(!name) { showToast("O Nome é obrigatório"); nameInput.focus(); return; }
+            if(!name) { window.showToast("O Nome é obrigatório"); nameInput.focus(); return; }
             
-            setLoading(true, "A Adicionar...");
+            window.setLoading(true, "A Adicionar...");
             try {
                 await sbClient.from('employees').insert([{ name, role }]);
                 nameInput.value = ''; roleInput.value = '';
-                await loadAllData(true);
-                showToast("Colaborador Adicionado");
-            } catch(e) { showToast("Erro ao adicionar"); }
-            setLoading(false);
+                await window.loadAllData(true);
+                window.showToast("Colaborador Adicionado");
+            } catch(e) { window.showToast("Erro ao adicionar"); }
+            window.setLoading(false);
         }
 
         async function saveAdminEmployeeEdit(empId) {
             const newName = document.getElementById(`admin-edit-name-${empId}`).value.trim().toUpperCase();
             const newRole = document.getElementById(`admin-edit-role-${empId}`).value.trim().toUpperCase();
             
-            if(!newName) return showToast("Nome inválido");
-            setLoading(true, "A Guardar...");
+            if(!newName) return window.showToast("Nome inválido");
+            window.setLoading(true, "A Guardar...");
             try {
                 await sbClient.from('employees').update({ name: newName, role: newRole }).eq('id', empId);
-                await loadAllData(true); showToast("Dados Atualizados");
-            } catch (e) { showToast("Erro na Atualização"); }
-            setLoading(false);
+                await window.loadAllData(true); window.showToast("Dados Atualizados");
+            } catch (e) { window.showToast("Erro na Atualização"); }
+            window.setLoading(false);
         }
 
         // --- 7. EXCLUSÕES (AÇÃO CORRIGIDA) ---
         async function removeEmployee(id, name) { 
             if(!confirm(`⚠️ ATENÇÃO: Deseja apagar permanentemente o colaborador "${name}" e TODO o seu histórico de turnos? Esta ação não pode ser desfeita.`)) return; 
             
-            setLoading(true, "A Eliminar Colaborador..."); 
+            window.setLoading(true, "A Eliminar Colaborador..."); 
             try {
-                // Elimina todos os turnos primeiro
                 await sbClient.from('shifts').delete().eq('employee_id', id); 
-                // Elimina o colaborador
                 await sbClient.from('employees').delete().eq('id', id); 
-                await loadAllData(true); 
-                showToast("Membro Eliminado");
+                await window.loadAllData(true); 
+                window.showToast("Membro Eliminado");
             } catch(error) {
                 console.error(error);
-                showToast("Falha ao Eliminar");
+                window.showToast("Falha ao Eliminar");
             }
-            setLoading(false);  
+            window.setLoading(false);  
         }
 
         async function handleClearEmployeeMonth(empId, name) { 
@@ -645,11 +766,10 @@
             
             if(!confirm(`Pretende limpar TODOS os turnos de ${name} relativos a ${monthName}?`)) return; 
             
-            setLoading(true, "A Limpar Turnos..."); 
+            window.setLoading(true, "A Limpar Turnos..."); 
             const prefix = `${y}-${m}-`;
             
             try {
-                // Busca EXATA dos IDs a eliminar para não falhar
                 const { data } = await sbClient.from('shifts').select('day_key').eq('employee_id', empId).like('day_key', `${prefix}%`);
                 
                 if (data && data.length > 0) {
@@ -657,13 +777,12 @@
                     await sbClient.from('shifts').delete().eq('employee_id', empId).in('day_key', keysToDelete);
                 }
                 
-                // Atualiza Memória Visual Imediata
                 if (shifts[empId]) { for (let key in shifts[empId]) { if (key.startsWith(prefix)) delete shifts[empId][key]; } }
                 
-                await loadAllData(true); 
-                showToast("Turnos Limpos"); 
-            } catch (error) { console.error(error); showToast("Erro ao Limpar"); }
-            setLoading(false);
+                await window.loadAllData(true); 
+                window.showToast("Turnos Limpos"); 
+            } catch (error) { console.error(error); window.showToast("Erro ao Limpar"); }
+            window.setLoading(false);
         }
 
         async function handleClearMonth() { 
@@ -673,37 +792,34 @@
 
             if(!confirm(`⚠️ ALERTA: Deseja apagar absolutamente TODOS os dados de TODOS os colaboradores para o mês de ${monthName}?`)) return; 
             
-            setLoading(true, "A Resetar Mês..."); 
+            window.setLoading(true, "A Resetar Mês..."); 
             const prefix = `${y}-${m}-`;
             
             try {
-                // Pesquisa cirurgica para evitar bloqueios de RLS/Supabase
                 const { data } = await sbClient.from('shifts').select('employee_id, day_key').like('day_key', `${prefix}%`);
                 
                 if(data && data.length > 0) {
-                    // Loop garante que apaga cada registo identificado
                     for(let item of data) {
                         await sbClient.from('shifts').delete().eq('employee_id', item.employee_id).eq('day_key', item.day_key);
                     }
                 }
-                await loadAllData(true); 
-                showToast("Mês Totalmente Limpo"); 
-            } catch(e) { console.error(e); showToast("Erro no Processo"); }
-            setLoading(false); 
+                await window.loadAllData(true); 
+                window.showToast("Mês Totalmente Limpo"); 
+            } catch(e) { console.error(e); window.showToast("Erro no Processo"); }
+            window.setLoading(false); 
         }
 
         async function handleDeleteShiftRecord() { 
             const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`; 
-            closeModal('shiftModal');
-            setLoading(true, "A Apagar Turno...");
+            window.closeModal('shiftModal');
+            window.setLoading(true, "A Apagar Turno...");
             try {
                 await sbClient.from('shifts').delete().eq('employee_id', editingContext.empId).eq('day_key', key); 
-                // Otimista
-                if (shifts[editingContext.empId] && shifts[editingContext.empId][key]) { delete shifts[editingContext.empId][key]; renderScale(); }
-                await loadAllData(true); 
-                showToast("Turno Apagado"); 
-            } catch(e) { console.error(e); showToast("Falha ao Apagar"); }
-            setLoading(false);
+                if (shifts[editingContext.empId] && shifts[editingContext.empId][key]) { delete shifts[editingContext.empId][key]; window.renderScale(); }
+                await window.loadAllData(true); 
+                window.showToast("Turno Apagado"); 
+            } catch(e) { console.error(e); window.showToast("Falha ao Apagar"); }
+            window.setLoading(false);
         }
 
         // --- 8. LÓGICA DE TURNOS ---
@@ -736,7 +852,7 @@
                 ? 'flex-1 py-3 rounded-xl text-[10px] font-black uppercase bg-blue-600 text-white shadow-md transition-all' 
                 : 'flex-1 py-3 rounded-xl text-[10px] font-black uppercase bg-white text-slate-400 border border-slate-200 hover:bg-slate-50 transition-all'; 
             }); 
-            if(m === 'TRABALHO') calculateAutoOut(); 
+            if(m === 'TRABALHO') window.calculateAutoOut(); 
         }
 
         async function saveShift() {
@@ -769,26 +885,82 @@
                 }
             }
             
-            setLoading(true, "A Guardar Turno..."); 
+            window.setLoading(true, "A Guardar Turno..."); 
             try {
                 await sbClient.from('shifts').upsert(upserts, { onConflict: 'employee_id, day_key' }); 
-                await loadAllData(true); 
-                closeModal('shiftModal'); 
-                showToast("Gravado com Sucesso");
-            } catch(e) { console.error(e); showToast("Erro a Guardar"); }
-            setLoading(false); 
+                await window.loadAllData(true); 
+                window.closeModal('shiftModal'); 
+                window.showToast("Gravado com Sucesso");
+            } catch(e) { console.error(e); window.showToast("Erro a Guardar"); }
+            window.setLoading(false); 
         }
 
-        // --- 9. EXPORTAÇÃO COMPLETA E CORRIGIDA ---
+        function openShiftModal(empId, d) { 
+            const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
+            editingContext = { empId, day: d, month: document.getElementById('monthSelect').value, year: document.getElementById('yearSelect').value }; 
+            document.getElementById('modalEmpName').innerText = employees.find(e=>e.id===empId).name.toUpperCase(); document.getElementById('modalDateLabel').innerText = `DIA ${d} • TURNO`; 
+            document.getElementById('field-in').value = shift.in; document.getElementById('field-out').value = shift.out; document.getElementById('field-lunch').value = shift.lunch || 2; 
+            window.setEditMode(shift.isFolga ? (shift.tipoFolga || 'DSR') : 'TRABALHO'); window.openModal('shiftModal'); 
+        }
+
+        function startRoleEdit(empId, currentRole) {
+            const cell = document.getElementById(`role-cell-${empId}`); if (!cell) return;
+            cell.innerHTML = `<input type="text" id="input-role-${empId}" class="inline-input" value="${currentRole || ''}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveRoleInline('${empId}')">`;
+            const input = document.getElementById(`input-role-${empId}`); input.focus(); input.select();
+        }
+        async function saveRoleInline(empId) {
+            const input = document.getElementById(`input-role-${empId}`); if (!input) return;
+            const newRole = input.value.trim().toUpperCase(); window.setLoading(true, "A Guardar...");
+            
+            const empIndex = employees.findIndex(e => e.id === empId);
+            if(empIndex !== -1) employees[empIndex].role = newRole;
+            window.renderScale();
+            
+            await sbClient.from('employees').update({ role: newRole }).eq('id', empId);
+            await window.loadAllData(true); window.setLoading(false); window.showToast("Posto Atualizado");
+        }
+
+        function startNameEditInline(empId, currentName) {
+            const cell = document.getElementById(`name-cell-${empId}`); if (!cell) return;
+            cell.innerHTML = `<input type="text" id="input-name-${empId}" class="inline-input" value="${currentName.toUpperCase()}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveNameInline('${empId}')">`;
+            const input = document.getElementById(`input-name-${empId}`); input.focus(); input.select();
+        }
+        async function saveNameInline(empId) {
+            const input = document.getElementById(`input-name-${empId}`); if (!input) return;
+            const newName = input.value.trim().toUpperCase(); if(!newName) return window.renderScale();
+            window.setLoading(true, "A Guardar..."); 
+            
+            const empIndex = employees.findIndex(e => e.id === empId);
+            if(empIndex !== -1) employees[empIndex].name = newName;
+            window.renderScale();
+
+            await sbClient.from('employees').update({ name: newName }).eq('id', empId);
+            await window.loadAllData(true); window.setLoading(false); window.showToast("Nome Atualizado");
+        }
+
+        function startAddInline() { isAddingInline = true; window.renderScale(); setTimeout(() => { const input = document.getElementById('input-name-new'); if(input) input.focus(); }, 100); }
+        async function saveNewMemberInline() {
+            const input = document.getElementById('input-name-new'); if(!input) return;
+            const rawValue = input.value.trim().toUpperCase();
+            if(!rawValue) { isAddingInline = false; window.renderScale(); return; }
+            
+            const nameList = rawValue.split(/[,\n]/).map(n => n.trim().toUpperCase()).filter(n => n !== "");
+            window.setLoading(true, "A Registar...");
+            await sbClient.from('employees').insert(nameList.map(name => ({ name, role: "" })));
+            isAddingInline = false; await window.loadAllData(true); window.setLoading(false); window.showToast("Membro Registado");
+        }
+
+
+        // --- 9. EXPORTAÇÃO (PDF / JPG) ---
         async function exportJPG() {
             const table = document.getElementById('mainTable'); 
-            setLoading(true, "A Processar Imagem...");
+            window.setLoading(true, "A Gerar Imagem...");
             const fullW = table.scrollWidth, fullH = table.scrollHeight;
 
             const canvas = await html2canvas(table, {
                 scale: 2.5, useCORS: true, width: fullW, height: fullH, scrollX: 0, scrollY: 0, windowWidth: fullW + 50, backgroundColor: '#ffffff',
                 onclone: (doc) => {
-                    doc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action').forEach(e => e.style.display = 'none');
+                    doc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
                     doc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
                         e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.fontSize = '14px'; 
                     });
@@ -799,7 +971,7 @@
 
             canvas.toBlob((blob) => { 
                 const a = document.createElement('a'); a.download = `Escala_Pro_Imagem.jpg`; a.href = URL.createObjectURL(blob); a.click(); 
-                setLoading(false); showToast("Imagem Descarregada");
+                window.setLoading(false); window.showToast("Imagem Descarregada");
             }, 'image/jpeg', 1.0);
         }
 
@@ -807,7 +979,7 @@
             const table = document.getElementById('mainTable');
             const m = parseInt(document.getElementById('monthSelect').value);
             const monthText = document.getElementById('monthSelect').options[m].text;
-            setLoading(true, "A Construir Documento...");
+            window.setLoading(true, "A Construir Documento...");
             
             const fullW = table.scrollWidth, fullH = table.scrollHeight;
 
@@ -821,7 +993,7 @@
                         const cloneCont = clonedDoc.getElementById('capture-container');
                         if(cloneCont) cloneCont.style.overflow = 'visible';
                         
-                        clonedDoc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action').forEach(e => e.style.display = 'none');
+                        clonedDoc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
                         clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
                             e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.fontSize = '14px'; e.style.color = '#000000';
                         });
@@ -832,13 +1004,25 @@
             };
 
             html2pdf().set(opt).from(table).save().then(() => { 
-                setLoading(false); showToast("PDF Descarregado"); 
+                window.setLoading(false); window.showToast("PDF Descarregado"); 
             }).catch(e => { 
-                setLoading(false); showToast("Falha no PDF"); console.error(e);
+                window.setLoading(false); window.showToast("Falha no PDF"); console.error(e);
             });
         }
+
+        // MAIOR FIX: Mapeamento de Funções para o Contexto Global HTML inline
+        Object.assign(window, {
+            openModal, closeModal, showToast, setLoading, updateStatus,
+            loadCachedData, saveToCache, setupSelectors, switchPanel,
+            checkAdminPassword, protectAction, handleAdminPanelAccess,
+            initSupabaseBackground, loadAllData, initCalendar, getEmployeeViolations,
+            renderScale, renderEmployeesAdmin, adminAddNewEmployee, saveAdminEmployeeEdit,
+            removeEmployee, handleClearEmployeeMonth, handleClearMonth,
+            handleDeleteShiftRecord, calculateAutoOut, setEditMode, saveShift,
+            openShiftModal, exportJPG, exportPDF, startRoleEdit, saveRoleInline,
+            startNameEditInline, saveNameInline, startAddInline, saveNewMemberInline,
+            showViolation
+        });
     </script>
 </body>
 </html>
-
-
