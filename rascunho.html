@@ -183,7 +183,7 @@
                 </div>
             </div>
             
-            <!-- LISTA DE SETORES (Estilo Pílula Igual ao Gerenciador) -->
+            <!-- LISTA DE SETORES -->
             <div class="flex-1 w-full xl:w-auto flex justify-start xl:justify-center items-center xl:px-4">
                 <div id="sectorListContainer" class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner overflow-x-auto no-scrollbar w-full max-w-full">
                     <!-- Preenchido via JS -->
@@ -210,7 +210,7 @@
         </div>
     </main>
 
-    <!-- 1. ABA: ESCALA DE HORÁRIOS (Oculto inicialmente) -->
+    <!-- 1. ABA: ESCALA DE HORÁRIOS -->
     <main id="panel-scale" class="hidden py-6 flex-1 bg-slate-50/30">
         <div class="content-container mb-4 flex justify-between items-center">
             <h2 id="currentSectorLabel" class="text-lg font-black text-slate-800 uppercase tracking-tight">Setor</h2>
@@ -412,7 +412,6 @@
         const SUPABASE_URL = 'https://cjcnqvdrztnhepxtlgju.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_3amBXdvUsQWYvf2qP4Ljbg_d3GDqglr';
         
-        // SISTEMA DE SETORES E SENHAS LOCAIS
         const SECTORS = ['FRENTE DE LOJA', 'REPOSIÇÃO', 'SETOR 1', 'SETOR 2', 'SETOR 3', 'SETOR 4'];
         
         let customPasswords = JSON.parse(localStorage.getItem('ep_sector_passwords') || '{}');
@@ -429,7 +428,6 @@
         const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
         let employees = [], shifts = {}, currentMode = 'TRABALHO', editingEmployeeId = null, editingContext = null;
 
-        // --- 1. FUNÇÕES UI & UTILITÁRIOS ---
         function openModal(id) { 
             const el = document.getElementById(id);
             if(el) { el.classList.remove('hidden'); el.classList.add('modal-active'); if(id==='passwordModal') setTimeout(()=>document.getElementById('adminPasswordInput').focus(), 300); }
@@ -479,7 +477,6 @@
             setTimeout(() => document.addEventListener('click', hidePopup), 10);
         }
 
-        // --- 2. RENDERIZAÇÃO E ACESSO DE SETORES ---
         function renderSectors() {
             const container = document.getElementById('sectorListContainer');
             if(!container) return;
@@ -498,7 +495,6 @@
                 pendingSectorAccess = sec;
                 document.getElementById('pwd-sector-name').innerText = sec;
                 
-                // Mostrar dica apenas se for a senha padrão
                 const hint = document.getElementById('pwd-sector-hint');
                 if(getSectorPassword(sec) === "0000") {
                     hint.innerText = " (Padrão: 0000)";
@@ -543,7 +539,6 @@
             }
         }
 
-        // --- 3. CACHE & INICIALIZAÇÃO ---
         function loadCachedData() {
             if(!currentSector) return;
             try {
@@ -579,7 +574,6 @@
         window.onload = async () => { 
             window.renderSectors();
             window.setupSelectors(); 
-            // Nao carrega cache inicialmente pois nao tem setor
             lucide.createIcons(); 
             
             window.updateStatus("Online", "text-blue-500");
@@ -594,7 +588,6 @@
             }); 
         };
 
-        // --- 4. GESTÃO DE NAVEGAÇÃO E ADMIN (SENHA POR SETOR) ---
         function switchPanel(p) { 
             if(!currentSector) return window.showToast("Selecione um setor primeiro");
             
@@ -642,7 +635,6 @@
         function protectAction(action) { 
             if(!currentSector) return window.showToast("Selecione um setor");
             
-            // Se já está logado no setor atual, permite ação direto
             if (unlockedSectors[currentSector] === true) { 
                 action(); 
             } else { 
@@ -674,21 +666,18 @@
             window.showToast("Senha Alterada com Sucesso");
         }
 
-        // --- 5. COMUNICAÇÃO COM BASE DE DADOS (FILTRADA POR SETOR) ---
-        function initSupabaseBackground() {
-            // Apenas para não dar erro se for chamada
-        }
+        function initSupabaseBackground() {}
+        
         async function loadAllData(silent = false) {
             if(!sbClient || !currentSector) return;
             if(!silent) window.setLoading(true, `A Sincronizar ${currentSector}...`);
             
             try {
-                // Filtra os empregados pelo setor selecionado
                 const { data: empData, error } = await sbClient.from('employees').select('*').eq('sector', currentSector).order('name');
                 
                 if (error) {
-                    console.error("ERRO SUPABASE: Coluna 'sector' em falta na tabela 'employees'.", error);
-                    window.showToast("Erro Cloud: Verifique a coluna Sector no Supabase");
+                    console.error("ERRO SUPABASE", error);
+                    window.showToast("Erro Cloud");
                     if(!silent) window.setLoading(false);
                     return;
                 }
@@ -714,15 +703,12 @@
             if(!silent) window.setLoading(false);
         }
 
-        // --- 6. VALIDAÇÕES LEGAIS E RENDERIZAÇÃO DA TABELA ---
         function initCalendar() {
             if(!currentSector) return;
             const mSelect = document.getElementById('monthSelect'); if(!mSelect) return;
             const m = parseInt(mSelect.value), y = parseInt(document.getElementById('yearSelect').value), dMax = new Date(y, m + 1, 0).getDate();
             const rowW = document.getElementById('header-row-weekdays'), rowN = document.getElementById('header-row-numbers');
             
-            // Fixação de bugs com remoção excessiva de thead/tbody content cells no refresh
-            // Reset and build columns from day 1 to dMax
             let weekdaysHTML = `<th class="sticky-header-name text-center px-4 tracking-tighter text-[11px]">EquipaCloud</th>
                                 <th class="sticky-header-mirror text-center text-[10px]" id="currentDay"></th>
                                 <th class="col-role"></th><th class="col-action"></th>`;
@@ -793,14 +779,11 @@
                 body.innerHTML = `<tr><td class="sticky-col-name py-2 border-b-0"><div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="p-8 text-center text-slate-400 font-black uppercase text-xs">Sem colaboradores neste setor.</td></tr>`;
                 lucide.createIcons(); 
                 
-                // Actualizar cabeçalho do espelho hoje
                 const todayHeader = document.getElementById('currentDay');
                 if(todayHeader) todayHeader.innerText = isThisMonth ? String(todayDay).padStart(2, '0') : '--';
-                
                 return;
             }
 
-            // Actualizar cabeçalho do espelho hoje
             const todayHeader = document.getElementById('currentDay');
             if(todayHeader) todayHeader.innerText = isThisMonth ? String(todayDay).padStart(2, '0') : '--';
 
@@ -845,9 +828,9 @@
                 }
                 
                 return `<tr>
-                    <td id="name-cell-${emp.id}" class="sticky-col-name py-1 px-3"><span class="emp-name-heavy cursor-pointer hover:text-blue-600 transition-colors block truncate w-full" title="Editar Nome" onclick="window.protectAction(() => window.startNameEditInline('${emp.id}', '${emp.name}'))">${emp.name.toUpperCase()}</span></td>
+                    <td id="name-cell-${emp.id}" class="sticky-col-name py-1 px-3"><span class="emp-name-heavy cursor-pointer hover:text-blue-600 transition-colors block w-full" title="Editar Nome" onclick="window.protectAction(() => window.startNameEditInline('${emp.id}', '${emp.name}'))">${emp.name.toUpperCase()}</span></td>
                     <td class="col-mirror py-1 px-2"><div class="flex flex-col items-center justify-center h-full">${mirrorContent}</div></td>
-                    <td class="col-role py-1 px-2 text-center"><div id="role-cell-${emp.id}" class="text-[11px] font-black text-slate-400 uppercase truncate cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors" title="Editar Posto" onclick="window.protectAction(() => window.startRoleEdit('${emp.id}', '${emp.role || ''}'))">${emp.role || '---'}</div></td>
+                    <td class="col-role py-1 px-2 text-center"><div id="role-cell-${emp.id}" class="text-[11px] font-black text-slate-400 uppercase cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors" title="Editar Posto" onclick="window.protectAction(() => window.startRoleEdit('${emp.id}', '${emp.role || ''}'))">${emp.role || '---'}</div></td>
                     <td class="col-action py-1 px-2 text-center"><button onclick="window.protectAction(() => window.handleClearEmployeeMonth('${emp.id}', '${emp.name}'))" class="text-slate-300 hover:text-red-500 cursor-pointer transition-colors p-2 rounded-lg hover:bg-red-50" title="Apagar todos os turnos de ${emp.name} neste mês"><i data-lucide="eraser" class="w-4 h-4 mx-auto"></i></button></td>
                     ${daysCells}
                 </tr>`;
@@ -866,7 +849,6 @@
             body.innerHTML = htmlRows; lucide.createIcons();
         }
 
-        // --- 7. GERENCIADOR ADMIN E RENOMEAR SETOR ---
         async function renameCurrentSector() {
             if(!currentSector) return;
             const input = document.getElementById('admin-rename-sector');
@@ -879,10 +861,8 @@
 
             window.setLoading(true, "A Renomear Setor...");
             try {
-                // Atualizar tabela Employees
                 await sbClient.from('employees').update({ sector: newName }).eq('sector', currentSector);
                 
-                // Atualizar state local e map das senhas!
                 const idx = SECTORS.indexOf(currentSector);
                 if(idx > -1) SECTORS[idx] = newName;
                 
@@ -895,7 +875,6 @@
                 unlockedSectors[newName] = unlockedSectors[currentSector];
                 delete unlockedSectors[currentSector];
                 
-                // Mover cache local
                 const cachedEmp = localStorage.getItem(`ep_employees_${currentSector}`);
                 const cachedShifts = localStorage.getItem(`ep_shifts_${currentSector}`);
                 if (cachedEmp) { localStorage.setItem(`ep_employees_${newName}`, cachedEmp); localStorage.removeItem(`ep_employees_${currentSector}`); }
@@ -903,7 +882,6 @@
 
                 currentSector = newName;
                 
-                // Atualizar UI
                 document.getElementById('currentSectorLabel').innerText = newName;
                 document.getElementById('adminSectorLabel').innerText = newName;
                 window.renderSectors();
@@ -966,7 +944,6 @@
             window.setLoading(false);
         }
 
-        // --- 8. EXCLUSÕES & ADIÇÕES INLINE ---
         async function removeEmployee(id, name) { 
             if(!confirm(`⚠️ ATENÇÃO: Deseja apagar permanentemente o colaborador "${name}" e TODO o seu histórico de turnos? Esta ação não pode ser desfeita.`)) return; 
             
@@ -1081,7 +1058,6 @@
             isAddingInline = false; await window.loadAllData(true); window.setLoading(false); window.showToast("Membro Registado");
         }
 
-        // --- 9. LÓGICA DE TURNOS E HORÁRIOS ---
         function openShiftModal(empId, d) { 
             const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
             editingContext = { empId, day: d, month: document.getElementById('monthSelect').value, year: document.getElementById('yearSelect').value }; 
@@ -1175,8 +1151,8 @@
             window.setLoading(false); 
         }
 
-
-        // --- 10. EXPORTAÇÃO (PDF / JPG) ---
+        // --- 10. EXPORTAÇÕES OTIMIZADAS PARA NÃO CORTAR TEXTOS NO FIM ---
+        
         async function exportJPG() {
             const table = document.getElementById('mainTable'); 
             const container = document.getElementById('capture-container');
@@ -1203,8 +1179,22 @@
                         doc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
                             e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.boxShadow = 'none'; 
                         });
+                        
+                        // NOVO: Remove a classe truncate e obriga o span do nome a soltar o texto sem esconder o fim
+                        doc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
+                            e.classList.remove('truncate');
+                            e.style.whiteSpace = 'normal';
+                            e.style.wordBreak = 'break-word';
+                            e.style.overflow = 'visible';
+                        });
+
                         const tempRow = doc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
-                        doc.getElementById('mainTable').style.width = 'auto';
+                        
+                        const cloneTable = doc.getElementById('mainTable');
+                        if(cloneTable) {
+                            cloneTable.style.width = 'max-content';
+                            cloneTable.style.tableLayout = 'auto'; // Ajusta automaticamente para o texto caber
+                        }
                     }
                 });
 
@@ -1234,7 +1224,6 @@
                 const fullW = table.scrollWidth;
                 const fullH = table.scrollHeight;
 
-                // Create the canvas explicitly exactly as we do for the JPG export
                 const canvas = await html2canvas(table, {
                     scale: 2, 
                     useCORS: true, 
@@ -1250,23 +1239,35 @@
                         
                         clonedDoc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
                         clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
-                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.fontSize = '14px'; e.style.color = '#000000'; e.style.boxShadow = 'none';
+                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.boxShadow = 'none';
                         });
+
+                        // NOVO: Evitar que o nome corte retirando o truncate no print
+                        clonedDoc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
+                            e.classList.remove('truncate');
+                            e.style.whiteSpace = 'normal';
+                            e.style.wordBreak = 'break-word';
+                            e.style.overflow = 'visible';
+                        });
+
                         const tempRow = clonedDoc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
                         const cloneTable = clonedDoc.getElementById('mainTable');
-                        if(cloneTable) cloneTable.style.width = 'auto';
+                        if(cloneTable) {
+                            cloneTable.style.width = 'max-content';
+                            cloneTable.style.tableLayout = 'auto'; // Ajusta a coluna ao texto
+                        }
                     }
                 });
 
-                // Convert canvas to a proper dimension PDF directly
-                const pdfW = canvas.width / 2; // adjustment for scale: 2
+                // PDF usa as dimensoes reais baseadas no render do canvas
+                const pdfW = canvas.width / 2; 
                 const pdfH = canvas.height / 2;
 
                 const opt = {
                     margin: 0, 
                     filename: `Escala_${currentSector}_${monthText}.pdf`, 
                     image: { type: 'jpeg', quality: 1.0 },
-                    jsPDF: { unit: 'px', format: [pdfW, pdfH], orientation: pdfW > pdfH ? 'landscape' : 'portrait', compress: true }
+                    jsPDF: { unit: 'px', format: [pdfW + 20, pdfH + 20], orientation: pdfW > pdfH ? 'landscape' : 'portrait', compress: true }
                 };
 
                 await html2pdf().set(opt).from(canvas).save();
