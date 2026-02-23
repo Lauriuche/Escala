@@ -23,7 +23,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         
         :root {
-            --cell-width: 80px; 
+            --cell-width: 130px; 
             --name-col-width: 190px; 
             --role-col-width: 120px; 
             --action-col-width: 45px;
@@ -31,7 +31,7 @@
             --row-height: 46px; 
             --sun-red: #f07556;
             --header-gray: #64748b;
-            --mirror-green: rgba(204, 255, 205, 1); /* Verde Neon Clarinho */
+            --mirror-green: rgba(204, 255, 205, 1);
             --page-padding: 1rem; 
             --violation-inter-36h: #a855f7; 
             --violation-inter-11h: #f97316; 
@@ -47,7 +47,6 @@
             overflow-x: hidden;
         }
 
-        /* Ocultar barra de rolagem mantendo funcionalidade */
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
@@ -64,10 +63,8 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Tabela Fixed para garantir que as larguras não colapsam */
         table { border-collapse: separate; border-spacing: 0; width: max-content; background-color: white; table-layout: fixed; }
 
-        /* Colunas Fixas e Sombras (Largura Totalmente Reforçada) */
         .sticky-col-name, .sticky-header-name { 
             position: sticky; left: 0; 
             width: var(--name-col-width); min-width: var(--name-col-width); max-width: var(--name-col-width);
@@ -77,10 +74,7 @@
             vertical-align: middle; background-clip: padding-box;
             box-shadow: inset -1px 0 0 #e2e8f0;
         }
-        .sticky-header-name { 
-            z-index: 60 !important; 
-            border-right: 1px solid rgba(255,255,255,0.2) !important; 
-        }
+        .sticky-header-name { z-index: 60 !important; border-right: 1px solid rgba(255,255,255,0.2) !important; }
 
         .col-mirror, .sticky-header-mirror { 
             position: sticky; left: var(--name-col-width); 
@@ -88,45 +82,29 @@
             background-color: var(--mirror-green) !important; color: #065f46 !important;
             text-align: center; 
         }
-        .col-mirror { 
-            z-index: 44;
-            box-shadow: inset -1px 0 0 rgba(0,0,0,0.05);
-        }
-        .sticky-header-mirror { 
-            z-index: 59 !important; 
-        }
+        .col-mirror { z-index: 44; box-shadow: inset -1px 0 0 rgba(0,0,0,0.05); }
+        .sticky-header-mirror { z-index: 59 !important; }
 
-        .col-role { 
-            width: var(--role-col-width); min-width: var(--role-col-width); max-width: var(--role-col-width); 
-        }
-        .col-action { 
-            width: var(--action-col-width); min-width: var(--action-col-width); max-width: var(--action-col-width); 
-        }
+        .col-role { width: var(--role-col-width); min-width: var(--role-col-width); max-width: var(--role-col-width); }
+        .col-action { width: var(--action-col-width); min-width: var(--action-col-width); max-width: var(--action-col-width); }
 
-        /* Cabeçalhos unificados */
         thead tr th { 
             position: sticky; top: 0; z-index: 20; background-color: var(--header-gray) !important; 
             border-bottom: 1px solid rgba(0,0,0,0.1); padding: 6px 8px; color: white; height: 38px; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
         thead tr:nth-child(2) th { top: 38px; height: 34px; font-size: 11px; }
 
-        .day-col { 
-            width: var(--cell-width); min-width: var(--cell-width); max-width: var(--cell-width); 
-            text-align: center; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background: white; 
-        }
+        .day-col { width: var(--cell-width); min-width: var(--cell-width); max-width: var(--cell-width); text-align: center; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background: white; }
         
         .sun-col { background-color: #fff1f0 !important; color: #f07556 !important; } 
         thead th.sun-col-header { background-color: var(--header-gray) !important; color: #fecaca !important; }
 
         .emp-name-heavy { font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: -0.01em; color: #000; font-size: 12px; }
 
-        /* Estilos do Espelho */
-        .mirror-time-in { font-size: 13px; font-weight: 900; line-height: 1.1; color: #065f46 !important; }
-        .mirror-time-out { font-size: 9px; font-weight: 700; color: rgba(6, 95, 70, 0.6) !important; margin-top: 1px; }
-
-        /* Estilos da Tabela (Retrocedido para o tamanho legível normal) */
-        .time-text { font-size: 12px; font-weight: 800; line-height: 1.1; color: #0f172a; }
-        .time-subtext { font-size: 8.5px; font-weight: 600; color: #64748b; margin-top: 1px; }
+        .mirror-time-in, .time-text { font-size: 13px; font-weight: 900; line-height: 1.1; color: #0f172a; }
+        .mirror-time-out, .time-subtext { font-size: 9px; font-weight: 700; color: #64748b; margin-top: 1px; }
+        .mirror-time-in { color: #065f46 !important; }
+        .mirror-time-out { color: rgba(6, 95, 70, 0.6) !important; }
 
         .inline-input { width: 100%; border: 2px solid #2563eb; background: white; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; text-align: center; padding: 6px 4px; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
@@ -144,9 +122,10 @@
 
         .cell-interactive { cursor: pointer; height: var(--row-height); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; transition: background 0.2s; }
         .cell-interactive:hover { background-color: rgba(37, 99, 235, 0.05); }
+        .cell-view-only { height: var(--row-height); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        
         .msg-error-cell { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; margin-bottom: 2px; }
 
-        /* Estilo para destacar células com erros usando Box-Shadow Interno */
         .cell-violation { background-color: #fef08a !important; box-shadow: inset 0 0 0 2px #eab308 !important; }
         .cell-violation-36h { background-color: #f3e8ff !important; box-shadow: inset 0 0 0 1.5px var(--violation-inter-36h) !important; }
         .cell-violation-11h { background-color: #fff7ed !important; box-shadow: inset 0 0 0 1.5px var(--violation-inter-11h) !important; }
@@ -160,7 +139,7 @@
 </head>
 <body class="antialiased flex flex-col min-h-screen relative">
 
-    <!-- CABEÇALHO GERAL -->
+    <!-- CABEÇALHO SUPERIOR (Logo e Data) -->
     <header class="bg-white border-b border-slate-200 py-3 sticky top-0 z-50 shadow-sm">
         <div class="content-container flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -174,47 +153,83 @@
                     <p id="connection-status" class="text-[9px] font-bold uppercase tracking-widest mt-1 text-slate-400">Iniciando...</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <div id="admin-indicator" class="hidden flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[9px] font-black uppercase">
-                    <i data-lucide="shield-check" class="w-3 h-3"></i> Modo Admin
+            
+            <div class="flex items-center gap-2 md:gap-3">
+                <div id="admin-indicator" class="hidden items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[9px] font-black uppercase">
+                    <i data-lucide="shield-check" class="w-3 h-3"></i> Admin
                 </div>
-                <div class="flex bg-slate-50 p-1 rounded-lg border border-slate-200">
-                    <select id="monthSelect" onchange="window.initCalendar()" class="bg-transparent font-bold text-sm px-2 outline-none text-slate-700 cursor-pointer"></select>
-                    <select id="yearSelect" onchange="window.initCalendar()" class="bg-transparent font-bold text-sm px-2 outline-none text-slate-700 border-l border-slate-200 cursor-pointer"></select>
+                
+                <!-- BOTÃO SAIR -->
+                <button id="btn-logout" onclick="window.logoutSector()" class="hidden items-center gap-1 px-4 py-1.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[9px] font-black uppercase hover:bg-red-100 transition-colors shadow-sm" title="Sair do Setor Atual">
+                    <i data-lucide="log-out" class="w-3 h-3"></i> Sair
+                </button>
+
+                <div class="flex bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+                    <select id="monthSelect" onchange="window.initCalendar()" class="bg-transparent font-black text-sm px-3 outline-none text-slate-700 cursor-pointer uppercase"></select>
+                    <select id="yearSelect" onchange="window.initCalendar()" class="bg-transparent font-black text-sm px-3 outline-none text-slate-700 border-l border-slate-300 cursor-pointer uppercase"></select>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- NAVEGAÇÃO E CONTROLES -->
-    <section class="bg-white py-4 border-b border-slate-200">
-        <div class="content-container flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-4 flex-wrap">
-                <div class="flex flex-col items-center justify-center bg-blue-50 px-5 py-1.5 rounded-xl border border-blue-100 min-w-[90px]">
+    <!-- BARRA DE SETORES E NAVEGAÇÃO CENTRALIZADA E ALINHADA -->
+    <section class="bg-white py-4 border-b border-slate-200 shadow-sm z-40 relative">
+        <div class="content-container">
+            <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4 w-full">
+                
+                <!-- Efetivo -->
+                <div class="flex flex-col items-center justify-center bg-blue-50 px-5 py-1.5 rounded-xl border border-blue-100 min-w-[90px] h-[46px]">
                     <span class="text-[10px] font-black text-blue-400 uppercase leading-none mt-1">Efetivo</span>
                     <span id="empTotalCount" class="text-xl font-black text-blue-700 leading-none mt-1 mb-1">0</span>
                 </div>
                 
-                <div class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner">
-                    <button onclick="window.switchPanel('scale')" id="nav-scale" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200/50">
+                <!-- Navegação (Escala/Gerenciador) -->
+                <div class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner h-[46px]">
+                    <button onclick="window.switchPanel('scale')" id="nav-scale" class="h-full flex items-center gap-2 px-5 rounded-xl text-[11px] font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200/50">
                         <i data-lucide="calendar-days" class="w-4 h-4"></i> Escala Mês
                     </button>
-                    <button onclick="window.handleAdminPanelAccess()" id="nav-admin" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all text-slate-500 hover:text-slate-800 bg-transparent border border-transparent">
+                    <!-- Visível apenas para Admins -->
+                    <button onclick="window.handleAdminPanelAccess()" id="nav-admin" class="hidden h-full flex items-center gap-2 px-5 rounded-xl text-[11px] font-black uppercase transition-all text-slate-500 hover:text-slate-800 bg-transparent border border-transparent">
                         <i data-lucide="users" class="w-4 h-4"></i> Gerenciador
                     </button>
                 </div>
-            </div>
-            
-            <div id="actions-scale" class="flex items-center">
-                <button onclick="window.protectAction(() => window.handleClearMonth())" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all hover:bg-red-50">
-                    <i data-lucide="calendar-off" class="w-4 h-4"></i> Limpar Mês Inteiro
-                </button>
+                
+                <!-- Setores -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar max-w-full">
+                    <div id="sectorListContainer" class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner w-max h-[46px]">
+                        <!-- Preenchido via JS -->
+                    </div>
+                    <!-- Criação de Setor - Sempre visível, mas requer Admin -->
+                    <button onclick="window.promptAddSector()" class="shrink-0 w-[46px] h-[46px] bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[14px] flex items-center justify-center border border-slate-200 shadow-inner transition-colors" title="Criar Novo Setor">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
             </div>
         </div>
     </section>
 
+    <!-- ESTADO VAZIO INICIAL -->
+    <main id="empty-state" class="flex-1 flex flex-col items-center justify-center p-10 bg-slate-50/50">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-center max-w-md">
+            <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="layout-grid" class="w-10 h-10"></i>
+            </div>
+            <h2 class="text-xl font-black text-slate-900 uppercase mb-2">Bem-vindo à EscalaPro</h2>
+            <p class="text-xs text-slate-500 font-medium">Selecione um setor na barra superior para iniciar. É necessária a senha de acesso (Admin ou Colaborador) para visualizar a equipa.</p>
+        </div>
+    </main>
+
     <!-- 1. ABA: ESCALA DE HORÁRIOS -->
-    <main id="panel-scale" class="py-6 flex-1 bg-slate-50/30">
+    <main id="panel-scale" class="hidden py-6 flex-1 bg-slate-50/30">
+        <div class="content-container mb-4 flex justify-between items-center">
+            <h2 class="text-lg font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+                Setor <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i> <span id="currentSectorLabel" class="text-blue-600">Nenhum</span>
+            </h2>
+            <button id="btn-clear-month" onclick="window.protectAction(() => window.handleClearMonth())" class="hidden flex items-center gap-2 bg-white border border-red-200 text-red-500 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all hover:bg-red-50">
+                <i data-lucide="calendar-off" class="w-4 h-4"></i> Limpar Mês
+            </button>
+        </div>
         <div class="content-container">
             <div id="capture-container" class="table-container no-scrollbar">
                 <table id="mainTable">
@@ -222,13 +237,13 @@
                         <tr id="header-row-weekdays">
                             <th class="sticky-header-name text-center px-4 tracking-tighter text-[11px]">EquipaCloud</th>
                             <th class="sticky-header-mirror text-center text-[10px]" id="currentDay"></th>
-                            <th class="col-role"></th><th class="col-action"></th>
+                            <th class="col-role"></th><th id="header-action-1" class="col-action"></th>
                         </tr>
                         <tr id="header-row-numbers">
                             <th class="sticky-header-name text-center px-4 text-white/80 text-[12px]">Colaborador</th>
-                            <th class="sticky-header-mirror text-center text-[#065f46] text-[11px]">ESPELHO</th>
+                            <th class="sticky-header-mirror text-center text-[#065f46] text-[12px]">ESPELHO</th>
                             <th class="col-role text-center text-white/80">Posto</th>
-                            <th class="col-action text-center text-white/80" title="Apagar Turnos"><i data-lucide="eraser" class="w-3.5 h-3.5 mx-auto"></i></th>
+                            <th id="header-action-2" class="col-action text-center text-white/80" title="Apagar Turnos"><i data-lucide="eraser" class="w-3.5 h-3.5 mx-auto"></i></th>
                         </tr>
                     </thead>
                     <tbody id="scaleBody">
@@ -263,14 +278,52 @@
         <div class="content-container max-w-5xl mx-auto">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Gerenciador</h2>
-                    <p class="text-[11px] text-slate-500 font-bold uppercase mt-1">Adicione, edite ou remova membros da equipa</p>
+                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Gerenciador: <span id="adminSectorLabel" class="text-blue-600">Setor</span></h2>
+                    <p class="text-[11px] text-slate-500 font-bold uppercase mt-1">Gira os membros e definições exclusivas deste setor</p>
                 </div>
+            </div>
+
+            <!-- OPÇÕES DO SETOR: Renomear, Mudar Senha Admin, Mudar Senha Colaborador -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                
+                <!-- Renomear Setor -->
+                <div class="bg-white p-5 rounded-[24px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Renomear Setor</h3>
+                    <div class="flex gap-2 mt-auto">
+                        <input type="text" id="admin-rename-sector" class="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-black uppercase outline-none focus:border-blue-500 transition-colors">
+                        <button onclick="window.protectAction(() => window.renameCurrentSector())" class="bg-slate-800 text-white font-black uppercase text-[10px] px-4 py-2.5 rounded-xl hover:bg-slate-900 transition-colors shadow-md flex items-center justify-center">
+                            Salvar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mudar Senha Admin -->
+                <div class="bg-white p-5 rounded-[24px] border border-blue-200 bg-blue-50/30 shadow-sm flex flex-col justify-between">
+                    <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-3">Senha ADMIN (Edição)</h3>
+                    <div class="flex gap-2 mt-auto">
+                        <input type="password" id="admin-new-password" placeholder="NOVA ADMIN" class="flex-1 w-full bg-white border border-blue-200 rounded-xl px-3 py-2.5 text-xs font-black text-center tracking-[0.2em] outline-none focus:border-blue-500 transition-colors">
+                        <button onclick="window.protectAction(() => window.changeSectorPassword())" class="bg-blue-600 text-white font-black uppercase text-[10px] px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors shadow-md flex items-center justify-center">
+                            Mudar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mudar Senha Colaborador -->
+                <div class="bg-white p-5 rounded-[24px] border border-emerald-200 bg-emerald-50/30 shadow-sm flex flex-col justify-between">
+                    <h3 class="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-3">Senha COLAB (Visão)</h3>
+                    <div class="flex gap-2 mt-auto">
+                        <input type="password" id="admin-new-colab-password" placeholder="NOVA COLAB" class="flex-1 w-full bg-white border border-emerald-200 rounded-xl px-3 py-2.5 text-xs font-black text-center tracking-[0.2em] outline-none focus:border-emerald-500 transition-colors">
+                        <button onclick="window.protectAction(() => window.changeSectorColabPassword())" class="bg-emerald-600 text-white font-black uppercase text-[10px] px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors shadow-md flex items-center justify-center">
+                            Mudar
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Adicionar Novo Formulário -->
             <div class="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm mb-8">
-                <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Adicionar Novo Colaborador</h3>
+                <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Adicionar Membro ao Setor</h3>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <input type="text" id="admin-new-name" placeholder="NOME DO COLABORADOR..." class="flex-[2] bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black uppercase outline-none focus:border-blue-500 transition-colors">
                     <input type="text" id="admin-new-role" placeholder="POSTO / CARGO (OPCIONAL)" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold uppercase outline-none focus:border-blue-500 transition-colors">
@@ -280,12 +333,10 @@
                 </div>
             </div>
 
-            <!-- Lista de Colaboradores Existentes -->
-            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Equipa Atual</h3>
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Equipa Atual do Setor</h3>
             <div id="employeeListAdmin" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <!-- Preenchido via JS -->
             </div>
-
         </div>
     </main>
     
@@ -302,25 +353,24 @@
         <div class="text-blue-600 mb-2 font-black text-[11px] uppercase tracking-widest flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Alerta Legal</div>
         <div id="violationMsg" class="text-slate-700 mb-3 leading-snug text-xs font-bold"></div>
         <div class="pt-2 border-t border-amber-200 text-green-700 italic font-bold leading-snug text-[11px]">
-            Sugestão de Resolução:<br><span id="violationSug" class="font-medium text-slate-600"></span>
+            Sugestão:<br><span id="violationSug" class="font-medium text-slate-600"></span>
         </div>
     </div>
 
-    <!-- MODAIS DE SISTEMA -->
-    
-    <!-- Modal Senha -->
+    <!-- MODAL SENHA -->
     <div id="passwordModal" class="fixed inset-0 z-[200] hidden bg-slate-900/80 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-white rounded-[32px] w-full max-w-xs p-8 text-center space-y-6 shadow-2xl border border-slate-100 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
             <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-blue-600 mt-2"><i data-lucide="lock" class="w-8 h-8"></i></div>
             <div>
                 <h3 class="text-xl font-black uppercase text-slate-900 leading-none">Acesso Restrito</h3>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Introduza a Senha Admin (123)</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Setor: <span id="pwd-sector-name" class="text-blue-600"></span></p>
+                <p id="pwd-sector-hint" class="text-[8px] text-amber-500 font-bold uppercase mt-1"></p>
             </div>
-            <input type="password" id="adminPasswordInput" onkeyup="if(event.key==='Enter') window.checkAdminPassword()" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 outline-none focus:border-blue-500 font-black text-2xl text-center tracking-[0.5em] text-slate-700 transition-colors">
+            <input type="password" id="adminPasswordInput" placeholder="****" onkeyup="if(event.key==='Enter') window.checkAdminPassword()" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 outline-none focus:border-blue-500 font-black text-2xl text-center tracking-[0.5em] text-slate-700 transition-colors">
             <div class="flex gap-3">
                 <button onclick="window.closeModal('passwordModal')" class="flex-1 py-4 font-black text-slate-400 uppercase text-xs hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-200">Cancelar</button>
-                <button onclick="window.checkAdminPassword()" class="flex-[2] py-4 bg-blue-600 text-white font-black rounded-2xl uppercase text-xs shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-colors">Confirmar</button>
+                <button onclick="window.checkAdminPassword()" class="flex-[2] py-4 bg-blue-600 text-white font-black rounded-2xl uppercase text-xs shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-colors">Acessar</button>
             </div>
         </div>
     </div>
@@ -337,7 +387,6 @@
             </div>
             
             <div class="space-y-5">
-                <!-- AQUI ESTÁ O AJUSTE PARA OS CAMPOS DE HORA NÃO SEREM CORTADOS -->
                 <div id="timeInputArea">
                     <label class="block text-left text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Registo de Horas</label>
                     <div class="flex items-center bg-slate-50 p-2.5 rounded-2xl border-2 border-slate-200 justify-between gap-1">
@@ -386,14 +435,21 @@
     <script>
         const SUPABASE_URL = 'https://cjcnqvdrztnhepxtlgju.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_3amBXdvUsQWYvf2qP4Ljbg_d3GDqglr';
-        const ADMIN_PASSWORD = "123";
+        
+        // VARIÁVEIS GLOBAIS DE SETORES E SENHAS
+        let SECTORS = [];
+        let customPasswords = {};
+        let customColabPasswords = {}; 
+        
+        let currentSector = null; 
+        let unlockedSectors = {}; 
+        let pendingSectorAccess = null; 
 
-        var sbClient, deferredPrompt, isAdmin = false, pendingAction = null, isAddingInline = false;
+        var sbClient, deferredPrompt, pendingAction = null, isAddingInline = false;
         const RULES = { WORK_BASE_MINS: 440, MAX_CONSECUTIVE: 6, INTER_DAILY_MIN_HOURS: 11, INTER_DSR_MIN_HOURS: 36, INTRA_MIN_HOURS: 1 };
         const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
         let employees = [], shifts = {}, currentMode = 'TRABALHO', editingEmployeeId = null, editingContext = null;
 
-        // --- 1. FUNÇÕES UI & UTILITÁRIOS ---
         function openModal(id) { 
             const el = document.getElementById(id);
             if(el) { el.classList.remove('hidden'); el.classList.add('modal-active'); if(id==='passwordModal') setTimeout(()=>document.getElementById('adminPasswordInput').focus(), 300); }
@@ -420,26 +476,19 @@
             el.className = `text-[9px] font-bold uppercase tracking-widest mt-1 transition-colors ${colorClass}`;
         }
 
-        // NOVO: Função Global de exibição de nota de violação
         function showViolation(element, msg, suggestion) {
             const popup = document.getElementById('globalViolationPopup');
             document.getElementById('violationMsg').innerText = msg;
             document.getElementById('violationSug').innerText = suggestion;
-            
             const rect = element.getBoundingClientRect();
-            
             let top = rect.bottom + window.scrollY + 8;
             let left = rect.left + window.scrollX - 100;
-            
             if (left < 10) left = 10;
             if (left + 220 > window.innerWidth) left = window.innerWidth - 230;
-            
             popup.style.top = top + 'px';
             popup.style.left = left + 'px';
-            
             popup.classList.remove('hidden');
             setTimeout(() => popup.classList.remove('opacity-0'), 10);
-
             const hidePopup = (e) => {
                 if(!popup.contains(e.target) && e.target !== element) {
                     popup.classList.add('opacity-0');
@@ -450,11 +499,174 @@
             setTimeout(() => document.addEventListener('click', hidePopup), 10);
         }
 
-        // --- 2. CACHE & INICIALIZAÇÃO ---
-        function loadCachedData() {
+        function getSectorPassword(sec) { return customPasswords[sec] || "0000"; }
+        function getSectorColabPassword(sec) { return customColabPasswords[sec] || "1111"; }
+
+        async function loadSectorsFromDB() {
             try {
-                const cachedEmp = localStorage.getItem('ep_employees');
-                const cachedShifts = localStorage.getItem('ep_shifts');
+                const { data, error } = await sbClient.from('sectors').select('*').order('name');
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    SECTORS = data.map(s => s.name);
+                    data.forEach(s => { 
+                        customPasswords[s.name] = s.password || '0000'; 
+                        customColabPasswords[s.name] = s.colab_password || '1111';
+                    });
+                } else {
+                    SECTORS = ['FRENTE DE LOJA', 'REPOSIÇÃO'];
+                    customPasswords = { 'FRENTE DE LOJA': '0000', 'REPOSIÇÃO': '0000' };
+                    customColabPasswords = { 'FRENTE DE LOJA': '1111', 'REPOSIÇÃO': '1111' };
+                    await sbClient.from('sectors').insert([
+                        { name: 'FRENTE DE LOJA', password: '0000', colab_password: '1111' }, 
+                        { name: 'REPOSIÇÃO', password: '0000', colab_password: '1111' }
+                    ]);
+                }
+            } catch(e) {
+                console.warn("Usando fallback de setores locais.", e);
+                const localSectors = JSON.parse(localStorage.getItem('ep_sectors') || '["FRENTE DE LOJA", "REPOSIÇÃO"]');
+                SECTORS = localSectors;
+                customPasswords = JSON.parse(localStorage.getItem('ep_sector_passwords') || '{}');
+                customColabPasswords = JSON.parse(localStorage.getItem('ep_sector_colab_passwords') || '{}');
+            }
+            window.renderSectors();
+        }
+
+        function renderSectors() {
+            const container = document.getElementById('sectorListContainer');
+            if(!container) return;
+            container.innerHTML = SECTORS.map(sec => {
+                const activeClasses = "bg-white text-blue-600 shadow-sm border border-slate-200/50";
+                const inactiveClasses = "text-slate-500 hover:text-slate-800 bg-transparent border border-transparent";
+                const isAct = (currentSector === sec);
+                return `<button onclick="window.requestSectorAccess('${sec}')" class="h-full px-5 rounded-xl text-[11px] font-black uppercase transition-all whitespace-nowrap flex-shrink-0 flex items-center ${isAct ? activeClasses : inactiveClasses}">${sec}</button>`;
+            }).join('');
+        }
+
+        function requestSectorAccess(sec) {
+            if (unlockedSectors[sec]) {
+                window.selectSector(sec);
+            } else {
+                pendingSectorAccess = sec;
+                document.getElementById('pwd-sector-name').innerText = sec;
+                
+                const hint = document.getElementById('pwd-sector-hint');
+                const adminP = getSectorPassword(sec);
+                const colabP = getSectorColabPassword(sec);
+                
+                let hintText = "";
+                if(adminP === "0000" && colabP === "1111") hintText = " (Admin: 0000 | Colab: 1111)";
+                else if(adminP === "0000") hintText = " (Admin Padrão: 0000)";
+                else if(colabP === "1111") hintText = " (Colab Padrão: 1111)";
+                
+                hint.innerText = hintText;
+                window.openModal('passwordModal');
+            }
+        }
+
+        async function selectSector(sec) {
+            currentSector = sec;
+            window.renderSectors();
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            
+            document.getElementById('currentSectorLabel').innerText = sec;
+            document.getElementById('adminSectorLabel').innerText = sec;
+            const renameInput = document.getElementById('admin-rename-sector');
+            if (renameInput) renameInput.value = sec;
+            
+            const role = unlockedSectors[sec];
+            const isAdmin = role === 'admin';
+            
+            const navAdmin = document.getElementById('nav-admin');
+            const btnClear = document.getElementById('btn-clear-month');
+            const adminIndicator = document.getElementById('admin-indicator');
+            const btnLogout = document.getElementById('btn-logout');
+            
+            if (isAdmin) {
+                navAdmin.classList.remove('hidden', 'hidden-until-sector');
+                if(btnClear) btnClear.classList.remove('hidden');
+                document.getElementById('connection-status').innerText = "Modo Admin";
+                document.getElementById('connection-status').className = "text-[9px] font-bold uppercase tracking-widest mt-1 text-blue-600";
+                
+                adminIndicator.className = "flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[9px] font-black uppercase";
+                adminIndicator.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3"></i> Admin';
+            } else {
+                navAdmin.classList.add('hidden');
+                if(btnClear) btnClear.classList.add('hidden');
+                document.getElementById('connection-status').innerText = "Modo Visualização (Colaborador)";
+                document.getElementById('connection-status').className = "text-[9px] font-bold uppercase tracking-widest mt-1 text-emerald-600";
+                
+                adminIndicator.className = "flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[9px] font-black uppercase";
+                adminIndicator.innerHTML = '<i data-lucide="eye" class="w-3 h-3"></i> Colab';
+            }
+            
+            adminIndicator.classList.remove('hidden');
+            btnLogout.classList.remove('hidden');
+            btnLogout.classList.add('flex');
+
+            window.switchPanel('scale');
+            await window.loadAllData();
+            lucide.createIcons();
+        }
+        
+        function logoutSector() {
+            if (!currentSector) return;
+            
+            const secToLogout = currentSector;
+            delete unlockedSectors[secToLogout];
+            currentSector = null;
+            
+            document.getElementById('empty-state').classList.remove('hidden');
+            document.getElementById('panel-scale').classList.add('hidden');
+            document.getElementById('panel-admin').classList.add('hidden');
+            
+            const adminIndicator = document.getElementById('admin-indicator');
+            adminIndicator.classList.add('hidden');
+            adminIndicator.classList.remove('flex');
+            
+            const btnLogout = document.getElementById('btn-logout');
+            btnLogout.classList.add('hidden');
+            btnLogout.classList.remove('flex');
+            
+            document.getElementById('connection-status').innerText = "Aguardando Setor...";
+            document.getElementById('connection-status').className = "text-[9px] font-bold uppercase tracking-widest mt-1 text-slate-400";
+            
+            window.renderSectors();
+            window.showToast(`Sessão encerrada`);
+        }
+
+        async function promptAddSector() {
+            const newSec = prompt("Qual o nome do novo Setor?");
+            if (newSec && newSec.trim() !== "") {
+                const upperSec = newSec.trim().toUpperCase();
+                if(!SECTORS.includes(upperSec)) {
+                    window.setLoading(true, "A Criar Setor...");
+                    try {
+                        await sbClient.from('sectors').insert([{ name: upperSec, password: '0000', colab_password: '1111' }]);
+                    } catch(e) { console.warn("Falha DB, salvando local"); }
+                    
+                    SECTORS.push(upperSec);
+                    customPasswords[upperSec] = '0000';
+                    customColabPasswords[upperSec] = '1111';
+                    localStorage.setItem('ep_sectors', JSON.stringify(SECTORS));
+                    localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+                    localStorage.setItem('ep_sector_colab_passwords', JSON.stringify(customColabPasswords));
+                    
+                    window.renderSectors();
+                    window.showToast("Setor Adicionado");
+                    window.setLoading(false);
+                } else {
+                    window.showToast("Setor já existe");
+                }
+            }
+        }
+
+        function loadCachedData() {
+            if(!currentSector) return;
+            try {
+                const cachedEmp = localStorage.getItem(`ep_employees_${currentSector}`);
+                const cachedShifts = localStorage.getItem(`ep_shifts_${currentSector}`);
                 if (cachedEmp) employees = JSON.parse(cachedEmp);
                 if (cachedShifts) shifts = JSON.parse(cachedShifts);
                 if (employees.length > 0) {
@@ -465,9 +677,10 @@
         }
 
         function saveToCache() {
+            if(!currentSector) return;
             try {
-                localStorage.setItem('ep_employees', JSON.stringify(employees));
-                localStorage.setItem('ep_shifts', JSON.stringify(shifts));
+                localStorage.setItem(`ep_employees_${currentSector}`, JSON.stringify(employees));
+                localStorage.setItem(`ep_shifts_${currentSector}`, JSON.stringify(shifts));
             } catch(e) {}
         }
 
@@ -482,20 +695,30 @@
         }
 
         window.onload = async () => { 
+            window.renderSectors();
             window.setupSelectors(); 
-            window.loadCachedData(); 
             lucide.createIcons(); 
             
-            window.updateStatus("Sincronizando...", "text-amber-500");
-            await window.initSupabaseBackground(); 
+            window.updateStatus("Conectando...", "text-amber-500");
+            
+            try {
+                const lib = window.supabase || supabase;
+                sbClient = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                await window.loadSectorsFromDB();
+                window.updateStatus("Online", "text-blue-500");
+            } catch(e) { 
+                window.updateStatus("Offline", "text-red-500"); 
+                window.loadSectorsFromDB();
+            }
             
             document.addEventListener('click', (e) => { 
                 if (!e.target.closest('.error-note-trigger')) document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible')); 
             }); 
         };
 
-        // --- 3. GESTÃO DE NAVEGAÇÃO E ADMIN ---
         function switchPanel(p) { 
+            if(!currentSector) return window.showToast("Selecione um setor primeiro");
+            
             const s = document.getElementById('panel-scale'), a = document.getElementById('panel-admin');
             const ns = document.getElementById('nav-scale'), na = document.getElementById('nav-admin');
             const activeClasses = ['bg-white', 'text-blue-600', 'shadow-sm', 'border-slate-200/50'];
@@ -510,38 +733,125 @@
                 s.classList.add('hidden'); a.classList.remove('hidden'); 
                 ns.classList.remove(...activeClasses); ns.classList.add(...inactiveClasses);
                 na.classList.remove(...inactiveClasses); na.classList.add(...activeClasses);
+                const renameInput = document.getElementById('admin-rename-sector');
+                if (renameInput) renameInput.value = currentSector;
                 window.renderEmployeesAdmin();
             } 
         }
 
         function checkAdminPassword() {
             const input = document.getElementById('adminPasswordInput');
-            if (input.value === ADMIN_PASSWORD) {
-                isAdmin = true; window.closeModal('passwordModal'); input.value = "";
-                document.getElementById('admin-indicator').classList.remove('hidden');
-                document.getElementById('admin-indicator').classList.add('flex');
-                if (pendingAction) { pendingAction(); pendingAction = null; }
-                window.showToast("Acesso Liberado");
-            } else { window.showToast("Senha Incorreta"); input.value = ""; input.focus(); }
+            const targetSector = pendingSectorAccess || currentSector;
+            const adminPass = getSectorPassword(targetSector);
+            const colabPass = getSectorColabPassword(targetSector);
+
+            if (input.value === adminPass) {
+                unlockedSectors[targetSector] = 'admin';
+                finishLogin(targetSector);
+            } else if (input.value === colabPass) {
+                unlockedSectors[targetSector] = 'colab';
+                finishLogin(targetSector);
+            } else {
+                window.showToast("Senha Incorreta");
+                input.value = ""; input.focus();
+            }
+
+            function finishLogin(sec) {
+                window.closeModal('passwordModal');
+                input.value = "";
+                if (pendingSectorAccess) {
+                    window.showToast(`Setor ${sec} Acessado`);
+                    window.selectSector(sec);
+                    pendingSectorAccess = null;
+                } else {
+                    window.selectSector(sec);
+                    if (pendingAction) { pendingAction(); pendingAction = null; }
+                }
+            }
         }
-        function protectAction(action) { if (isAdmin) { action(); } else { pendingAction = action; window.openModal('passwordModal'); } }
+        
+        function protectAction(action, requiresAdmin = true) { 
+            if(!currentSector) return window.showToast("Selecione um setor");
+            
+            const role = unlockedSectors[currentSector];
+            
+            if (requiresAdmin && role !== 'admin') {
+                return window.showToast("Acesso Negado: Apenas Administradores");
+            }
+            
+            if (role) { 
+                action(); 
+            } else { 
+                pendingAction = action; 
+                document.getElementById('pwd-sector-name').innerText = currentSector;
+                
+                const hint = document.getElementById('pwd-sector-hint');
+                const aP = getSectorPassword(currentSector);
+                const cP = getSectorColabPassword(currentSector);
+                let ht = "";
+                if(aP === "0000" && cP === "1111") ht = " (Admin: 0000 | Colab: 1111)";
+                else if(aP === "0000") ht = " (Admin Padrão: 0000)";
+                else if(cP === "1111") ht = " (Colab Padrão: 1111)";
+                hint.innerText = ht;
+                
+                window.openModal('passwordModal'); 
+            } 
+        }
+        
         function handleAdminPanelAccess() { window.protectAction(() => window.switchPanel('admin')); }
 
-        // --- 4. COMUNICAÇÃO COM BASE DE DADOS ---
-        async function initSupabaseBackground() {
+        async function changeSectorPassword() {
+            if(!currentSector) return;
+            const input = document.getElementById('admin-new-password');
+            const newPass = input.value.trim();
+            if(!newPass) return window.showToast("Por favor, digite uma senha válida");
+            
+            window.setLoading(true, "A Alterar Senha...");
             try {
-                const lib = window.supabase || supabase;
-                sbClient = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                await window.loadAllData(true); 
-            } catch(e) { window.updateStatus("Erro de Conexão", "text-red-500"); }
+                await sbClient.from('sectors').update({ password: newPass }).eq('name', currentSector);
+            } catch(e) { console.warn("Falha DB, salvando local"); }
+            
+            customPasswords[currentSector] = newPass;
+            localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+            
+            input.value = '';
+            window.showToast("Senha Admin Alterada");
+            window.setLoading(false);
+        }
+
+        async function changeSectorColabPassword() {
+            if(!currentSector) return;
+            const input = document.getElementById('admin-new-colab-password');
+            const newPass = input.value.trim();
+            if(!newPass) return window.showToast("Por favor, digite uma senha válida");
+            
+            window.setLoading(true, "A Alterar Senha...");
+            try {
+                await sbClient.from('sectors').update({ colab_password: newPass }).eq('name', currentSector);
+            } catch(e) { console.warn("Falha DB, salvando local"); }
+            
+            customColabPasswords[currentSector] = newPass;
+            localStorage.setItem('ep_sector_colab_passwords', JSON.stringify(customColabPasswords));
+            
+            input.value = '';
+            window.showToast("Senha Colaborador Alterada");
+            window.setLoading(false);
         }
 
         async function loadAllData(silent = false) {
-            if(!sbClient) return;
-            if(!silent) window.setLoading(true, "A Sincronizar...");
+            if(!sbClient || !currentSector) return;
+            if(!silent) window.setLoading(true, `A Sincronizar ${currentSector}...`);
             
             try {
-                const { data: empData } = await sbClient.from('employees').select('*').order('name');
+                const { data: empData, error } = await sbClient.from('employees').select('*').eq('sector', currentSector).order('name');
+                
+                if (error) {
+                    console.error("ERRO SUPABASE", error);
+                    window.showToast("Erro Cloud: Verifique coluna Sector");
+                    if(!silent) window.setLoading(false);
+                    return;
+                }
+                
                 employees = empData || [];
                 document.getElementById('empTotalCount').innerText = employees.length;
                 
@@ -557,26 +867,41 @@
                 if(!document.getElementById('panel-scale').classList.contains('hidden')) window.initCalendar();
                 if(!document.getElementById('panel-admin').classList.contains('hidden')) window.renderEmployeesAdmin();
                 
-                window.updateStatus("Cloud Sincronizada", "text-green-500");
             } catch(error) {
                 console.error("Falha ao carregar", error);
-                window.updateStatus("Falha na Leitura", "text-red-500");
             }
             if(!silent) window.setLoading(false);
         }
 
-        // --- 5. VALIDAÇÕES LEGAIS E RENDERIZAÇÃO DA TABELA ---
         function initCalendar() {
+            if(!currentSector) return;
             const mSelect = document.getElementById('monthSelect'); if(!mSelect) return;
             const m = parseInt(mSelect.value), y = parseInt(document.getElementById('yearSelect').value), dMax = new Date(y, m + 1, 0).getDate();
             const rowW = document.getElementById('header-row-weekdays'), rowN = document.getElementById('header-row-numbers');
-            while (rowW.cells.length > 4) rowW.deleteCell(4);
-            while (rowN.cells.length > 4) rowN.deleteCell(4);
+            
+            const isAdmin = unlockedSectors[currentSector] === 'admin';
+            
+            let headerAction1 = isAdmin ? `<th id="header-action-1" class="col-action"></th>` : ``;
+            let headerAction2 = isAdmin ? `<th id="header-action-2" class="col-action text-center text-white/80" title="Apagar Turnos"><i data-lucide="eraser" class="w-3.5 h-3.5 mx-auto"></i></th>` : ``;
+
+            let weekdaysHTML = `<th class="sticky-header-name text-center px-4 tracking-tighter text-[11px]">EquipaCloud</th>
+                                <th class="sticky-header-mirror text-center text-[10px]" id="currentDay"></th>
+                                <th class="col-role"></th>${headerAction1}`;
+            let numbersHTML = `<th class="sticky-header-name text-center px-4 text-white/80 text-[12px]">Colaborador</th>
+                               <th class="sticky-header-mirror text-center text-[#065f46] text-[12px]">ESPELHO</th>
+                               <th class="col-role text-center text-white/80">Posto</th>
+                               ${headerAction2}`;
+
             for (let d = 1; d <= dMax; d++) {
                 const date = new Date(y, m, d), isSun = date.getDay() === 0;
-                const thW = document.createElement('th'); thW.className = `day-col weekday-label ${isSun ? 'sun-col-header' : ''}`; thW.innerText = WEEKDAYS[date.getDay()]; rowW.appendChild(thW);
-                const thN = document.createElement('th'); thN.className = `day-col day-label ${isSun ? 'sun-col-header' : ''}`; thN.innerText = String(d).padStart(2, '0'); rowN.appendChild(thN);
+                const sunClass = isSun ? 'sun-col-header' : '';
+                weekdaysHTML += `<th class="day-col weekday-label ${sunClass}">${WEEKDAYS[date.getDay()]}</th>`;
+                numbersHTML += `<th class="day-col day-label ${sunClass}">${String(d).padStart(2, '0')}</th>`;
             }
+            
+            rowW.innerHTML = weekdaysHTML;
+            rowN.innerHTML = numbersHTML;
+            
             window.renderScale();
         }
 
@@ -587,7 +912,7 @@
                 const isDsr = shift && shift.isFolga && (shift.tipoFolga === 'DSR' || shift.tipoFolga === 'FERIAS');
                 
                 if (isDsr) {
-                    if (streak.length > 6) streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos sem folga.', suggestion: 'Conceder DSR.' }; });
+                    if (streak.length > 6) streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos.', suggestion: 'Conceder DSR.' }; });
                     streak = [];
                 } else {
                     streak.push(d);
@@ -615,20 +940,30 @@
                     }
                 }
             }
-            if (streak.length > 6) { streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos sem folga.', suggestion: 'Agendar um DSR o mais rápido possível.' }; }); }
+            if (streak.length > 6) { streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos.', suggestion: 'Agendar um DSR o mais rápido possível.' }; }); }
             return violations;
         }
 
         function renderScale() {
             const body = document.getElementById('scaleBody'), monthSelect = document.getElementById('monthSelect');
-            if(!monthSelect) return;
+            if(!monthSelect || !currentSector) return;
             const month = parseInt(monthSelect.value), year = parseInt(document.getElementById('yearSelect').value);
             const dMax = new Date(year, month + 1, 0).getDate(), today = new Date(), isThisMonth = (today.getMonth() === month && today.getFullYear() === year), todayDay = today.getDate();
             
+            const isAdmin = unlockedSectors[currentSector] === 'admin';
+
             if (employees.length === 0 && !isAddingInline) {
-                body.innerHTML = `<tr><td class="sticky-col-name py-2 border-b-0"><div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="p-8 text-center text-slate-400 font-black uppercase text-xs">Sem colaboradores registados. Adicione no "+" ou no Gerenciador.</td></tr>`;
-                lucide.createIcons(); return;
+                let addBtnHtml = isAdmin ? `<div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())"><i data-lucide="plus" class="w-5 h-5"></i></div>` : ``;
+                body.innerHTML = `<tr><td class="sticky-col-name py-2 border-b-0">${addBtnHtml}</td><td colspan="40" class="p-8 text-center text-slate-400 font-black uppercase text-xs">Sem colaboradores neste setor.</td></tr>`;
+                lucide.createIcons(); 
+                
+                const todayHeader = document.getElementById('currentDay');
+                if(todayHeader) todayHeader.innerText = isThisMonth ? String(todayDay).padStart(2, '0') : '--';
+                return;
             }
+
+            const todayHeader = document.getElementById('currentDay');
+            if(todayHeader) todayHeader.innerText = isThisMonth ? String(todayDay).padStart(2, '0') : '--';
 
             let htmlRows = employees.map(emp => {
                 const violations = getEmployeeViolations(emp.id, month, year, dMax);
@@ -667,36 +1002,100 @@
                             }
                         }
                     }
-                    daysCells += `<td class="day-col ${bg}"><div class="cell-interactive" onclick="window.protectAction(() => window.openShiftModal('${emp.id}', ${d}))">${note}${content}</div></td>`;
+                    
+                    let cellAction = isAdmin ? `onclick="window.protectAction(() => window.openShiftModal('${emp.id}', ${d}))"` : ``;
+                    let cellClass = isAdmin ? `cell-interactive` : `cell-view-only`;
+                    daysCells += `<td class="day-col ${bg}"><div class="${cellClass}" ${cellAction}>${note}${content}</div></td>`;
                 }
                 
+                let nameAction = isAdmin ? `cursor-pointer hover:text-blue-600 transition-colors` : ``;
+                let nameClick = isAdmin ? `onclick="window.protectAction(() => window.startNameEditInline('${emp.id}', '${emp.name}'))"` : ``;
+                
+                let roleAction = isAdmin ? `cursor-pointer hover:bg-slate-50 transition-colors` : ``;
+                let roleClick = isAdmin ? `onclick="window.protectAction(() => window.startRoleEdit('${emp.id}', '${emp.role || ''}'))"` : ``;
+                
+                let deleteActionCol = isAdmin ? `<td class="col-action py-1 px-2 text-center"><button onclick="window.protectAction(() => window.handleClearEmployeeMonth('${emp.id}', '${emp.name}'))" class="text-slate-300 hover:text-red-500 cursor-pointer transition-colors p-2 rounded-lg hover:bg-red-50" title="Apagar todos os turnos de ${emp.name} neste mês"><i data-lucide="eraser" class="w-4 h-4 mx-auto"></i></button></td>` : ``;
+
                 return `<tr>
-                    <td id="name-cell-${emp.id}" class="sticky-col-name py-1 px-3"><span class="emp-name-heavy cursor-pointer hover:text-blue-600 transition-colors block truncate w-full" title="Editar Nome" onclick="window.protectAction(() => window.startNameEditInline('${emp.id}', '${emp.name}'))">${emp.name.toUpperCase()}</span></td>
+                    <td id="name-cell-${emp.id}" class="sticky-col-name py-1 px-3"><span class="emp-name-heavy block w-full truncate ${nameAction}" title="${isAdmin?'Editar Nome':''}" ${nameClick}>${emp.name.toUpperCase()}</span></td>
                     <td class="col-mirror py-1 px-2"><div class="flex flex-col items-center justify-center h-full">${mirrorContent}</div></td>
-                    <td class="col-role py-1 px-2 text-center"><div id="role-cell-${emp.id}" class="text-[11px] font-black text-slate-400 uppercase truncate cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors" title="Editar Posto" onclick="window.protectAction(() => window.startRoleEdit('${emp.id}', '${emp.role || ''}'))">${emp.role || '---'}</div></td>
-                    <td class="col-action py-1 px-2 text-center"><button onclick="window.protectAction(() => window.handleClearEmployeeMonth('${emp.id}', '${emp.name}'))" class="text-slate-300 hover:text-red-500 cursor-pointer transition-colors p-2 rounded-lg hover:bg-red-50" title="Apagar todos os turnos de ${emp.name} neste mês"><i data-lucide="eraser" class="w-4 h-4 mx-auto"></i></button></td>
+                    <td class="col-role py-1 px-2 text-center"><div id="role-cell-${emp.id}" class="text-[11px] font-black text-slate-400 uppercase truncate p-1.5 rounded-lg ${roleAction}" title="${isAdmin?'Editar Posto':''}" ${roleClick}>${emp.role || '---'}</div></td>
+                    ${deleteActionCol}
                     ${daysCells}
                 </tr>`;
             }).join('');
 
-            if (isAddingInline) {
+            if (isAddingInline && isAdmin) {
                 let emptyCells = ''; for(let d=1; d<=dMax; d++) emptyCells += `<td class="day-col border-b border-slate-200"></td>`;
                 htmlRows += `<tr class="bg-blue-50/50">
                     <td class="sticky-col-name py-2 px-3"><input type="text" id="input-name-new" class="inline-input border-blue-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="NOME E ENTER..." onblur="if(!this.value) { isAddingInline=false; window.renderScale(); }" onkeyup="if(event.key==='Enter') window.saveNewMemberInline()"></td>
                     <td class="col-mirror"></td><td class="col-role border-b border-slate-200"></td><td class="col-action border-b border-slate-200"></td>
                     ${emptyCells}
                 </tr>`;
+            } else if (isAddingInline) {
+                isAddingInline = false; 
             }
 
-            htmlRows += `<tr><td class="sticky-col-name py-3 border-b-0"><div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())" title="Adicionar Novo Colaborador"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="border-b-0"></td></tr>`;
+            let addRowHtml = isAdmin ? `<tr><td class="sticky-col-name py-3 border-b-0"><div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())" title="Adicionar Novo Colaborador"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="border-b-0"></td></tr>` : `<tr><td class="sticky-col-name py-3 border-b-0"></td><td colspan="40" class="border-b-0"></td></tr>`;
+
+            htmlRows += addRowHtml;
             body.innerHTML = htmlRows; lucide.createIcons();
         }
 
-        // --- 6. GERENCIADOR ADMIN ---
+        async function renameCurrentSector() {
+            if(!currentSector) return;
+            const input = document.getElementById('admin-rename-sector');
+            const newName = input.value.trim().toUpperCase();
+            
+            if(!newName || newName === currentSector) return window.showToast("Nome inválido ou idêntico");
+            if(SECTORS.includes(newName)) return window.showToast("Já existe um setor com este nome");
+
+            if(!confirm(`⚠️ Mudar o nome de "${currentSector}" para "${newName}"? Todos os funcionários e turnos passarão a pertencer a este novo setor.`)) return;
+
+            window.setLoading(true, "A Renomear Setor...");
+            try {
+                await sbClient.from('sectors').update({ name: newName }).eq('name', currentSector);
+                await sbClient.from('employees').update({ sector: newName }).eq('sector', currentSector);
+            } catch(e) { console.warn("Erro ao renomear na BD", e); }
+            
+            const idx = SECTORS.indexOf(currentSector);
+            if(idx > -1) SECTORS[idx] = newName;
+            
+            if (customPasswords[currentSector]) {
+                customPasswords[newName] = customPasswords[currentSector];
+                delete customPasswords[currentSector];
+                localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+            }
+            if (customColabPasswords[currentSector]) {
+                customColabPasswords[newName] = customColabPasswords[currentSector];
+                delete customColabPasswords[currentSector];
+                localStorage.setItem('ep_sector_colab_passwords', JSON.stringify(customColabPasswords));
+            }
+            
+            unlockedSectors[newName] = unlockedSectors[currentSector];
+            delete unlockedSectors[currentSector];
+            
+            const cachedEmp = localStorage.getItem(`ep_employees_${currentSector}`);
+            const cachedShifts = localStorage.getItem(`ep_shifts_${currentSector}`);
+            if (cachedEmp) { localStorage.setItem(`ep_employees_${newName}`, cachedEmp); localStorage.removeItem(`ep_employees_${currentSector}`); }
+            if (cachedShifts) { localStorage.setItem(`ep_shifts_${newName}`, cachedShifts); localStorage.removeItem(`ep_shifts_${currentSector}`); }
+
+            localStorage.setItem('ep_sectors', JSON.stringify(SECTORS));
+
+            currentSector = newName;
+            
+            document.getElementById('currentSectorLabel').innerText = newName;
+            document.getElementById('adminSectorLabel').innerText = newName;
+            window.renderSectors();
+            
+            window.showToast("Setor Renomeado com Sucesso");
+            window.setLoading(false);
+        }
+
         function renderEmployeesAdmin() { 
             const list = document.getElementById('employeeListAdmin'); 
             if(!list) return; 
-            if(employees.length === 0) { list.innerHTML = `<div class="col-span-full text-center p-8 text-slate-400 font-bold uppercase text-xs">Sem Membros Cadastrados</div>`; return; }
+            if(employees.length === 0) { list.innerHTML = `<div class="col-span-full text-center p-8 text-slate-400 font-bold uppercase text-xs">Sem Membros neste Setor</div>`; return; }
 
             list.innerHTML = employees.map(emp => `
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group flex items-center justify-between gap-4">
@@ -722,7 +1121,7 @@
             
             window.setLoading(true, "A Adicionar...");
             try {
-                await sbClient.from('employees').insert([{ name, role }]);
+                await sbClient.from('employees').insert([{ name, role, sector: currentSector }]);
                 nameInput.value = ''; roleInput.value = '';
                 await window.loadAllData(true);
                 window.showToast("Colaborador Adicionado");
@@ -743,7 +1142,7 @@
             window.setLoading(false);
         }
 
-        // --- 7. EXCLUSÕES (AÇÃO CORRIGIDA) ---
+        // --- 8. EXCLUSÕES & ADIÇÕES INLINE ---
         async function removeEmployee(id, name) { 
             if(!confirm(`⚠️ ATENÇÃO: Deseja apagar permanentemente o colaborador "${name}" e TODO o seu histórico de turnos? Esta ação não pode ser desfeita.`)) return; 
             
@@ -772,7 +1171,6 @@
             
             try {
                 const { data } = await sbClient.from('shifts').select('day_key').eq('employee_id', empId).like('day_key', `${prefix}%`);
-                
                 if (data && data.length > 0) {
                     const keysToDelete = data.map(d => d.day_key);
                     await sbClient.from('shifts').delete().eq('employee_id', empId).in('day_key', keysToDelete);
@@ -791,23 +1189,81 @@
             const y = parseInt(document.getElementById('yearSelect').value); 
             const monthName = document.getElementById('monthSelect').options[m].text;
 
-            if(!confirm(`⚠️ ALERTA: Deseja apagar absolutamente TODOS os dados de TODOS os colaboradores para o mês de ${monthName}?`)) return; 
+            if(!confirm(`⚠️ ALERTA: Deseja apagar absolutamente TODOS os dados do setor ${currentSector} para o mês de ${monthName}?`)) return; 
             
             window.setLoading(true, "A Resetar Mês..."); 
             const prefix = `${y}-${m}-`;
             
             try {
-                const { data } = await sbClient.from('shifts').select('employee_id, day_key').like('day_key', `${prefix}%`);
-                
-                if(data && data.length > 0) {
-                    for(let item of data) {
-                        await sbClient.from('shifts').delete().eq('employee_id', item.employee_id).eq('day_key', item.day_key);
+                const empIds = employees.map(e => e.id);
+                if(empIds.length > 0) {
+                    const { data } = await sbClient.from('shifts').select('employee_id, day_key').like('day_key', `${prefix}%`).in('employee_id', empIds);
+                    if(data && data.length > 0) {
+                        for(let item of data) {
+                            await sbClient.from('shifts').delete().eq('employee_id', item.employee_id).eq('day_key', item.day_key);
+                        }
                     }
                 }
                 await window.loadAllData(true); 
                 window.showToast("Mês Totalmente Limpo"); 
             } catch(e) { console.error(e); window.showToast("Erro no Processo"); }
             window.setLoading(false); 
+        }
+
+        function startRoleEdit(empId, currentRole) {
+            const cell = document.getElementById(`role-cell-${empId}`); if (!cell) return;
+            cell.innerHTML = `<input type="text" id="input-role-${empId}" class="inline-input" value="${currentRole || ''}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveRoleInline('${empId}')">`;
+            const input = document.getElementById(`input-role-${empId}`); input.focus(); input.select();
+        }
+        async function saveRoleInline(empId) {
+            const input = document.getElementById(`input-role-${empId}`); if (!input) return;
+            const newRole = input.value.trim().toUpperCase(); window.setLoading(true, "A Guardar...");
+            
+            const empIndex = employees.findIndex(e => e.id === empId);
+            if(empIndex !== -1) employees[empIndex].role = newRole;
+            window.renderScale();
+            
+            await sbClient.from('employees').update({ role: newRole }).eq('id', empId);
+            await window.loadAllData(true); window.setLoading(false); window.showToast("Posto Atualizado");
+        }
+
+        function startNameEditInline(empId, currentName) {
+            const cell = document.getElementById(`name-cell-${empId}`); if (!cell) return;
+            cell.innerHTML = `<input type="text" id="input-name-${empId}" class="inline-input" value="${currentName.toUpperCase()}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveNameInline('${empId}')">`;
+            const input = document.getElementById(`input-name-${empId}`); input.focus(); input.select();
+        }
+        async function saveNameInline(empId) {
+            const input = document.getElementById(`input-name-${empId}`); if (!input) return;
+            const newName = input.value.trim().toUpperCase(); if(!newName) return window.renderScale();
+            window.setLoading(true, "A Guardar..."); 
+            
+            const empIndex = employees.findIndex(e => e.id === empId);
+            if(empIndex !== -1) employees[empIndex].name = newName;
+            window.renderScale();
+
+            await sbClient.from('employees').update({ name: newName }).eq('id', empId);
+            await window.loadAllData(true); window.setLoading(false); window.showToast("Nome Atualizado");
+        }
+
+        function startAddInline() { isAddingInline = true; window.renderScale(); setTimeout(() => { const input = document.getElementById('input-name-new'); if(input) input.focus(); }, 100); }
+        async function saveNewMemberInline() {
+            const input = document.getElementById('input-name-new'); if(!input) return;
+            const rawValue = input.value.trim().toUpperCase();
+            if(!rawValue) { isAddingInline = false; window.renderScale(); return; }
+            
+            const nameList = rawValue.split(/[,\n]/).map(n => n.trim().toUpperCase()).filter(n => n !== "");
+            window.setLoading(true, "A Registar...");
+            await sbClient.from('employees').insert(nameList.map(name => ({ name, role: "", sector: currentSector })));
+            isAddingInline = false; await window.loadAllData(true); window.setLoading(false); window.showToast("Membro Registado");
+        }
+
+        // --- 9. LÓGICA DE TURNOS E HORÁRIOS ---
+        function openShiftModal(empId, d) { 
+            const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
+            editingContext = { empId, day: d, month: document.getElementById('monthSelect').value, year: document.getElementById('yearSelect').value }; 
+            document.getElementById('modalEmpName').innerText = employees.find(e=>e.id===empId).name.toUpperCase(); document.getElementById('modalDateLabel').innerText = `DIA ${d} • TURNO`; 
+            document.getElementById('field-in').value = shift.in; document.getElementById('field-out').value = shift.out; document.getElementById('field-lunch').value = shift.lunch || 2; 
+            window.setEditMode(shift.isFolga ? (shift.tipoFolga || 'DSR') : 'TRABALHO'); window.openModal('shiftModal'); 
         }
 
         async function handleDeleteShiftRecord() { 
@@ -823,7 +1279,6 @@
             window.setLoading(false);
         }
 
-        // --- 8. LÓGICA DE TURNOS ---
         function calculateAutoOut() { 
             const v = document.getElementById('field-in').value, l = parseFloat(document.getElementById('field-lunch').value || 0); 
             if(v) { 
@@ -896,133 +1351,143 @@
             window.setLoading(false); 
         }
 
-        function openShiftModal(empId, d) { 
-            const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
-            editingContext = { empId, day: d, month: document.getElementById('monthSelect').value, year: document.getElementById('yearSelect').value }; 
-            document.getElementById('modalEmpName').innerText = employees.find(e=>e.id===empId).name.toUpperCase(); document.getElementById('modalDateLabel').innerText = `DIA ${d} • TURNO`; 
-            document.getElementById('field-in').value = shift.in; document.getElementById('field-out').value = shift.out; document.getElementById('field-lunch').value = shift.lunch || 2; 
-            window.setEditMode(shift.isFolga ? (shift.tipoFolga || 'DSR') : 'TRABALHO'); window.openModal('shiftModal'); 
-        }
 
-        function startRoleEdit(empId, currentRole) {
-            const cell = document.getElementById(`role-cell-${empId}`); if (!cell) return;
-            cell.innerHTML = `<input type="text" id="input-role-${empId}" class="inline-input" value="${currentRole || ''}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveRoleInline('${empId}')">`;
-            const input = document.getElementById(`input-role-${empId}`); input.focus(); input.select();
-        }
-        async function saveRoleInline(empId) {
-            const input = document.getElementById(`input-role-${empId}`); if (!input) return;
-            const newRole = input.value.trim().toUpperCase(); window.setLoading(true, "A Guardar...");
-            
-            const empIndex = employees.findIndex(e => e.id === empId);
-            if(empIndex !== -1) employees[empIndex].role = newRole;
-            window.renderScale();
-            
-            await sbClient.from('employees').update({ role: newRole }).eq('id', empId);
-            await window.loadAllData(true); window.setLoading(false); window.showToast("Posto Atualizado");
-        }
-
-        function startNameEditInline(empId, currentName) {
-            const cell = document.getElementById(`name-cell-${empId}`); if (!cell) return;
-            cell.innerHTML = `<input type="text" id="input-name-${empId}" class="inline-input" value="${currentName.toUpperCase()}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveNameInline('${empId}')">`;
-            const input = document.getElementById(`input-name-${empId}`); input.focus(); input.select();
-        }
-        async function saveNameInline(empId) {
-            const input = document.getElementById(`input-name-${empId}`); if (!input) return;
-            const newName = input.value.trim().toUpperCase(); if(!newName) return window.renderScale();
-            window.setLoading(true, "A Guardar..."); 
-            
-            const empIndex = employees.findIndex(e => e.id === empId);
-            if(empIndex !== -1) employees[empIndex].name = newName;
-            window.renderScale();
-
-            await sbClient.from('employees').update({ name: newName }).eq('id', empId);
-            await window.loadAllData(true); window.setLoading(false); window.showToast("Nome Atualizado");
-        }
-
-        function startAddInline() { isAddingInline = true; window.renderScale(); setTimeout(() => { const input = document.getElementById('input-name-new'); if(input) input.focus(); }, 100); }
-        async function saveNewMemberInline() {
-            const input = document.getElementById('input-name-new'); if(!input) return;
-            const rawValue = input.value.trim().toUpperCase();
-            if(!rawValue) { isAddingInline = false; window.renderScale(); return; }
-            
-            const nameList = rawValue.split(/[,\n]/).map(n => n.trim().toUpperCase()).filter(n => n !== "");
-            window.setLoading(true, "A Registar...");
-            await sbClient.from('employees').insert(nameList.map(name => ({ name, role: "" })));
-            isAddingInline = false; await window.loadAllData(true); window.setLoading(false); window.showToast("Membro Registado");
-        }
-
-
-        // --- 9. EXPORTAÇÃO (PDF / JPG) ---
+        // --- 10. EXPORTAÇÃO (PDF / JPG) ---
         async function exportJPG() {
             const table = document.getElementById('mainTable'); 
+            const container = document.getElementById('capture-container');
             window.setLoading(true, "A Gerar Imagem...");
-            const fullW = table.scrollWidth, fullH = table.scrollHeight;
+            
+            const originalOverflow = container.style.overflow;
+            container.style.overflow = 'visible';
 
-            const canvas = await html2canvas(table, {
-                scale: 2.5, useCORS: true, width: fullW, height: fullH, scrollX: 0, scrollY: 0, windowWidth: fullW + 50, backgroundColor: '#ffffff',
-                onclone: (doc) => {
-                    doc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
-                    doc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
-                        e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.fontSize = '14px'; 
-                    });
-                    const tempRow = doc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
-                    doc.getElementById('mainTable').style.width = 'auto';
-                }
-            });
+            try {
+                const fullW = table.scrollWidth;
+                const fullH = table.scrollHeight;
 
-            canvas.toBlob((blob) => { 
-                const a = document.createElement('a'); a.download = `Escala_Pro_Imagem.jpg`; a.href = URL.createObjectURL(blob); a.click(); 
-                window.setLoading(false); window.showToast("Imagem Descarregada");
-            }, 'image/jpeg', 1.0);
+                const canvas = await html2canvas(table, {
+                    scale: 2, 
+                    useCORS: true, 
+                    width: fullW,
+                    height: fullH,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: fullW + 50,
+                    backgroundColor: '#ffffff',
+                    onclone: (doc) => {
+                        doc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
+                        doc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
+                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.boxShadow = 'none'; 
+                        });
+                        
+                        doc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
+                            e.classList.remove('truncate');
+                            e.style.whiteSpace = 'normal';
+                            e.style.wordBreak = 'break-word';
+                            e.style.overflow = 'visible';
+                        });
+
+                        const tempRow = doc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
+                        
+                        const cloneTable = doc.getElementById('mainTable');
+                        if(cloneTable) {
+                            cloneTable.style.width = 'max-content';
+                            cloneTable.style.tableLayout = 'auto'; 
+                        }
+                    }
+                });
+
+                canvas.toBlob((blob) => { 
+                    const a = document.createElement('a'); a.download = `Escala_${currentSector}.jpg`; a.href = URL.createObjectURL(blob); a.click(); 
+                    window.setLoading(false); window.showToast("Imagem Descarregada");
+                }, 'image/jpeg', 1.0);
+            } catch(e) {
+                console.error(e);
+                window.setLoading(false); window.showToast("Erro na Exportação");
+            } finally {
+                container.style.overflow = originalOverflow;
+            }
         }
 
         async function exportPDF() {
             const table = document.getElementById('mainTable');
+            const container = document.getElementById('capture-container');
             const m = parseInt(document.getElementById('monthSelect').value);
             const monthText = document.getElementById('monthSelect').options[m].text;
             window.setLoading(true, "A Construir Documento...");
             
-            const fullW = table.scrollWidth, fullH = table.scrollHeight;
+            const originalOverflow = container.style.overflow;
+            container.style.overflow = 'visible';
 
-            const opt = {
-                margin: 5, 
-                filename: `Escala_${monthText}.pdf`, 
-                image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { 
-                    scale: 2.5, useCORS: true, width: fullW, height: fullH, windowWidth: fullW + 50, backgroundColor: '#ffffff', 
+            try {
+                const fullW = table.scrollWidth;
+                const fullH = table.scrollHeight;
+
+                const canvas = await html2canvas(table, {
+                    scale: 2, 
+                    useCORS: true, 
+                    width: fullW, 
+                    height: fullH, 
+                    scrollX: 0, 
+                    scrollY: 0, 
+                    windowWidth: fullW + 50, 
+                    backgroundColor: '#ffffff', 
                     onclone: (clonedDoc) => {
                         const cloneCont = clonedDoc.getElementById('capture-container');
                         if(cloneCont) cloneCont.style.overflow = 'visible';
                         
                         clonedDoc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
                         clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
-                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.fontSize = '14px'; e.style.color = '#000000';
+                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.fontSize = '14px'; e.style.color = '#000000'; e.style.boxShadow = 'none';
                         });
-                        const tempRow = clonedDoc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
-                    }
-                },
-                jsPDF: { unit: 'px', format: [fullW + 80, fullH + 150], orientation: 'landscape', compress: true }
-            };
 
-            html2pdf().set(opt).from(table).save().then(() => { 
+                        clonedDoc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
+                            e.classList.remove('truncate');
+                            e.style.whiteSpace = 'normal';
+                            e.style.wordBreak = 'break-word';
+                            e.style.overflow = 'visible';
+                        });
+
+                        const tempRow = clonedDoc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
+                        const cloneTable = clonedDoc.getElementById('mainTable');
+                        if(cloneTable) {
+                            cloneTable.style.width = 'max-content';
+                            cloneTable.style.tableLayout = 'auto';
+                        }
+                    }
+                });
+
+                const pdfW = canvas.width / 2; 
+                const pdfH = canvas.height / 2;
+
+                const opt = {
+                    margin: 0, 
+                    filename: `Escala_${currentSector}_${monthText}.pdf`, 
+                    image: { type: 'jpeg', quality: 1.0 },
+                    jsPDF: { unit: 'px', format: [pdfW + 20, pdfH + 20], orientation: pdfW > pdfH ? 'landscape' : 'portrait', compress: true }
+                };
+
+                await html2pdf().set(opt).from(canvas).save();
+                
                 window.setLoading(false); window.showToast("PDF Descarregado"); 
-            }).catch(e => { 
+            } catch(e) { 
                 window.setLoading(false); window.showToast("Falha no PDF"); console.error(e);
-            });
+            } finally {
+                container.style.overflow = originalOverflow;
+            }
         }
 
-        // MAIOR FIX: Mapeamento de Funções para o Contexto Global HTML inline
+        // MAPEAR FUNÇÕES PARA O WINDOW OBJECT PARA USO INLINE HTML
         Object.assign(window, {
-            openModal, closeModal, showToast, setLoading, updateStatus,
-            loadCachedData, saveToCache, setupSelectors, switchPanel,
+            openModal, closeModal, showToast, setLoading, updateStatus, showViolation,
+            loadCachedData, saveToCache, setupSelectors, switchPanel, promptAddSector, selectSector, renderSectors, requestSectorAccess, logoutSector,
             checkAdminPassword, protectAction, handleAdminPanelAccess,
-            initSupabaseBackground, loadAllData, initCalendar, getEmployeeViolations,
-            renderScale, renderEmployeesAdmin, adminAddNewEmployee, saveAdminEmployeeEdit,
+            loadAllData, initCalendar, getEmployeeViolations,
+            renderScale, renameCurrentSector, changeSectorPassword, changeSectorColabPassword, renderEmployeesAdmin, adminAddNewEmployee, saveAdminEmployeeEdit,
             removeEmployee, handleClearEmployeeMonth, handleClearMonth,
             handleDeleteShiftRecord, calculateAutoOut, setEditMode, saveShift,
             openShiftModal, exportJPG, exportPDF, startRoleEdit, saveRoleInline,
-            startNameEditInline, saveNameInline, startAddInline, saveNewMemberInline,
-            showViolation
+            startNameEditInline, saveNameInline, startAddInline, saveNewMemberInline, loadSectorsFromDB
         });
     </script>
 </body>
