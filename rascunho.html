@@ -163,7 +163,7 @@
         </div>
     </header>
 
-    <!-- BARRA DE SETORES E NAVEGAÇÃO UNIFICADA -->
+    <!-- BARRA DE SETORES E NAVEGAÇÃO ALINHADA -->
     <section class="bg-white py-4 border-b border-slate-200 shadow-sm z-40 relative">
         <div class="content-container flex flex-col xl:flex-row items-center justify-between gap-4">
             
@@ -173,26 +173,30 @@
                     <span id="empTotalCount" class="text-xl font-black text-blue-700 leading-none mt-1 mb-1">0</span>
                 </div>
                 
-                <div class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner">
-                    <button onclick="window.switchPanel('scale')" id="nav-scale" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200/50">
+                <div class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner h-[46px]">
+                    <button onclick="window.switchPanel('scale')" id="nav-scale" class="h-full flex items-center gap-2 px-5 rounded-xl text-[11px] font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200/50">
                         <i data-lucide="calendar-days" class="w-4 h-4"></i> Escala Mês
                     </button>
-                    <button onclick="window.handleAdminPanelAccess()" id="nav-admin" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all text-slate-500 hover:text-slate-800 bg-transparent border border-transparent hidden-until-sector">
+                    <button onclick="window.handleAdminPanelAccess()" id="nav-admin" class="h-full flex items-center gap-2 px-5 rounded-xl text-[11px] font-black uppercase transition-all text-slate-500 hover:text-slate-800 bg-transparent border border-transparent hidden-until-sector">
                         <i data-lucide="users" class="w-4 h-4"></i> Gerenciador
                     </button>
                 </div>
             </div>
             
-            <!-- LISTA DE SETORES -->
-            <div class="flex-1 w-full xl:w-auto flex justify-start xl:justify-center items-center xl:px-4">
-                <div id="sectorListContainer" class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner overflow-x-auto no-scrollbar w-full max-w-full">
+            <!-- LISTA DE SETORES ALINHADA (Estilo Pílula IDÊNTICO) -->
+            <div class="flex-1 w-full xl:w-auto flex justify-start xl:justify-center items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                <div id="sectorListContainer" class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner w-max h-[46px]">
                     <!-- Preenchido via JS -->
                 </div>
+                <button onclick="window.promptAddSector()" class="shrink-0 w-[46px] h-[46px] bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[14px] flex items-center justify-center border border-slate-200 shadow-inner transition-colors" title="Criar Novo Setor">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                </button>
             </div>
 
-            <div id="actions-scale" class="flex items-center shrink-0">
-                <button onclick="window.promptAddSector()" class="w-10 h-10 bg-slate-600 hover:bg-slate-800 text-white rounded-full flex items-center justify-center shadow-md transition-colors" title="Criar Novo Setor">
-                    <i data-lucide="plus" class="w-5 h-5"></i>
+            <!-- BOTÃO DE LIMPEZA GERAL -->
+            <div class="flex items-center shrink-0 w-full xl:w-auto justify-center xl:justify-end">
+                <button onclick="window.protectAction(() => window.handleClearMonth())" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 h-[46px] px-5 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all hover:bg-red-50">
+                    <i data-lucide="calendar-off" class="w-4 h-4"></i> Limpar Mês
                 </button>
             </div>
 
@@ -206,17 +210,16 @@
                 <i data-lucide="layout-grid" class="w-10 h-10"></i>
             </div>
             <h2 class="text-xl font-black text-slate-900 uppercase mb-2">Bem-vindo à EscalaPro</h2>
-            <p class="text-xs text-slate-500 font-medium">Selecione um setor na barra superior para iniciar. Será necessária uma senha de acesso para visualizar e editar os dados.</p>
+            <p class="text-xs text-slate-500 font-medium">Selecione um setor na barra superior para iniciar. Será necessária a senha de acesso para visualizar e editar os dados da equipa.</p>
         </div>
     </main>
 
     <!-- 1. ABA: ESCALA DE HORÁRIOS -->
     <main id="panel-scale" class="hidden py-6 flex-1 bg-slate-50/30">
         <div class="content-container mb-4 flex justify-between items-center">
-            <h2 id="currentSectorLabel" class="text-lg font-black text-slate-800 uppercase tracking-tight">Setor</h2>
-            <button onclick="window.protectAction(() => window.handleClearMonth())" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all hover:bg-red-50">
-                <i data-lucide="calendar-off" class="w-3.5 h-3.5"></i> Limpar Mês
-            </button>
+            <h2 class="text-lg font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+                Setor <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i> <span id="currentSectorLabel" class="text-blue-600">Nenhum</span>
+            </h2>
         </div>
         <div class="content-container">
             <div id="capture-container" class="table-container no-scrollbar">
@@ -287,11 +290,11 @@
 
                 <!-- Mudar Senha -->
                 <div class="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex flex-col justify-between">
-                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Mudar Senha do Setor</h3>
+                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Mudar Senha de Acesso</h3>
                     <div class="flex gap-2 mt-auto">
                         <input type="password" id="admin-new-password" placeholder="NOVA SENHA" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-center tracking-[0.3em] outline-none focus:border-blue-500 transition-colors">
                         <button onclick="window.protectAction(() => window.changeSectorPassword())" class="bg-red-500 text-white font-black uppercase text-sm px-6 py-3 rounded-xl hover:bg-red-600 transition-colors shadow-md flex items-center gap-2 justify-center">
-                            <i data-lucide="key" class="w-4 h-4"></i> Mudar
+                            <i data-lucide="key" class="w-4 h-4"></i> Salvar
                         </button>
                     </div>
                 </div>
@@ -300,7 +303,7 @@
 
             <!-- Adicionar Novo Formulário -->
             <div class="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm mb-8">
-                <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Adicionar ao Setor</h3>
+                <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Adicionar Membro ao Setor</h3>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <input type="text" id="admin-new-name" placeholder="NOME DO COLABORADOR..." class="flex-[2] bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black uppercase outline-none focus:border-blue-500 transition-colors">
                     <input type="text" id="admin-new-role" placeholder="POSTO / CARGO (OPCIONAL)" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold uppercase outline-none focus:border-blue-500 transition-colors">
@@ -341,7 +344,7 @@
             <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-blue-600 mt-2"><i data-lucide="lock" class="w-8 h-8"></i></div>
             <div>
                 <h3 class="text-xl font-black uppercase text-slate-900 leading-none">Acesso Restrito</h3>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Senha do Setor <span id="pwd-sector-name" class="text-blue-600"></span><span id="pwd-sector-hint"> (Padrão: 0000)</span></p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Senha do Setor <span id="pwd-sector-name" class="text-blue-600"></span><span id="pwd-sector-hint" class="text-amber-500"></span></p>
             </div>
             <input type="password" id="adminPasswordInput" placeholder="****" onkeyup="if(event.key==='Enter') window.checkAdminPassword()" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 outline-none focus:border-blue-500 font-black text-2xl text-center tracking-[0.5em] text-slate-700 transition-colors">
             <div class="flex gap-3">
@@ -412,13 +415,9 @@
         const SUPABASE_URL = 'https://cjcnqvdrztnhepxtlgju.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_3amBXdvUsQWYvf2qP4Ljbg_d3GDqglr';
         
-        const SECTORS = ['FRENTE DE LOJA', 'REPOSIÇÃO', 'SETOR 1', 'SETOR 2', 'SETOR 3', 'SETOR 4'];
-        
-        let customPasswords = JSON.parse(localStorage.getItem('ep_sector_passwords') || '{}');
-        function getSectorPassword(sec) {
-            return customPasswords[sec] || "0000";
-        }
-        
+        // VARIÁVEIS GLOBAIS DE SETORES
+        let SECTORS = [];
+        let customPasswords = {};
         let currentSector = null; 
         let unlockedSectors = {}; 
         let pendingSectorAccess = null; 
@@ -428,6 +427,7 @@
         const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
         let employees = [], shifts = {}, currentMode = 'TRABALHO', editingEmployeeId = null, editingContext = null;
 
+        // --- 1. FUNÇÕES UI & UTILITÁRIOS ---
         function openModal(id) { 
             const el = document.getElementById(id);
             if(el) { el.classList.remove('hidden'); el.classList.add('modal-active'); if(id==='passwordModal') setTimeout(()=>document.getElementById('adminPasswordInput').focus(), 300); }
@@ -477,6 +477,35 @@
             setTimeout(() => document.addEventListener('click', hidePopup), 10);
         }
 
+        function getSectorPassword(sec) {
+            return customPasswords[sec] || "0000";
+        }
+
+        // --- 2. COMUNICAÇÃO DE SETORES COM A BASE DE DADOS ---
+        async function loadSectorsFromDB() {
+            try {
+                // Tenta puxar a tabela "sectors" do Supabase
+                const { data, error } = await sbClient.from('sectors').select('*').order('name');
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    SECTORS = data.map(s => s.name);
+                    data.forEach(s => { customPasswords[s.name] = s.password || '0000'; });
+                } else {
+                    // Seed inicial na DB
+                    SECTORS = ['FRENTE DE LOJA', 'REPOSIÇÃO'];
+                    customPasswords = { 'FRENTE DE LOJA': '0000', 'REPOSIÇÃO': '0000' };
+                    await sbClient.from('sectors').insert([{ name: 'FRENTE DE LOJA', password: '0000' }, { name: 'REPOSIÇÃO', password: '0000' }]);
+                }
+            } catch(e) {
+                console.warn("Tabela 'sectors' pode não existir no Supabase. Usando armazenamento local.", e);
+                const localSectors = JSON.parse(localStorage.getItem('ep_sectors') || '["FRENTE DE LOJA", "REPOSIÇÃO"]');
+                SECTORS = localSectors;
+                customPasswords = JSON.parse(localStorage.getItem('ep_sector_passwords') || '{}');
+            }
+            window.renderSectors();
+        }
+
         function renderSectors() {
             const container = document.getElementById('sectorListContainer');
             if(!container) return;
@@ -484,7 +513,7 @@
                 const activeClasses = "bg-white text-blue-600 shadow-sm border border-slate-200/50";
                 const inactiveClasses = "text-slate-500 hover:text-slate-800 bg-transparent border border-transparent";
                 const isAct = (currentSector === sec);
-                return `<button onclick="window.requestSectorAccess('${sec}')" class="px-5 py-2.5 rounded-xl text-[11px] font-black uppercase transition-all whitespace-nowrap flex-shrink-0 ${isAct ? activeClasses : inactiveClasses}">${sec}</button>`;
+                return `<button onclick="window.requestSectorAccess('${sec}')" class="h-full px-5 rounded-xl text-[11px] font-black uppercase transition-all whitespace-nowrap flex-shrink-0 flex items-center ${isAct ? activeClasses : inactiveClasses}">${sec}</button>`;
             }).join('');
         }
 
@@ -530,15 +559,26 @@
             if (newSec && newSec.trim() !== "") {
                 const upperSec = newSec.trim().toUpperCase();
                 if(!SECTORS.includes(upperSec)) {
+                    window.setLoading(true, "A Criar Setor...");
+                    try {
+                        await sbClient.from('sectors').insert([{ name: upperSec, password: '0000' }]);
+                    } catch(e) { console.warn("Falha DB, salvando local"); }
+                    
                     SECTORS.push(upperSec);
+                    customPasswords[upperSec] = '0000';
+                    localStorage.setItem('ep_sectors', JSON.stringify(SECTORS));
+                    localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+                    
                     window.renderSectors();
                     window.showToast("Setor Adicionado");
+                    window.setLoading(false);
                 } else {
                     window.showToast("Setor já existe");
                 }
             }
         }
 
+        // --- 3. CACHE & INICIALIZAÇÃO ---
         function loadCachedData() {
             if(!currentSector) return;
             try {
@@ -572,22 +612,27 @@
         }
 
         window.onload = async () => { 
-            window.renderSectors();
             window.setupSelectors(); 
             lucide.createIcons(); 
             
-            window.updateStatus("Online", "text-blue-500");
+            window.updateStatus("Conectando...", "text-amber-500");
             
             try {
                 const lib = window.supabase || supabase;
                 sbClient = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } catch(e) { window.updateStatus("Erro Cloud", "text-red-500"); }
+                await window.loadSectorsFromDB();
+                window.updateStatus("Online", "text-blue-500");
+            } catch(e) { 
+                window.updateStatus("Offline", "text-red-500"); 
+                window.loadSectorsFromDB(); // Força load local se der erro
+            }
             
             document.addEventListener('click', (e) => { 
                 if (!e.target.closest('.error-note-trigger')) document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible')); 
             }); 
         };
 
+        // --- 4. GESTÃO DE NAVEGAÇÃO E ADMIN (SENHA POR SETOR) ---
         function switchPanel(p) { 
             if(!currentSector) return window.showToast("Selecione um setor primeiro");
             
@@ -654,19 +699,27 @@
         
         function handleAdminPanelAccess() { window.protectAction(() => window.switchPanel('admin')); }
 
-        function changeSectorPassword() {
+        async function changeSectorPassword() {
             if(!currentSector) return;
             const input = document.getElementById('admin-new-password');
             const newPass = input.value.trim();
             if(!newPass) return window.showToast("Por favor, digite uma senha válida");
             
+            window.setLoading(true, "A Alterar Senha...");
+            try {
+                await sbClient.from('sectors').update({ password: newPass }).eq('name', currentSector);
+            } catch(e) { console.warn("Falha DB, salvando local"); }
+            
             customPasswords[currentSector] = newPass;
             localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+            
             input.value = '';
             window.showToast("Senha Alterada com Sucesso");
+            window.setLoading(false);
         }
 
-        function initSupabaseBackground() {}
+        // --- 5. COMUNICAÇÃO COM BASE DE DADOS ---
+        function initSupabaseBackground() {} // Mantido vazio por compatibilidade se chamada
         
         async function loadAllData(silent = false) {
             if(!sbClient || !currentSector) return;
@@ -677,7 +730,7 @@
                 
                 if (error) {
                     console.error("ERRO SUPABASE", error);
-                    window.showToast("Erro Cloud");
+                    window.showToast("Erro Cloud: Verifique coluna Sector");
                     if(!silent) window.setLoading(false);
                     return;
                 }
@@ -703,6 +756,7 @@
             if(!silent) window.setLoading(false);
         }
 
+        // --- 6. VALIDAÇÕES LEGAIS E RENDERIZAÇÃO DA TABELA ---
         function initCalendar() {
             if(!currentSector) return;
             const mSelect = document.getElementById('monthSelect'); if(!mSelect) return;
@@ -861,36 +915,36 @@
 
             window.setLoading(true, "A Renomear Setor...");
             try {
+                await sbClient.from('sectors').update({ name: newName }).eq('name', currentSector);
                 await sbClient.from('employees').update({ sector: newName }).eq('sector', currentSector);
-                
-                const idx = SECTORS.indexOf(currentSector);
-                if(idx > -1) SECTORS[idx] = newName;
-                
-                if (customPasswords[currentSector]) {
-                    customPasswords[newName] = customPasswords[currentSector];
-                    delete customPasswords[currentSector];
-                    localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
-                }
-                
-                unlockedSectors[newName] = unlockedSectors[currentSector];
-                delete unlockedSectors[currentSector];
-                
-                const cachedEmp = localStorage.getItem(`ep_employees_${currentSector}`);
-                const cachedShifts = localStorage.getItem(`ep_shifts_${currentSector}`);
-                if (cachedEmp) { localStorage.setItem(`ep_employees_${newName}`, cachedEmp); localStorage.removeItem(`ep_employees_${currentSector}`); }
-                if (cachedShifts) { localStorage.setItem(`ep_shifts_${newName}`, cachedShifts); localStorage.removeItem(`ep_shifts_${currentSector}`); }
-
-                currentSector = newName;
-                
-                document.getElementById('currentSectorLabel').innerText = newName;
-                document.getElementById('adminSectorLabel').innerText = newName;
-                window.renderSectors();
-                
-                window.showToast("Setor Renomeado com Sucesso");
-            } catch(e) {
-                console.error(e);
-                window.showToast("Erro ao renomear o setor na Base de Dados");
+            } catch(e) { console.warn("Erro ao renomear na BD", e); }
+            
+            const idx = SECTORS.indexOf(currentSector);
+            if(idx > -1) SECTORS[idx] = newName;
+            
+            if (customPasswords[currentSector]) {
+                customPasswords[newName] = customPasswords[currentSector];
+                delete customPasswords[currentSector];
+                localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
             }
+            
+            unlockedSectors[newName] = unlockedSectors[currentSector];
+            delete unlockedSectors[currentSector];
+            
+            const cachedEmp = localStorage.getItem(`ep_employees_${currentSector}`);
+            const cachedShifts = localStorage.getItem(`ep_shifts_${currentSector}`);
+            if (cachedEmp) { localStorage.setItem(`ep_employees_${newName}`, cachedEmp); localStorage.removeItem(`ep_employees_${currentSector}`); }
+            if (cachedShifts) { localStorage.setItem(`ep_shifts_${newName}`, cachedShifts); localStorage.removeItem(`ep_shifts_${currentSector}`); }
+
+            localStorage.setItem('ep_sectors', JSON.stringify(SECTORS));
+
+            currentSector = newName;
+            
+            document.getElementById('currentSectorLabel').innerText = newName;
+            document.getElementById('adminSectorLabel').innerText = newName;
+            window.renderSectors();
+            
+            window.showToast("Setor Renomeado com Sucesso");
             window.setLoading(false);
         }
 
@@ -1180,7 +1234,6 @@
                             e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.boxShadow = 'none'; 
                         });
                         
-                        // NOVO: Remove a classe truncate e obriga o span do nome a soltar o texto sem esconder o fim
                         doc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
                             e.classList.remove('truncate');
                             e.style.whiteSpace = 'normal';
@@ -1193,7 +1246,7 @@
                         const cloneTable = doc.getElementById('mainTable');
                         if(cloneTable) {
                             cloneTable.style.width = 'max-content';
-                            cloneTable.style.tableLayout = 'auto'; // Ajusta automaticamente para o texto caber
+                            cloneTable.style.tableLayout = 'auto'; 
                         }
                     }
                 });
@@ -1239,10 +1292,9 @@
                         
                         clonedDoc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
                         clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
-                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.boxShadow = 'none';
+                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.fontSize = '14px'; e.style.color = '#000000'; e.style.boxShadow = 'none';
                         });
 
-                        // NOVO: Evitar que o nome corte retirando o truncate no print
                         clonedDoc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
                             e.classList.remove('truncate');
                             e.style.whiteSpace = 'normal';
@@ -1254,12 +1306,11 @@
                         const cloneTable = clonedDoc.getElementById('mainTable');
                         if(cloneTable) {
                             cloneTable.style.width = 'max-content';
-                            cloneTable.style.tableLayout = 'auto'; // Ajusta a coluna ao texto
+                            cloneTable.style.tableLayout = 'auto';
                         }
                     }
                 });
 
-                // PDF usa as dimensoes reais baseadas no render do canvas
                 const pdfW = canvas.width / 2; 
                 const pdfH = canvas.height / 2;
 
