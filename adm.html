@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EscalaPro Cloud - Gestão Profissional</title>
+    
+    <!-- Meta tags para PWA e Mobile -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EscalaPro">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2693/2693507.png">
+
+    <!-- Bibliotecas -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --cell-width: 130px; 
+            --name-col-width: 190px; 
+            --role-col-width: 120px; 
+            --action-col-width: 45px;
+            --mirror-col-width: 115px; 
+            --row-height: 46px; 
+            --sun-red: #f07556;
+            --header-gray: #64748b;
+            --mirror-green: rgba(204, 255, 205, 1);
+            --page-padding: 1rem; 
+            --violation-inter-36h: #a855f7; 
+            --violation-inter-11h: #f97316; 
+            --violation-intra: #ef4444;
+        }
+        @media (min-width: 768px) { :root { --page-padding: 2rem; } }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        .content-container { padding-left: var(--page-padding); padding-right: var(--page-padding); }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--header-gray);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table { border-collapse: separate; border-spacing: 0; width: max-content; background-color: white; table-layout: fixed; }
+
+        .sticky-col-name, .sticky-header-name { 
+            position: sticky; left: 0; 
+            width: var(--name-col-width); min-width: var(--name-col-width); max-width: var(--name-col-width);
+        }
+        .sticky-col-name { 
+            z-index: 45; background-color: white !important;
+            vertical-align: middle; background-clip: padding-box;
+            box-shadow: inset -1px 0 0 #e2e8f0;
+        }
+        .sticky-header-name { z-index: 60 !important; border-right: 1px solid rgba(255,255,255,0.2) !important; }
+
+        .col-mirror, .sticky-header-mirror { 
+            position: sticky; left: var(--name-col-width); 
+            width: var(--mirror-col-width); min-width: var(--mirror-col-width); max-width: var(--mirror-col-width);
+            background-color: var(--mirror-green) !important; color: #065f46 !important;
+            text-align: center; 
+        }
+        .col-mirror { z-index: 44; box-shadow: inset -1px 0 0 rgba(0,0,0,0.05); }
+        .sticky-header-mirror { z-index: 59 !important; }
+
+        .col-role { width: var(--role-col-width); min-width: var(--role-col-width); max-width: var(--role-col-width); }
+        .col-action { width: var(--action-col-width); min-width: var(--action-col-width); max-width: var(--action-col-width); }
+
+        thead tr th { 
+            position: sticky; top: 0; z-index: 20; background-color: var(--header-gray) !important; 
+            border-bottom: 1px solid rgba(0,0,0,0.1); padding: 6px 8px; color: white; height: 38px; font-weight: 800; font-size: 11px; text-transform: uppercase;
+        }
+        thead tr:nth-child(2) th { top: 38px; height: 34px; font-size: 11px; }
+
+        .day-col { width: var(--cell-width); min-width: var(--cell-width); max-width: var(--cell-width); text-align: center; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background: white; }
+        
+        .sun-col { background-color: #fff1f0 !important; color: #f07556 !important; } 
+        thead th.sun-col-header { background-color: var(--header-gray) !important; color: #fecaca !important; }
+
+        .emp-name-heavy { font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: -0.01em; color: #000; font-size: 12px; }
+
+        .mirror-time-in, .time-text { font-size: 13px; font-weight: 900; line-height: 1.1; color: #0f172a; }
+        .mirror-time-out, .time-subtext { font-size: 9px; font-weight: 700; color: #64748b; margin-top: 1px; }
+        .mirror-time-in { color: #065f46 !important; }
+        .mirror-time-out { color: rgba(6, 95, 70, 0.6) !important; }
+
+        .inline-input { width: 100%; border: 2px solid #2563eb; background: white; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; text-align: center; padding: 6px 4px; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        .btn-circular-add {
+            width: 32px; height: 32px; background: #2563eb; color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 6px 12px; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4); border: 2px solid white;
+        }
+        .btn-circular-add:hover { transform: scale(1.1); background: #1d4ed8; }
+
+        .badge-dsr { background: #2563eb; color: white; font-size: 10px; font-weight: 900; padding: 5px 2px; width: 88%; border-radius: 6px; text-align: center; margin: auto; text-transform: uppercase; }
+        .badge-bh { background: #f97316; color: white; font-size: 10px; font-weight: 900; padding: 5px 2px; width: 88%; border-radius: 6px; text-align: center; margin: auto; text-transform: uppercase; }
+        .badge-vacation { background: #10b981; color: white; font-size: 10px; font-weight: 900; padding: 5px 2px; width: 88%; border-radius: 6px; text-align: center; margin: auto; text-transform: uppercase; }
+
+        .cell-interactive { cursor: pointer; height: var(--row-height); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; transition: background 0.2s; }
+        .cell-interactive:hover { background-color: rgba(37, 99, 235, 0.05); }
+        .cell-view-only { height: var(--row-height); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        
+        .msg-error-cell { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; margin-bottom: 2px; }
+
+        .cell-violation { background-color: #fef08a !important; box-shadow: inset 0 0 0 2px #eab308 !important; }
+        .cell-violation-36h { background-color: #f3e8ff !important; box-shadow: inset 0 0 0 1.5px var(--violation-inter-36h) !important; }
+        .cell-violation-11h { background-color: #fff7ed !important; box-shadow: inset 0 0 0 1.5px var(--violation-inter-11h) !important; }
+        .cell-violation-intra { background-color: #fef2f2 !important; box-shadow: inset 0 0 0 1.5px var(--violation-intra) !important; }
+
+        .modal-active { display: flex !important; animation: modalIn 0.2s ease-out; }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(15px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        #passwordModal input { letter-spacing: 0.5em; text-align: center; }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen relative">
+
+    <!-- CABEÇALHO SUPERIOR (Logo e Data) -->
+    <header class="bg-white border-b border-slate-200 py-3 sticky top-0 z-50 shadow-sm">
+        <div class="content-container flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-[10px] shadow-md rotate-3">
+                    <i data-lucide="cloud" class="text-white w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-black text-xl text-slate-900 tracking-tighter leading-none uppercase text-blue-600 flex items-center gap-2">
+                        EscalaPro 
+                    </h1>
+                    <p id="connection-status" class="text-[9px] font-bold uppercase tracking-widest mt-1 text-slate-400">Iniciando...</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 md:gap-3">
+                <div id="admin-indicator" class="hidden items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[9px] font-black uppercase">
+                    <i data-lucide="shield-check" class="w-3 h-3"></i> Admin
+                </div>
+                
+                <!-- BOTÃO SAIR -->
+                <button id="btn-logout" onclick="window.logoutSector()" class="hidden items-center gap-1 px-4 py-1.5 bg-red-50 text-red-600 border border-red-100 rounded-full text-[9px] font-black uppercase hover:bg-red-100 transition-colors shadow-sm" title="Sair do Setor Atual">
+                    <i data-lucide="log-out" class="w-3 h-3"></i> Sair
+                </button>
+
+                <div class="flex bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+                    <select id="monthSelect" onchange="window.initCalendar()" class="bg-transparent font-black text-sm px-3 outline-none text-slate-700 cursor-pointer uppercase"></select>
+                    <select id="yearSelect" onchange="window.initCalendar()" class="bg-transparent font-black text-sm px-3 outline-none text-slate-700 border-l border-slate-300 cursor-pointer uppercase"></select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- BARRA DE SETORES E NAVEGAÇÃO CENTRALIZADA E ALINHADA -->
+    <section class="bg-white py-4 border-b border-slate-200 shadow-sm z-40 relative">
+        <div class="content-container">
+            <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4 w-full">
+                
+                <!-- Efetivo -->
+                <div class="flex flex-col items-center justify-center bg-blue-50 px-5 py-1.5 rounded-xl border border-blue-100 min-w-[90px] h-[46px]">
+                    <span class="text-[10px] font-black text-blue-400 uppercase leading-none mt-1">Efetivo</span>
+                    <span id="empTotalCount" class="text-xl font-black text-blue-700 leading-none mt-1 mb-1">0</span>
+                </div>
+                
+                <!-- Navegação (Escala/Gerenciador) -->
+                <div class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner h-[46px]">
+                    <button onclick="window.switchPanel('scale')" id="nav-scale" class="h-full flex items-center gap-2 px-5 rounded-xl text-[11px] font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200/50">
+                        <i data-lucide="calendar-days" class="w-4 h-4"></i> Escala Mês
+                    </button>
+                    <!-- Visível apenas para Admins -->
+                    <button onclick="window.handleAdminPanelAccess()" id="nav-admin" class="hidden h-full flex items-center gap-2 px-5 rounded-xl text-[11px] font-black uppercase transition-all text-slate-500 hover:text-slate-800 bg-transparent border border-transparent">
+                        <i data-lucide="users" class="w-4 h-4"></i> Gerenciador
+                    </button>
+                </div>
+                
+                <!-- Setores -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar max-w-full">
+                    <div id="sectorListContainer" class="bg-slate-100 p-1.5 rounded-[14px] flex items-center gap-1 border border-slate-200 shadow-inner w-max h-[46px]">
+                        <!-- Preenchido via JS -->
+                    </div>
+                    <!-- Criação de Setor - Sempre visível, mas requer Admin -->
+                    <button onclick="window.promptAddSector()" class="shrink-0 w-[46px] h-[46px] bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[14px] flex items-center justify-center border border-slate-200 shadow-inner transition-colors" title="Criar Novo Setor">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ESTADO VAZIO INICIAL -->
+    <main id="empty-state" class="flex-1 flex flex-col items-center justify-center p-10 bg-slate-50/50">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-center max-w-md">
+            <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="layout-grid" class="w-10 h-10"></i>
+            </div>
+            <h2 class="text-xl font-black text-slate-900 uppercase mb-2">Bem-vindo à EscalaPro</h2>
+            <p class="text-xs text-slate-500 font-medium">Selecione um setor na barra superior para iniciar. É necessária a senha de acesso (Admin ou Colaborador) para visualizar a equipa.</p>
+        </div>
+    </main>
+
+    <!-- 1. ABA: ESCALA DE HORÁRIOS -->
+    <main id="panel-scale" class="hidden py-6 flex-1 bg-slate-50/30">
+        <div class="content-container mb-4 flex justify-between items-center">
+            <h2 class="text-lg font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
+                Setor <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i> <span id="currentSectorLabel" class="text-blue-600">Nenhum</span>
+            </h2>
+            <button id="btn-clear-month" onclick="window.protectAction(() => window.handleClearMonth())" class="hidden flex items-center gap-2 bg-white border border-red-200 text-red-500 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-sm active:scale-95 transition-all hover:bg-red-50">
+                <i data-lucide="calendar-off" class="w-4 h-4"></i> Limpar Mês
+            </button>
+        </div>
+        <div class="content-container">
+            <div id="capture-container" class="table-container no-scrollbar">
+                <table id="mainTable">
+                    <thead>
+                        <tr id="header-row-weekdays">
+                            <th class="sticky-header-name text-center px-4 tracking-tighter text-[11px]">EquipaCloud</th>
+                            <th class="sticky-header-mirror text-center text-[10px]" id="currentDay"></th>
+                            <th class="col-role"></th><th id="header-action-1" class="col-action"></th>
+                        </tr>
+                        <tr id="header-row-numbers">
+                            <th class="sticky-header-name text-center px-4 text-white/80 text-[12px]">Colaborador</th>
+                            <th class="sticky-header-mirror text-center text-[#065f46] text-[12px]">ESPELHO</th>
+                            <th class="col-role text-center text-white/80">Posto</th>
+                            <th id="header-action-2" class="col-action text-center text-white/80" title="Apagar Turnos"><i data-lucide="eraser" class="w-3.5 h-3.5 mx-auto"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="scaleBody">
+                        <tr><td colspan="40" class="p-8 text-center text-slate-400 font-bold uppercase text-xs animate-pulse">A Sincronizar Dados da Escala...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="content-container pt-8 pb-4">
+            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Legenda do Sistema</h4>
+            <div class="flex flex-wrap gap-4">
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#ccffcd] border border-green-200"></span> <span class="text-[10px] font-bold uppercase text-slate-600">Espelho Hoje</span></div>
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#fff1f0] border border-red-200"></span> <span class="text-[10px] font-bold uppercase text-slate-600">Domingo</span></div>
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-blue-600 shadow-sm"></span> <span class="text-[10px] font-bold uppercase text-slate-600">DSR / Folga</span></div>
+                <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-md bg-[#fef08a] border-2 border-[#eab308]"></span> <span class="text-[10px] font-bold uppercase text-slate-600">Erros Jornada</span></div>
+            </div>
+            
+            <div class="mt-8 flex flex-wrap justify-end gap-3 pt-6 border-t border-slate-200">
+                <button onclick="window.exportJPG()" class="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-8 py-3.5 rounded-xl font-black text-[11px] uppercase shadow-sm active:scale-95 transition-all hover:bg-slate-50">
+                    <i data-lucide="image" class="w-4 h-4"></i> Exportar JPG
+                </button>
+                <button onclick="window.exportPDF()" class="flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-xl font-black text-[11px] uppercase shadow-lg shadow-blue-600/30 active:scale-95 transition-all hover:bg-blue-700">
+                    <i data-lucide="file-text" class="w-4 h-4"></i> Exportar PDF
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 2. ABA: GERENCIADOR DE COLABORADORES (ADMIN) -->
+    <main id="panel-admin" class="hidden py-8 flex-1 bg-slate-50/50">
+        <div class="content-container max-w-5xl mx-auto">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Gerenciador: <span id="adminSectorLabel" class="text-blue-600">Setor</span></h2>
+                    <p class="text-[11px] text-slate-500 font-bold uppercase mt-1">Gira os membros e definições exclusivas deste setor</p>
+                </div>
+            </div>
+
+            <!-- OPÇÕES DO SETOR: Renomear, Mudar Senha Admin, Mudar Senha Colaborador -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                
+                <!-- Renomear Setor -->
+                <div class="bg-white p-5 rounded-[24px] border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Renomear Setor</h3>
+                    <div class="flex gap-2 mt-auto">
+                        <input type="text" id="admin-rename-sector" class="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-black uppercase outline-none focus:border-blue-500 transition-colors">
+                        <button onclick="window.protectAction(() => window.renameCurrentSector())" class="bg-slate-800 text-white font-black uppercase text-[10px] px-4 py-2.5 rounded-xl hover:bg-slate-900 transition-colors shadow-md flex items-center justify-center">
+                            Salvar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mudar Senha Admin -->
+                <div class="bg-white p-5 rounded-[24px] border border-blue-200 bg-blue-50/30 shadow-sm flex flex-col justify-between">
+                    <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-3">Senha ADMIN (Edição)</h3>
+                    <div class="flex gap-2 mt-auto">
+                        <input type="password" id="admin-new-password" placeholder="NOVA ADMIN" class="flex-1 w-full bg-white border border-blue-200 rounded-xl px-3 py-2.5 text-xs font-black text-center tracking-[0.2em] outline-none focus:border-blue-500 transition-colors">
+                        <button onclick="window.protectAction(() => window.changeSectorPassword())" class="bg-blue-600 text-white font-black uppercase text-[10px] px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors shadow-md flex items-center justify-center">
+                            Mudar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mudar Senha Colaborador -->
+                <div class="bg-white p-5 rounded-[24px] border border-emerald-200 bg-emerald-50/30 shadow-sm flex flex-col justify-between">
+                    <h3 class="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-3">Senha COLAB (Visão)</h3>
+                    <div class="flex gap-2 mt-auto">
+                        <input type="password" id="admin-new-colab-password" placeholder="NOVA COLAB" class="flex-1 w-full bg-white border border-emerald-200 rounded-xl px-3 py-2.5 text-xs font-black text-center tracking-[0.2em] outline-none focus:border-emerald-500 transition-colors">
+                        <button onclick="window.protectAction(() => window.changeSectorColabPassword())" class="bg-emerald-600 text-white font-black uppercase text-[10px] px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors shadow-md flex items-center justify-center">
+                            Mudar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Adicionar Novo Formulário -->
+            <div class="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm mb-8">
+                <h3 class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Adicionar Membro ao Setor</h3>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" id="admin-new-name" placeholder="NOME DO COLABORADOR..." class="flex-[2] bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black uppercase outline-none focus:border-blue-500 transition-colors">
+                    <input type="text" id="admin-new-role" placeholder="POSTO / CARGO (OPCIONAL)" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold uppercase outline-none focus:border-blue-500 transition-colors">
+                    <button onclick="window.protectAction(() => window.adminAddNewEmployee())" class="bg-blue-600 text-white font-black uppercase text-sm px-8 py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/30 whitespace-nowrap flex items-center gap-2 justify-center">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> Guardar
+                    </button>
+                </div>
+            </div>
+
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Equipa Atual do Setor</h3>
+            <div id="employeeListAdmin" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+    </main>
+    
+    <footer class="mt-auto py-6 border-t border-slate-200 text-center bg-white">
+        <div class="content-container">
+            <p class="text-[12px] text-slate-600 font-bold uppercase tracking-[0.2em]">© 2026 lauriuche.inc</p>
+            <p class="text-[8px] text-slate-800 font-bold uppercase tracking-[0.2em]">Todos os direitos Reservados </p>
+        </div>
+    </footer>
+
+    <!-- POPUP GLOBAL DE VIOLAÇÕES -->
+    <div id="globalViolationPopup" class="fixed hidden z-[999] bg-[#fffde7] border border-[#fbc02d] rounded-xl p-4 shadow-2xl max-w-xs transition-opacity duration-200 opacity-0 transform -translate-y-2 pointer-events-auto text-left">
+        <button onclick="document.getElementById('globalViolationPopup').classList.add('hidden')" class="absolute top-3 right-3 text-slate-400 hover:text-slate-800"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <div class="text-blue-600 mb-2 font-black text-[11px] uppercase tracking-widest flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Alerta Legal</div>
+        <div id="violationMsg" class="text-slate-700 mb-3 leading-snug text-xs font-bold"></div>
+        <div class="pt-2 border-t border-amber-200 text-green-700 italic font-bold leading-snug text-[11px]">
+            Sugestão:<br><span id="violationSug" class="font-medium text-slate-600"></span>
+        </div>
+    </div>
+
+    <!-- MODAL SENHA -->
+    <div id="passwordModal" class="fixed inset-0 z-[200] hidden bg-slate-900/80 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-[32px] w-full max-w-xs p-8 text-center space-y-6 shadow-2xl border border-slate-100 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
+            <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-blue-600 mt-2"><i data-lucide="lock" class="w-8 h-8"></i></div>
+            <div>
+                <h3 class="text-xl font-black uppercase text-slate-900 leading-none">Acesso Restrito</h3>
+                <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Setor: <span id="pwd-sector-name" class="text-blue-600"></span></p>
+                <p id="pwd-sector-hint" class="text-[8px] text-amber-500 font-bold uppercase mt-1"></p>
+            </div>
+            <input type="password" id="adminPasswordInput" placeholder="****" onkeyup="if(event.key==='Enter') window.checkAdminPassword()" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 outline-none focus:border-blue-500 font-black text-2xl text-center tracking-[0.5em] text-slate-700 transition-colors">
+            <div class="flex gap-3">
+                <button onclick="window.closeModal('passwordModal')" class="flex-1 py-4 font-black text-slate-400 uppercase text-xs hover:bg-slate-50 rounded-2xl transition-colors border border-transparent hover:border-slate-200">Cancelar</button>
+                <button onclick="window.checkAdminPassword()" class="flex-[2] py-4 bg-blue-600 text-white font-black rounded-2xl uppercase text-xs shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-colors">Acessar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Turno -->
+    <div id="shiftModal" class="fixed inset-0 z-[100] hidden bg-slate-900/80 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-[32px] w-full max-w-sm shadow-2xl p-6 text-center border border-slate-100">
+            <div class="flex justify-between items-start mb-6">
+                <div class="text-left">
+                    <h3 id="modalEmpName" class="text-xl font-black text-slate-900 leading-none uppercase truncate max-w-[220px]">NOME</h3>
+                    <p id="modalDateLabel" class="text-blue-600 font-bold text-[11px] uppercase mt-1.5"></p>
+                </div>
+                <button onclick="window.closeModal('shiftModal')" class="p-2.5 bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="space-y-5">
+                <div id="timeInputArea">
+                    <label class="block text-left text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Registo de Horas</label>
+                    <div class="flex items-center bg-slate-50 p-2.5 rounded-2xl border-2 border-slate-200 justify-between gap-1">
+                        <input type="time" id="field-in" oninput="window.calculateAutoOut()" onkeyup="if(event.key==='Enter') window.saveShift()" class="bg-transparent font-black text-lg outline-none w-[105px] text-center text-slate-800 px-1">
+                        <div class="flex flex-col items-center shrink-0">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase mb-0.5">Pausa(h)</span>
+                            <input type="number" id="field-lunch" step="0.5" value="2" oninput="window.calculateAutoOut()" onkeyup="if(event.key==='Enter') window.saveShift()" class="bg-transparent font-black text-lg outline-none w-16 text-center text-blue-600 bg-white rounded-md border border-slate-200">
+                        </div>
+                        <input type="time" id="field-out" onkeyup="if(event.key==='Enter') window.saveShift()" class="bg-transparent font-black text-lg outline-none w-[105px] text-center text-slate-800 px-1">
+                    </div>
+                </div>
+                
+                <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
+                    <button onclick="window.setEditMode('TRABALHO')" id="btn-mode-work" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm">Trabalho</button>
+                    <button onclick="window.setEditMode('DSR')" id="btn-mode-dsr" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all">Folga/DSR</button>
+                    <button onclick="window.setEditMode('FERIAS')" id="btn-mode-vacation" class="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all">Férias</button>
+                </div>
+                
+                <div class="space-y-3 bg-slate-50 p-4 rounded-2xl text-left border border-slate-200">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="field-repeat" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-xs font-bold uppercase text-slate-700">Preencher restantes dias vazios</span>
+                    </label>
+                    <label id="label-propagate" class="hidden flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="field-propagate" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-xs font-black uppercase text-blue-600">Replicar folga a cada 7 dias</span>
+                    </label>
+                </div>
+                
+                <div class="flex gap-3 pt-2">
+                    <button onclick="window.handleDeleteShiftRecord()" class="px-6 bg-white border-2 border-red-100 hover:border-red-500 text-red-500 hover:bg-red-50 rounded-2xl transition-colors" title="Apagar este dia"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    <button onclick="window.saveShift()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-sm shadow-lg shadow-blue-600/30 transition-colors">Guardar Turno</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback e Loading -->
+    <div id="loadingOverlay" class="fixed inset-0 z-[700] hidden flex-col items-center justify-center bg-white/90 backdrop-blur-sm text-slate-900 p-6">
+        <div class="w-14 h-14 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+        <p id="loadingText" class="font-black text-[11px] uppercase tracking-[0.2em] animate-pulse text-blue-600">A Processar...</p>
+    </div>
+
+    <div id="toastContainer" class="fixed bottom-10 right-1/2 transform translate-x-1/2 md:translate-x-0 md:right-10 z-[800] space-y-4 pointer-events-none flex flex-col items-center md:items-end w-full md:w-auto px-4"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://cjcnqvdrztnhepxtlgju.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_3amBXdvUsQWYvf2qP4Ljbg_d3GDqglr';
+        
+        // VARIÁVEIS GLOBAIS DE SETORES E SENHAS
+        let SECTORS = [];
+        let customPasswords = {};
+        let customColabPasswords = {}; 
+        
+        let currentSector = null; 
+        let unlockedSectors = {}; 
+        let pendingSectorAccess = null; 
+
+        var sbClient, deferredPrompt, pendingAction = null, isAddingInline = false;
+        const RULES = { WORK_BASE_MINS: 440, MAX_CONSECUTIVE: 6, INTER_DAILY_MIN_HOURS: 11, INTER_DSR_MIN_HOURS: 36, INTRA_MIN_HOURS: 1 };
+        const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+        let employees = [], shifts = {}, currentMode = 'TRABALHO', editingEmployeeId = null, editingContext = null;
+
+        // --- 1. FUNÇÕES UI & UTILITÁRIOS ---
+        function openModal(id) { 
+            const el = document.getElementById(id);
+            if(el) { el.classList.remove('hidden'); el.classList.add('modal-active'); if(id==='passwordModal') setTimeout(()=>document.getElementById('adminPasswordInput').focus(), 300); }
+        }
+        function closeModal(id) { 
+            const el = document.getElementById(id);
+            if(el) { el.classList.remove('modal-active'); setTimeout(() => el.classList.add('hidden'), 200); }
+        }
+        function showToast(m) { 
+            const c = document.getElementById('toastContainer'); 
+            const t = document.createElement('div'); 
+            t.className = "bg-slate-900 text-white px-8 py-4 rounded-2xl text-[11px] font-black shadow-2xl transition-all duration-300 transform translate-y-0 opacity-100 uppercase tracking-widest text-center"; 
+            t.innerText = m; c.appendChild(t); 
+            setTimeout(() => { t.classList.add('opacity-0', 'translate-y-4'); setTimeout(()=>t.remove(), 300); }, 3000); 
+        }
+        function setLoading(s, t = "Processando...") { 
+            const el = document.getElementById('loadingOverlay');
+            if(s) { el.classList.remove('hidden'); el.classList.add('flex'); document.getElementById('loadingText').innerText = t; } 
+            else { el.classList.add('hidden'); el.classList.remove('flex'); }
+        }
+        function updateStatus(status, colorClass) {
+            const el = document.getElementById('connection-status');
+            el.innerText = status;
+            el.className = `text-[9px] font-bold uppercase tracking-widest mt-1 transition-colors ${colorClass}`;
+        }
+
+        function showViolation(element, msg, suggestion) {
+            const popup = document.getElementById('globalViolationPopup');
+            document.getElementById('violationMsg').innerText = msg;
+            document.getElementById('violationSug').innerText = suggestion;
+            const rect = element.getBoundingClientRect();
+            let top = rect.bottom + window.scrollY + 8;
+            let left = rect.left + window.scrollX - 100;
+            if (left < 10) left = 10;
+            if (left + 220 > window.innerWidth) left = window.innerWidth - 230;
+            popup.style.top = top + 'px';
+            popup.style.left = left + 'px';
+            popup.classList.remove('hidden');
+            setTimeout(() => popup.classList.remove('opacity-0'), 10);
+            const hidePopup = (e) => {
+                if(!popup.contains(e.target) && e.target !== element) {
+                    popup.classList.add('opacity-0');
+                    setTimeout(() => popup.classList.add('hidden'), 200);
+                    document.removeEventListener('click', hidePopup);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', hidePopup), 10);
+        }
+
+        function getSectorPassword(sec) { return customPasswords[sec] || "0000"; }
+        function getSectorColabPassword(sec) { return customColabPasswords[sec] || "1111"; }
+
+        // --- 2. RENDERIZAÇÃO E ACESSO DE SETORES ---
+        function renderSectors() {
+            const container = document.getElementById('sectorListContainer');
+            if(!container) return;
+            container.innerHTML = SECTORS.map(sec => {
+                const activeClasses = "bg-white text-blue-600 shadow-sm border border-slate-200/50";
+                const inactiveClasses = "text-slate-500 hover:text-slate-800 bg-transparent border border-transparent";
+                const isAct = (currentSector === sec);
+                return `<button onclick="window.requestSectorAccess('${sec}')" class="h-full px-5 rounded-xl text-[11px] font-black uppercase transition-all whitespace-nowrap flex-shrink-0 flex items-center ${isAct ? activeClasses : inactiveClasses}">${sec}</button>`;
+            }).join('');
+        }
+
+        function requestSectorAccess(sec) {
+            if (unlockedSectors[sec]) {
+                window.selectSector(sec);
+            } else {
+                pendingSectorAccess = sec;
+                document.getElementById('pwd-sector-name').innerText = sec;
+                
+                const hint = document.getElementById('pwd-sector-hint');
+                const adminP = getSectorPassword(sec);
+                const colabP = getSectorColabPassword(sec);
+                
+                let hintText = "";
+                if(adminP === "0000" && colabP === "1111") hintText = " (Admin: 0000 | Colab: 1111)";
+                else if(adminP === "0000") hintText = " (Admin Padrão: 0000)";
+                else if(colabP === "1111") hintText = " (Colab Padrão: 1111)";
+                
+                hint.innerText = hintText;
+                window.openModal('passwordModal');
+            }
+        }
+
+        async function selectSector(sec) {
+            currentSector = sec;
+            window.renderSectors();
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            
+            document.getElementById('currentSectorLabel').innerText = sec;
+            document.getElementById('adminSectorLabel').innerText = sec;
+            const renameInput = document.getElementById('admin-rename-sector');
+            if (renameInput) renameInput.value = sec;
+            
+            const role = unlockedSectors[sec];
+            const isAdmin = role === 'admin';
+            
+            const navAdmin = document.getElementById('nav-admin');
+            const btnClear = document.getElementById('btn-clear-month');
+            const adminIndicator = document.getElementById('admin-indicator');
+            const btnLogout = document.getElementById('btn-logout');
+            
+            if (isAdmin) {
+                navAdmin.classList.remove('hidden', 'hidden-until-sector');
+                if(btnClear) btnClear.classList.remove('hidden');
+                document.getElementById('connection-status').innerText = "Modo Admin";
+                document.getElementById('connection-status').className = "text-[9px] font-bold uppercase tracking-widest mt-1 text-blue-600";
+                
+                adminIndicator.className = "flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[9px] font-black uppercase";
+                adminIndicator.innerHTML = '<i data-lucide="shield-check" class="w-3 h-3"></i> Admin';
+            } else {
+                navAdmin.classList.add('hidden');
+                if(btnClear) btnClear.classList.add('hidden');
+                document.getElementById('connection-status').innerText = "Modo Visualização (Colaborador)";
+                document.getElementById('connection-status').className = "text-[9px] font-bold uppercase tracking-widest mt-1 text-emerald-600";
+                
+                adminIndicator.className = "flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[9px] font-black uppercase";
+                adminIndicator.innerHTML = '<i data-lucide="eye" class="w-3 h-3"></i> Colab';
+            }
+            
+            adminIndicator.classList.remove('hidden');
+            btnLogout.classList.remove('hidden');
+            btnLogout.classList.add('flex');
+
+            window.switchPanel('scale');
+            await window.loadAllData();
+            lucide.createIcons();
+        }
+        
+        function logoutSector() {
+            if (!currentSector) return;
+            
+            const secToLogout = currentSector;
+            delete unlockedSectors[secToLogout];
+            currentSector = null;
+            
+            document.getElementById('empty-state').classList.remove('hidden');
+            document.getElementById('panel-scale').classList.add('hidden');
+            document.getElementById('panel-admin').classList.add('hidden');
+            
+            const adminIndicator = document.getElementById('admin-indicator');
+            adminIndicator.classList.add('hidden');
+            adminIndicator.classList.remove('flex');
+            
+            const btnLogout = document.getElementById('btn-logout');
+            btnLogout.classList.add('hidden');
+            btnLogout.classList.remove('flex');
+            
+            document.getElementById('connection-status').innerText = "Aguardando Setor...";
+            document.getElementById('connection-status').className = "text-[9px] font-bold uppercase tracking-widest mt-1 text-slate-400";
+            
+            window.renderSectors();
+            window.showToast(`Sessão encerrada`);
+        }
+
+        async function promptAddSector() {
+            const newSec = prompt("Qual o nome do novo Setor?");
+            if (newSec && newSec.trim() !== "") {
+                const upperSec = newSec.trim().toUpperCase();
+                if(!SECTORS.includes(upperSec)) {
+                    window.setLoading(true, "A Criar Setor...");
+                    try {
+                        await sbClient.from('sectors').insert([{ name: upperSec, password: '0000', colab_password: '1111' }]);
+                    } catch(e) { console.warn("Falha DB, salvando local"); }
+                    
+                    SECTORS.push(upperSec);
+                    customPasswords[upperSec] = '0000';
+                    customColabPasswords[upperSec] = '1111';
+                    localStorage.setItem('ep_sectors', JSON.stringify(SECTORS));
+                    localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+                    localStorage.setItem('ep_sector_colab_passwords', JSON.stringify(customColabPasswords));
+                    
+                    window.renderSectors();
+                    window.showToast("Setor Adicionado");
+                    window.setLoading(false);
+                } else {
+                    window.showToast("Setor já existe");
+                }
+            }
+        }
+
+        // --- 3. CACHE & INICIALIZAÇÃO ---
+        function loadCachedData() {
+            if(!currentSector) return;
+            try {
+                const cachedEmp = localStorage.getItem(`ep_employees_${currentSector}`);
+                const cachedShifts = localStorage.getItem(`ep_shifts_${currentSector}`);
+                if (cachedEmp) employees = JSON.parse(cachedEmp);
+                if (cachedShifts) shifts = JSON.parse(cachedShifts);
+                if (employees.length > 0) {
+                    document.getElementById('empTotalCount').innerText = employees.length;
+                    window.initCalendar(); 
+                }
+            } catch(e) { console.error("Erro cache", e); }
+        }
+
+        function saveToCache() {
+            if(!currentSector) return;
+            try {
+                localStorage.setItem(`ep_employees_${currentSector}`, JSON.stringify(employees));
+                localStorage.setItem(`ep_shifts_${currentSector}`, JSON.stringify(shifts));
+            } catch(e) {}
+        }
+
+        function setupSelectors() {
+            const mS = document.getElementById('monthSelect'); const yS = document.getElementById('yearSelect');
+            if(!mS || !yS) return;
+            const n = new Date();
+            const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            mS.innerHTML = ""; months.forEach((m, i) => { const opt = document.createElement('option'); opt.value = i; opt.innerText = m.toUpperCase(); if (i === n.getMonth()) opt.selected = true; mS.appendChild(opt); });
+            yS.innerHTML = ""; for (let y = 2025; y <= 2027; y++) { const opt = document.createElement('option'); opt.value = y; opt.innerText = y; if (y === n.getFullYear()) opt.selected = true; yS.appendChild(opt); }
+            const dayEl = document.getElementById('currentDay'); if(dayEl) dayEl.innerText = String(n.getDate()).padStart(2, '0');
+        }
+
+        window.onload = async () => { 
+            window.renderSectors();
+            window.setupSelectors(); 
+            lucide.createIcons(); 
+            
+            window.updateStatus("Conectando...", "text-amber-500");
+            
+            try {
+                const lib = window.supabase || supabase;
+                sbClient = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                await window.loadSectorsFromDB();
+                window.updateStatus("Online", "text-blue-500");
+            } catch(e) { 
+                window.updateStatus("Offline", "text-red-500"); 
+                window.loadSectorsFromDB();
+            }
+            
+            document.addEventListener('click', (e) => { 
+                if (!e.target.closest('.error-note-trigger')) document.querySelectorAll('.error-note-popup').forEach(p => p.classList.remove('is-visible')); 
+            }); 
+        };
+
+        // --- 4. GESTÃO DE NAVEGAÇÃO E ADMIN (SENHA DUPLA) ---
+        function switchPanel(p) { 
+            if(!currentSector) return window.showToast("Selecione um setor primeiro");
+            
+            const s = document.getElementById('panel-scale'), a = document.getElementById('panel-admin');
+            const ns = document.getElementById('nav-scale'), na = document.getElementById('nav-admin');
+            const activeClasses = ['bg-white', 'text-blue-600', 'shadow-sm', 'border-slate-200/50'];
+            const inactiveClasses = ['text-slate-500', 'hover:text-slate-800', 'bg-transparent', 'border-transparent'];
+
+            if(p === 'scale') { 
+                s.classList.remove('hidden'); a.classList.add('hidden'); 
+                ns.classList.remove(...inactiveClasses); ns.classList.add(...activeClasses);
+                na.classList.remove(...activeClasses); na.classList.add(...inactiveClasses);
+                window.initCalendar();
+            } else { 
+                s.classList.add('hidden'); a.classList.remove('hidden'); 
+                ns.classList.remove(...activeClasses); ns.classList.add(...inactiveClasses);
+                na.classList.remove(...inactiveClasses); na.classList.add(...activeClasses);
+                const renameInput = document.getElementById('admin-rename-sector');
+                if (renameInput) renameInput.value = currentSector;
+                window.renderEmployeesAdmin();
+            } 
+        }
+
+        function checkAdminPassword() {
+            const input = document.getElementById('adminPasswordInput');
+            const targetSector = pendingSectorAccess || currentSector;
+            const adminPass = getSectorPassword(targetSector);
+            const colabPass = getSectorColabPassword(targetSector);
+
+            if (input.value === adminPass) {
+                unlockedSectors[targetSector] = 'admin';
+                finishLogin(targetSector);
+            } else if (input.value === colabPass) {
+                unlockedSectors[targetSector] = 'colab';
+                finishLogin(targetSector);
+            } else {
+                window.showToast("Senha Incorreta");
+                input.value = ""; input.focus();
+            }
+
+            function finishLogin(sec) {
+                window.closeModal('passwordModal');
+                input.value = "";
+                if (pendingSectorAccess) {
+                    window.showToast(`Setor ${sec} Acessado`);
+                    window.selectSector(sec);
+                    pendingSectorAccess = null;
+                } else {
+                    window.selectSector(sec);
+                    if (pendingAction) { pendingAction(); pendingAction = null; }
+                }
+            }
+        }
+        
+        function protectAction(action, requiresAdmin = true) { 
+            if(!currentSector) return window.showToast("Selecione um setor");
+            
+            const role = unlockedSectors[currentSector];
+            
+            if (requiresAdmin && role !== 'admin') {
+                return window.showToast("Acesso Negado: Apenas Administradores");
+            }
+            
+            if (role) { 
+                action(); 
+            } else { 
+                pendingAction = action; 
+                document.getElementById('pwd-sector-name').innerText = currentSector;
+                
+                const hint = document.getElementById('pwd-sector-hint');
+                const aP = getSectorPassword(currentSector);
+                const cP = getSectorColabPassword(currentSector);
+                let ht = "";
+                if(aP === "0000" && cP === "1111") ht = " (Admin: 0000 | Colab: 1111)";
+                else if(aP === "0000") ht = " (Admin Padrão: 0000)";
+                else if(cP === "1111") ht = " (Colab Padrão: 1111)";
+                hint.innerText = ht;
+                
+                window.openModal('passwordModal'); 
+            } 
+        }
+        
+        function handleAdminPanelAccess() { window.protectAction(() => window.switchPanel('admin')); }
+
+        async function changeSectorPassword() {
+            if(!currentSector) return;
+            const input = document.getElementById('admin-new-password');
+            const newPass = input.value.trim();
+            if(!newPass) return window.showToast("Por favor, digite uma senha válida");
+            
+            window.setLoading(true, "A Alterar Senha...");
+            try {
+                await sbClient.from('sectors').update({ password: newPass }).eq('name', currentSector);
+            } catch(e) { console.warn("Falha DB, salvando local"); }
+            
+            customPasswords[currentSector] = newPass;
+            localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+            
+            input.value = '';
+            window.showToast("Senha Admin Alterada");
+            window.setLoading(false);
+        }
+
+        async function changeSectorColabPassword() {
+            if(!currentSector) return;
+            const input = document.getElementById('admin-new-colab-password');
+            const newPass = input.value.trim();
+            if(!newPass) return window.showToast("Por favor, digite uma senha válida");
+            
+            window.setLoading(true, "A Alterar Senha...");
+            try {
+                await sbClient.from('sectors').update({ colab_password: newPass }).eq('name', currentSector);
+            } catch(e) { console.warn("Falha DB, salvando local"); }
+            
+            customColabPasswords[currentSector] = newPass;
+            localStorage.setItem('ep_sector_colab_passwords', JSON.stringify(customColabPasswords));
+            
+            input.value = '';
+            window.showToast("Senha Colaborador Alterada");
+            window.setLoading(false);
+        }
+
+        // --- 5. COMUNICAÇÃO COM BASE DE DADOS (FILTRADA POR SETOR) ---
+        async function loadAllData(silent = false) {
+            if(!sbClient || !currentSector) return;
+            if(!silent) window.setLoading(true, `A Sincronizar ${currentSector}...`);
+            
+            try {
+                const { data: empData, error } = await sbClient.from('employees').select('*').eq('sector', currentSector).order('name');
+                
+                if (error) {
+                    console.error("ERRO SUPABASE", error);
+                    window.showToast("Erro Cloud: Verifique coluna Sector");
+                    if(!silent) window.setLoading(false);
+                    return;
+                }
+                
+                employees = empData || [];
+                document.getElementById('empTotalCount').innerText = employees.length;
+                
+                const { data: shiftData } = await sbClient.from('shifts').select('*');
+                shifts = {};
+                shiftData?.forEach(item => { 
+                    if(!shifts[item.employee_id]) shifts[item.employee_id] = {}; 
+                    shifts[item.employee_id][item.day_key] = item.shift_data; 
+                });
+
+                window.saveToCache();
+                
+                if(!document.getElementById('panel-scale').classList.contains('hidden')) window.initCalendar();
+                if(!document.getElementById('panel-admin').classList.contains('hidden')) window.renderEmployeesAdmin();
+                
+            } catch(error) {
+                console.error("Falha ao carregar", error);
+            }
+            if(!silent) window.setLoading(false);
+        }
+
+        // --- 6. VALIDAÇÕES LEGAIS E RENDERIZAÇÃO DA TABELA ---
+        function initCalendar() {
+            if(!currentSector) return;
+            const mSelect = document.getElementById('monthSelect'); if(!mSelect) return;
+            const m = parseInt(mSelect.value), y = parseInt(document.getElementById('yearSelect').value), dMax = new Date(y, m + 1, 0).getDate();
+            const rowW = document.getElementById('header-row-weekdays'), rowN = document.getElementById('header-row-numbers');
+            
+            const isAdmin = unlockedSectors[currentSector] === 'admin';
+            
+            let headerAction1 = isAdmin ? `<th id="header-action-1" class="col-action"></th>` : ``;
+            let headerAction2 = isAdmin ? `<th id="header-action-2" class="col-action text-center text-white/80" title="Apagar Turnos"><i data-lucide="eraser" class="w-3.5 h-3.5 mx-auto"></i></th>` : ``;
+
+            let weekdaysHTML = `<th class="sticky-header-name text-center px-4 tracking-tighter text-[11px]">EquipaCloud</th>
+                                <th class="sticky-header-mirror text-center text-[10px]" id="currentDay"></th>
+                                <th class="col-role"></th>${headerAction1}`;
+            let numbersHTML = `<th class="sticky-header-name text-center px-4 text-white/80 text-[12px]">Colaborador</th>
+                               <th class="sticky-header-mirror text-center text-[#065f46] text-[12px]">ESPELHO</th>
+                               <th class="col-role text-center text-white/80">Posto</th>
+                               ${headerAction2}`;
+
+            for (let d = 1; d <= dMax; d++) {
+                const date = new Date(y, m, d), isSun = date.getDay() === 0;
+                const sunClass = isSun ? 'sun-col-header' : '';
+                weekdaysHTML += `<th class="day-col weekday-label ${sunClass}">${WEEKDAYS[date.getDay()]}</th>`;
+                numbersHTML += `<th class="day-col day-label ${sunClass}">${String(d).padStart(2, '0')}</th>`;
+            }
+            
+            rowW.innerHTML = weekdaysHTML;
+            rowN.innerHTML = numbersHTML;
+            
+            window.renderScale();
+        }
+
+        function getEmployeeViolations(empId, month, year, dMax) {
+            let violations = {}; let streak = [];
+            for (let d = 1; d <= dMax; d++) {
+                const dayKey = `${year}-${month}-${d}`, shift = shifts[empId]?.[dayKey];
+                const isDsr = shift && shift.isFolga && (shift.tipoFolga === 'DSR' || shift.tipoFolga === 'FERIAS');
+                
+                if (isDsr) {
+                    if (streak.length > 6) streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos.', suggestion: 'Conceder DSR.' }; });
+                    streak = [];
+                } else {
+                    streak.push(d);
+                }
+                
+                if (shift && !shift.isFolga) {
+                    if (shift.lunch && parseFloat(shift.lunch) < RULES.INTRA_MIN_HOURS) violations[d] = { type: 'intra', msg: 'A pausa de almoço é inferior a 1h.', suggestion: 'Aumentar a pausa.' };
+                    if (d > 1) {
+                        let lastDay = d - 1, gapDays = 0;
+                        while(lastDay >= 1 && shifts[empId]?.[`${year}-${month}-${lastDay}`]?.isFolga) { lastDay--; gapDays++; }
+                        if (lastDay >= 1) {
+                            const lastShift = shifts[empId]?.[`${year}-${month}-${lastDay}`];
+                            if (lastShift && !lastShift.isFolga && lastShift.out && shift.in) {
+                                const [hOut, mOut] = lastShift.out.split(':').map(Number), [hIn, mIn] = shift.in.split(':').map(Number);
+                                const gap = ((24 * 60) - (hOut * 60 + mOut) + (gapDays * 24 * 60) + (hIn * 60 + mIn)) / 60;
+                                if (gapDays > 0 && gap < RULES.INTER_DSR_MIN_HOURS) {
+                                    const nextValid = (hOut + 12) % 24;
+                                    violations[d] = { type: '36h', msg: `Descanso semanal insuficiente (${gap.toFixed(1)}h).`, suggestion: `Atrasar entrada para as ${String(Math.ceil(nextValid)).padStart(2,'0')}:00.` };
+                                } else if (gapDays === 0 && gap < RULES.INTER_DAILY_MIN_HOURS) {
+                                    const nextValid = (hOut + 11) % 24;
+                                    violations[d] = { type: '11h', msg: `Interjornada insuficiente (${gap.toFixed(1)}h).`, suggestion: `Atrasar entrada para as ${String(Math.ceil(nextValid)).padStart(2,'0')}:00.` };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (streak.length > 6) { streak.forEach(day => { if(!violations[day]) violations[day] = { type: '6x1', msg: 'Trabalhou mais de 6 dias seguidos.', suggestion: 'Agendar um DSR o mais rápido possível.' }; }); }
+            return violations;
+        }
+
+        function renderScale() {
+            const body = document.getElementById('scaleBody'), monthSelect = document.getElementById('monthSelect');
+            if(!monthSelect || !currentSector) return;
+            const month = parseInt(monthSelect.value), year = parseInt(document.getElementById('yearSelect').value);
+            const dMax = new Date(year, month + 1, 0).getDate(), today = new Date(), isThisMonth = (today.getMonth() === month && today.getFullYear() === year), todayDay = today.getDate();
+            
+            const isAdmin = unlockedSectors[currentSector] === 'admin';
+
+            if (employees.length === 0 && !isAddingInline) {
+                let addBtnHtml = isAdmin ? `<div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())"><i data-lucide="plus" class="w-5 h-5"></i></div>` : ``;
+                body.innerHTML = `<tr><td class="sticky-col-name py-2 border-b-0">${addBtnHtml}</td><td colspan="40" class="p-8 text-center text-slate-400 font-black uppercase text-xs">Sem colaboradores neste setor.</td></tr>`;
+                lucide.createIcons(); 
+                
+                const todayHeader = document.getElementById('currentDay');
+                if(todayHeader) todayHeader.innerText = isThisMonth ? String(todayDay).padStart(2, '0') : '--';
+                return;
+            }
+
+            const todayHeader = document.getElementById('currentDay');
+            if(todayHeader) todayHeader.innerText = isThisMonth ? String(todayDay).padStart(2, '0') : '--';
+
+            let htmlRows = employees.map(emp => {
+                const violations = getEmployeeViolations(emp.id, month, year, dMax);
+                let mirrorContent = '<span class="opacity-30">---</span>';
+                if (isThisMonth) {
+                    const mShift = shifts[emp.id]?.[`${year}-${month}-${todayDay}`];
+                    if (mShift) {
+                        if (mShift.isFolga) {
+                            const b = mShift.tipoFolga === 'FERIAS' ? 'badge-vacation' : (mShift.tipoFolga === 'BH' ? 'badge-bh' : 'badge-dsr');
+                            mirrorContent = `<div class="${b}">${mShift.tipoFolga || 'DSR'}</div>`;
+                        } else mirrorContent = `<div class="mirror-time-in">${mShift.in}</div><div class="mirror-time-out">${mShift.out}</div>`;
+                    }
+                }
+                
+                let daysCells = '';
+                for (let d = 1; d <= dMax; d++) {
+                    const key = `${year}-${month}-${d}`, shift = shifts[emp.id]?.[key], isSun = new Date(year, month, d).getDay() === 0;
+                    let content = '<span class="opacity-10 text-[10px]">--:--</span>', bg = isSun ? "sun-col" : "", note = "";
+                    
+                    if (shift) {
+                        if (shift.isFolga) {
+                            const b = shift.tipoFolga === 'FERIAS' ? 'badge-vacation' : (shift.tipoFolga === 'BH' ? 'badge-bh' : 'badge-dsr');
+                            content = `<div class="${b}">${shift.tipoFolga || 'DSR'}</div>`;
+                        } else {
+                            const v = violations[d];
+                            if (v) {
+                                if (v.type === '36h' || v.type === '11h') { bg += v.type==='36h' ? " cell-violation-36h" : " cell-violation-11h"; content = `<div class="msg-error-cell ${v.type==='36h'?'text-purple-700':'text-orange-700'}">ERRO</div><div class="time-text">${shift.in}</div>`; }
+                                else if (v.type === 'intra') { bg += " cell-violation-intra"; content = `<div class="msg-error-cell text-red-600">PAUSA</div><div class="time-text">${shift.in}</div>`; }
+                                else { bg += " cell-violation"; content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`; }
+                                
+                                note = `<div class="error-note-trigger absolute top-1 right-1 z-10 cursor-pointer bg-white/80 rounded-full p-0.5 shadow-sm hover:scale-110 transition-transform" title="Aviso Legal" onclick="event.stopPropagation(); window.showViolation(this, '${v.msg}', '${v.suggestion}')">
+                                            <i data-lucide="alert-triangle" class="w-3 h-3 text-red-500 hover:text-red-700"></i>
+                                        </div>`;
+                            } else {
+                                content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`;
+                            }
+                        }
+                    }
+                    
+                    let cellAction = isAdmin ? `onclick="window.protectAction(() => window.openShiftModal('${emp.id}', ${d}))"` : ``;
+                    let cellClass = isAdmin ? `cell-interactive` : `cell-view-only`;
+                    daysCells += `<td class="day-col ${bg}"><div class="${cellClass}" ${cellAction}>${note}${content}</div></td>`;
+                }
+                
+                let nameAction = isAdmin ? `cursor-pointer hover:text-blue-600 transition-colors` : ``;
+                let nameClick = isAdmin ? `onclick="window.protectAction(() => window.startNameEditInline('${emp.id}', '${emp.name}'))"` : ``;
+                
+                let roleAction = isAdmin ? `cursor-pointer hover:bg-slate-50 transition-colors` : ``;
+                let roleClick = isAdmin ? `onclick="window.protectAction(() => window.startRoleEdit('${emp.id}', '${emp.role || ''}'))"` : ``;
+                
+                let deleteActionCol = isAdmin ? `<td class="col-action py-1 px-2 text-center"><button onclick="window.protectAction(() => window.handleClearEmployeeMonth('${emp.id}', '${emp.name}'))" class="text-slate-300 hover:text-red-500 cursor-pointer transition-colors p-2 rounded-lg hover:bg-red-50" title="Apagar todos os turnos de ${emp.name} neste mês"><i data-lucide="eraser" class="w-4 h-4 mx-auto"></i></button></td>` : ``;
+
+                return `<tr>
+                    <td id="name-cell-${emp.id}" class="sticky-col-name py-1 px-3"><span class="emp-name-heavy block w-full truncate ${nameAction}" title="${isAdmin?'Editar Nome':''}" ${nameClick}>${emp.name.toUpperCase()}</span></td>
+                    <td class="col-mirror py-1 px-2"><div class="flex flex-col items-center justify-center h-full">${mirrorContent}</div></td>
+                    <td class="col-role py-1 px-2 text-center"><div id="role-cell-${emp.id}" class="text-[11px] font-black text-slate-400 uppercase truncate p-1.5 rounded-lg ${roleAction}" title="${isAdmin?'Editar Posto':''}" ${roleClick}>${emp.role || '---'}</div></td>
+                    ${deleteActionCol}
+                    ${daysCells}
+                </tr>`;
+            }).join('');
+
+            if (isAddingInline && isAdmin) {
+                let emptyCells = ''; for(let d=1; d<=dMax; d++) emptyCells += `<td class="day-col border-b border-slate-200"></td>`;
+                htmlRows += `<tr class="bg-blue-50/50">
+                    <td class="sticky-col-name py-2 px-3"><input type="text" id="input-name-new" class="inline-input border-blue-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="NOME E ENTER..." onblur="if(!this.value) { isAddingInline=false; window.renderScale(); }" onkeyup="if(event.key==='Enter') window.saveNewMemberInline()"></td>
+                    <td class="col-mirror"></td><td class="col-role border-b border-slate-200"></td><td class="col-action border-b border-slate-200"></td>
+                    ${emptyCells}
+                </tr>`;
+            } else if (isAddingInline) {
+                isAddingInline = false; 
+            }
+
+            let addRowHtml = isAdmin ? `<tr><td class="sticky-col-name py-3 border-b-0"><div class="btn-circular-add mx-auto" onclick="window.protectAction(() => window.startAddInline())" title="Adicionar Novo Colaborador"><i data-lucide="plus" class="w-5 h-5"></i></div></td><td colspan="40" class="border-b-0"></td></tr>` : `<tr><td class="sticky-col-name py-3 border-b-0"></td><td colspan="40" class="border-b-0"></td></tr>`;
+
+            htmlRows += addRowHtml;
+            body.innerHTML = htmlRows; lucide.createIcons();
+        }
+
+        async function renameCurrentSector() {
+            if(!currentSector) return;
+            const input = document.getElementById('admin-rename-sector');
+            const newName = input.value.trim().toUpperCase();
+            
+            if(!newName || newName === currentSector) return window.showToast("Nome inválido ou idêntico");
+            if(SECTORS.includes(newName)) return window.showToast("Já existe um setor com este nome");
+
+            if(!confirm(`⚠️ Mudar o nome de "${currentSector}" para "${newName}"? Todos os funcionários e turnos passarão a pertencer a este novo setor.`)) return;
+
+            window.setLoading(true, "A Renomear Setor...");
+            try {
+                await sbClient.from('sectors').update({ name: newName }).eq('name', currentSector);
+                await sbClient.from('employees').update({ sector: newName }).eq('sector', currentSector);
+            } catch(e) { console.warn("Erro ao renomear na BD", e); }
+            
+            const idx = SECTORS.indexOf(currentSector);
+            if(idx > -1) SECTORS[idx] = newName;
+            
+            if (customPasswords[currentSector]) {
+                customPasswords[newName] = customPasswords[currentSector];
+                delete customPasswords[currentSector];
+                localStorage.setItem('ep_sector_passwords', JSON.stringify(customPasswords));
+            }
+            if (customColabPasswords[currentSector]) {
+                customColabPasswords[newName] = customColabPasswords[currentSector];
+                delete customColabPasswords[currentSector];
+                localStorage.setItem('ep_sector_colab_passwords', JSON.stringify(customColabPasswords));
+            }
+            
+            unlockedSectors[newName] = unlockedSectors[currentSector];
+            delete unlockedSectors[currentSector];
+            
+            const cachedEmp = localStorage.getItem(`ep_employees_${currentSector}`);
+            const cachedShifts = localStorage.getItem(`ep_shifts_${currentSector}`);
+            if (cachedEmp) { localStorage.setItem(`ep_employees_${newName}`, cachedEmp); localStorage.removeItem(`ep_employees_${currentSector}`); }
+            if (cachedShifts) { localStorage.setItem(`ep_shifts_${newName}`, cachedShifts); localStorage.removeItem(`ep_shifts_${currentSector}`); }
+
+            localStorage.setItem('ep_sectors', JSON.stringify(SECTORS));
+
+            currentSector = newName;
+            
+            document.getElementById('currentSectorLabel').innerText = newName;
+            document.getElementById('adminSectorLabel').innerText = newName;
+            window.renderSectors();
+            
+            window.showToast("Setor Renomeado com Sucesso");
+            window.setLoading(false);
+        }
+
+        function renderEmployeesAdmin() { 
+            const list = document.getElementById('employeeListAdmin'); 
+            if(!list) return; 
+            if(employees.length === 0) { list.innerHTML = `<div class="col-span-full text-center p-8 text-slate-400 font-bold uppercase text-xs">Sem Membros neste Setor</div>`; return; }
+
+            list.innerHTML = employees.map(emp => `
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group flex items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <input type="text" id="admin-edit-name-${emp.id}" value="${emp.name.toUpperCase()}" class="w-full font-black text-slate-900 text-sm uppercase outline-none bg-transparent border-b-2 border-transparent focus:border-blue-500 mb-1 transition-colors px-1" placeholder="NOME DO COLABORADOR">
+                        <input type="text" id="admin-edit-role-${emp.id}" value="${emp.role || ''}" class="w-full text-[10px] text-slate-500 font-bold uppercase outline-none bg-transparent border-b-2 border-transparent focus:border-blue-500 transition-colors px-1" placeholder="SEM POSTO (CLIQUE PARA EDITAR)">
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="window.protectAction(() => window.saveAdminEmployeeEdit('${emp.id}'))" class="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all" title="Gravar Edição"><i data-lucide="save" class="w-4 h-4"></i></button>
+                        <button onclick="window.protectAction(() => window.removeEmployee('${emp.id}', '${emp.name}'))" class="w-10 h-10 flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-600 hover:text-white rounded-xl transition-all" title="Apagar Membro Permanentemente"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>`).join(''); 
+            lucide.createIcons(); 
+        }
+
+        async function adminAddNewEmployee() {
+            const nameInput = document.getElementById('admin-new-name');
+            const roleInput = document.getElementById('admin-new-role');
+            const name = nameInput.value.trim().toUpperCase();
+            const role = roleInput.value.trim().toUpperCase();
+            
+            if(!name) { window.showToast("O Nome é obrigatório"); nameInput.focus(); return; }
+            
+            window.setLoading(true, "A Adicionar...");
+            try {
+                await sbClient.from('employees').insert([{ name, role, sector: currentSector }]);
+                nameInput.value = ''; roleInput.value = '';
+                await window.loadAllData(true);
+                window.showToast("Colaborador Adicionado");
+            } catch(e) { window.showToast("Erro ao adicionar"); }
+            window.setLoading(false);
+        }
+
+        async function saveAdminEmployeeEdit(empId) {
+            const newName = document.getElementById(`admin-edit-name-${empId}`).value.trim().toUpperCase();
+            const newRole = document.getElementById(`admin-edit-role-${empId}`).value.trim().toUpperCase();
+            
+            if(!newName) return window.showToast("Nome inválido");
+            window.setLoading(true, "A Guardar...");
+            try {
+                await sbClient.from('employees').update({ name: newName, role: newRole }).eq('id', empId);
+                await window.loadAllData(true); window.showToast("Dados Atualizados");
+            } catch (e) { window.showToast("Erro na Atualização"); }
+            window.setLoading(false);
+        }
+
+        // --- 8. EXCLUSÕES & ADIÇÕES INLINE ---
+        async function removeEmployee(id, name) { 
+            if(!confirm(`⚠️ ATENÇÃO: Deseja apagar permanentemente o colaborador "${name}" e TODO o seu histórico de turnos? Esta ação não pode ser desfeita.`)) return; 
+            
+            window.setLoading(true, "A Eliminar Colaborador..."); 
+            try {
+                await sbClient.from('shifts').delete().eq('employee_id', id); 
+                await sbClient.from('employees').delete().eq('id', id); 
+                await window.loadAllData(true); 
+                window.showToast("Membro Eliminado");
+            } catch(error) {
+                console.error(error);
+                window.showToast("Falha ao Eliminar");
+            }
+            window.setLoading(false);  
+        }
+
+        async function handleClearEmployeeMonth(empId, name) { 
+            const m = parseInt(document.getElementById('monthSelect').value);
+            const y = parseInt(document.getElementById('yearSelect').value); 
+            const monthName = document.getElementById('monthSelect').options[m].text;
+            
+            if(!confirm(`Pretende limpar TODOS os turnos de ${name} relativos a ${monthName}?`)) return; 
+            
+            window.setLoading(true, "A Limpar Turnos..."); 
+            const prefix = `${y}-${m}-`;
+            
+            try {
+                const { data } = await sbClient.from('shifts').select('day_key').eq('employee_id', empId).like('day_key', `${prefix}%`);
+                if (data && data.length > 0) {
+                    const keysToDelete = data.map(d => d.day_key);
+                    await sbClient.from('shifts').delete().eq('employee_id', empId).in('day_key', keysToDelete);
+                }
+                
+                if (shifts[empId]) { for (let key in shifts[empId]) { if (key.startsWith(prefix)) delete shifts[empId][key]; } }
+                
+                await window.loadAllData(true); 
+                window.showToast("Turnos Limpos"); 
+            } catch (error) { console.error(error); window.showToast("Erro ao Limpar"); }
+            window.setLoading(false);
+        }
+
+        async function handleClearMonth() { 
+            const m = parseInt(document.getElementById('monthSelect').value);
+            const y = parseInt(document.getElementById('yearSelect').value); 
+            const monthName = document.getElementById('monthSelect').options[m].text;
+
+            if(!confirm(`⚠️ ALERTA: Deseja apagar absolutamente TODOS os dados do setor ${currentSector} para o mês de ${monthName}?`)) return; 
+            
+            window.setLoading(true, "A Resetar Mês..."); 
+            const prefix = `${y}-${m}-`;
+            
+            try {
+                const empIds = employees.map(e => e.id);
+                if(empIds.length > 0) {
+                    const { data } = await sbClient.from('shifts').select('employee_id, day_key').like('day_key', `${prefix}%`).in('employee_id', empIds);
+                    if(data && data.length > 0) {
+                        for(let item of data) {
+                            await sbClient.from('shifts').delete().eq('employee_id', item.employee_id).eq('day_key', item.day_key);
+                        }
+                    }
+                }
+                await window.loadAllData(true); 
+                window.showToast("Mês Totalmente Limpo"); 
+            } catch(e) { console.error(e); window.showToast("Erro no Processo"); }
+            window.setLoading(false); 
+        }
+
+        function startRoleEdit(empId, currentRole) {
+            const cell = document.getElementById(`role-cell-${empId}`); if (!cell) return;
+            cell.innerHTML = `<input type="text" id="input-role-${empId}" class="inline-input" value="${currentRole || ''}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveRoleInline('${empId}')">`;
+            const input = document.getElementById(`input-role-${empId}`); input.focus(); input.select();
+        }
+        async function saveRoleInline(empId) {
+            const input = document.getElementById(`input-role-${empId}`); if (!input) return;
+            const newRole = input.value.trim().toUpperCase(); window.setLoading(true, "A Guardar...");
+            
+            const empIndex = employees.findIndex(e => e.id === empId);
+            if(empIndex !== -1) employees[empIndex].role = newRole;
+            window.renderScale();
+            
+            await sbClient.from('employees').update({ role: newRole }).eq('id', empId);
+            await window.loadAllData(true); window.setLoading(false); window.showToast("Posto Atualizado");
+        }
+
+        function startNameEditInline(empId, currentName) {
+            const cell = document.getElementById(`name-cell-${empId}`); if (!cell) return;
+            cell.innerHTML = `<input type="text" id="input-name-${empId}" class="inline-input" value="${currentName.toUpperCase()}" onblur="window.renderScale()" onkeyup="if(event.key==='Enter') window.saveNameInline('${empId}')">`;
+            const input = document.getElementById(`input-name-${empId}`); input.focus(); input.select();
+        }
+        async function saveNameInline(empId) {
+            const input = document.getElementById(`input-name-${empId}`); if (!input) return;
+            const newName = input.value.trim().toUpperCase(); if(!newName) return window.renderScale();
+            window.setLoading(true, "A Guardar..."); 
+            
+            const empIndex = employees.findIndex(e => e.id === empId);
+            if(empIndex !== -1) employees[empIndex].name = newName;
+            window.renderScale();
+
+            await sbClient.from('employees').update({ name: newName }).eq('id', empId);
+            await window.loadAllData(true); window.setLoading(false); window.showToast("Nome Atualizado");
+        }
+
+        function startAddInline() { isAddingInline = true; window.renderScale(); setTimeout(() => { const input = document.getElementById('input-name-new'); if(input) input.focus(); }, 100); }
+        async function saveNewMemberInline() {
+            const input = document.getElementById('input-name-new'); if(!input) return;
+            const rawValue = input.value.trim().toUpperCase();
+            if(!rawValue) { isAddingInline = false; window.renderScale(); return; }
+            
+            const nameList = rawValue.split(/[,\n]/).map(n => n.trim().toUpperCase()).filter(n => n !== "");
+            window.setLoading(true, "A Registar...");
+            await sbClient.from('employees').insert(nameList.map(name => ({ name, role: "", sector: currentSector })));
+            isAddingInline = false; await window.loadAllData(true); window.setLoading(false); window.showToast("Membro Registado");
+        }
+
+        // --- 9. LÓGICA DE TURNOS E HORÁRIOS ---
+        function openShiftModal(empId, d) { 
+            const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
+            editingContext = { empId, day: d, month: document.getElementById('monthSelect').value, year: document.getElementById('yearSelect').value }; 
+            document.getElementById('modalEmpName').innerText = employees.find(e=>e.id===empId).name.toUpperCase(); document.getElementById('modalDateLabel').innerText = `DIA ${d} • TURNO`; 
+            document.getElementById('field-in').value = shift.in; document.getElementById('field-out').value = shift.out; document.getElementById('field-lunch').value = shift.lunch || 2; 
+            window.setEditMode(shift.isFolga ? (shift.tipoFolga || 'DSR') : 'TRABALHO'); window.openModal('shiftModal'); 
+        }
+
+        async function handleDeleteShiftRecord() { 
+            const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`; 
+            window.closeModal('shiftModal');
+            window.setLoading(true, "A Apagar Turno...");
+            try {
+                await sbClient.from('shifts').delete().eq('employee_id', editingContext.empId).eq('day_key', key); 
+                if (shifts[editingContext.empId] && shifts[editingContext.empId][key]) { delete shifts[editingContext.empId][key]; window.renderScale(); }
+                await window.loadAllData(true); 
+                window.showToast("Turno Apagado"); 
+            } catch(e) { console.error(e); window.showToast("Falha ao Apagar"); }
+            window.setLoading(false);
+        }
+
+        function calculateAutoOut() { 
+            const v = document.getElementById('field-in').value, l = parseFloat(document.getElementById('field-lunch').value || 0); 
+            if(v) { 
+                const [h, m] = v.split(':').map(Number); 
+                let t = (h * 60 + m + 440 + (l * 60)) % 1440; 
+                document.getElementById('field-out').value = `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`; 
+            } 
+        }
+
+        function setEditMode(m) { 
+            currentMode = m; 
+            const timeArea = document.getElementById('timeInputArea');
+            if(timeArea) {
+                if(m !== 'TRABALHO') timeArea.classList.add('hidden');
+                else timeArea.classList.remove('hidden');
+            }
+            const propagate = document.getElementById('label-propagate');
+            if(propagate) {
+                if(m !== 'DSR') propagate.classList.add('hidden');
+                else propagate.classList.remove('hidden');
+            }
+
+            ['work', 'dsr', 'vacation'].forEach(k => { 
+                const b = document.getElementById(`btn-mode-${k}`); 
+                if(!b) return;
+                b.className = (m === (k==='work'?'TRABALHO':k.toUpperCase())) 
+                ? 'flex-1 py-3 rounded-xl text-[10px] font-black uppercase bg-blue-600 text-white shadow-md transition-all' 
+                : 'flex-1 py-3 rounded-xl text-[10px] font-black uppercase bg-white text-slate-400 border border-slate-200 hover:bg-slate-50 transition-all'; 
+            }); 
+            if(m === 'TRABALHO') window.calculateAutoOut(); 
+        }
+
+        async function saveShift() {
+            const { empId, day, month, year } = editingContext;
+            const repeat = document.getElementById('field-repeat').checked;
+            const propagate = document.getElementById('field-propagate').checked;
+            const isF = (currentMode !== 'TRABALHO');
+            const data = { 
+                in: document.getElementById('field-in').value, 
+                out: document.getElementById('field-out').value, 
+                lunch: document.getElementById('field-lunch').value, 
+                isFolga: isF, 
+                tipoFolga: isF ? currentMode : null 
+            };
+            
+            let upserts = [{ employee_id: empId, day_key: `${year}-${month}-${day}`, shift_data: data }];
+            
+            if (repeat) { 
+                const dMax = new Date(year, parseInt(month) + 1, 0).getDate(); 
+                for (let d = day + 1; d <= dMax; d++) {
+                    if (!shifts[empId]?.[`${year}-${month}-${d}`]?.isFolga) {
+                        upserts.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: data }); 
+                    }
+                }
+            }
+            if (currentMode === 'DSR' && propagate) { 
+                const dMax = new Date(year, parseInt(month) + 1, 0).getDate(); 
+                for (let d = day + 7; d <= dMax; d += 7) {
+                    upserts.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: { ...data, isFolga: true, tipoFolga: 'DSR' } }); 
+                }
+            }
+            
+            window.setLoading(true, "A Guardar Turno..."); 
+            try {
+                await sbClient.from('shifts').upsert(upserts, { onConflict: 'employee_id, day_key' }); 
+                await window.loadAllData(true); 
+                window.closeModal('shiftModal'); 
+                window.showToast("Gravado com Sucesso");
+            } catch(e) { console.error(e); window.showToast("Erro a Guardar"); }
+            window.setLoading(false); 
+        }
+
+
+        // --- 10. EXPORTAÇÃO (PDF / JPG) ---
+        async function exportJPG() {
+            const table = document.getElementById('mainTable'); 
+            const container = document.getElementById('capture-container');
+            window.setLoading(true, "A Gerar Imagem...");
+            
+            const originalOverflow = container.style.overflow;
+            container.style.overflow = 'visible';
+
+            try {
+                const fullW = table.scrollWidth;
+                const fullH = table.scrollHeight;
+
+                const canvas = await html2canvas(table, {
+                    scale: 2, 
+                    useCORS: true, 
+                    width: fullW,
+                    height: fullH,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: fullW + 50,
+                    backgroundColor: '#ffffff',
+                    onclone: (doc) => {
+                        doc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
+                        doc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
+                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.color = '#000000'; e.style.boxShadow = 'none'; 
+                        });
+                        
+                        doc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
+                            e.classList.remove('truncate');
+                            e.style.whiteSpace = 'normal';
+                            e.style.wordBreak = 'break-word';
+                            e.style.overflow = 'visible';
+                        });
+
+                        const tempRow = doc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
+                        
+                        const cloneTable = doc.getElementById('mainTable');
+                        if(cloneTable) {
+                            cloneTable.style.width = 'max-content';
+                            cloneTable.style.tableLayout = 'auto'; 
+                        }
+                    }
+                });
+
+                canvas.toBlob((blob) => { 
+                    const a = document.createElement('a'); a.download = `Escala_${currentSector}.jpg`; a.href = URL.createObjectURL(blob); a.click(); 
+                    window.setLoading(false); window.showToast("Imagem Descarregada");
+                }, 'image/jpeg', 1.0);
+            } catch(e) {
+                console.error(e);
+                window.setLoading(false); window.showToast("Erro na Exportação");
+            } finally {
+                container.style.overflow = originalOverflow;
+            }
+        }
+
+        async function exportPDF() {
+            const table = document.getElementById('mainTable');
+            const container = document.getElementById('capture-container');
+            const m = parseInt(document.getElementById('monthSelect').value);
+            const monthText = document.getElementById('monthSelect').options[m].text;
+            window.setLoading(true, "A Construir Documento...");
+            
+            const originalOverflow = container.style.overflow;
+            container.style.overflow = 'visible';
+
+            try {
+                const fullW = table.scrollWidth;
+                const fullH = table.scrollHeight;
+
+                const canvas = await html2canvas(table, {
+                    scale: 2, 
+                    useCORS: true, 
+                    width: fullW, 
+                    height: fullH, 
+                    scrollX: 0, 
+                    scrollY: 0, 
+                    windowWidth: fullW + 50, 
+                    backgroundColor: '#ffffff', 
+                    onclone: (clonedDoc) => {
+                        const cloneCont = clonedDoc.getElementById('capture-container');
+                        if(cloneCont) cloneCont.style.overflow = 'visible';
+                        
+                        clonedDoc.querySelectorAll('.col-mirror, .sticky-header-mirror, .btn-circular-add, .col-action, .error-note-trigger').forEach(e => e.style.display = 'none');
+                        clonedDoc.querySelectorAll('.sticky-col-name, thead tr th, .sticky-header-name').forEach(e => { 
+                            e.style.position = 'static'; e.style.backgroundColor = '#ffffff'; e.style.fontSize = '14px'; e.style.color = '#000000'; e.style.boxShadow = 'none';
+                        });
+
+                        clonedDoc.querySelectorAll('.emp-name-heavy.truncate').forEach(e => {
+                            e.classList.remove('truncate');
+                            e.style.whiteSpace = 'normal';
+                            e.style.wordBreak = 'break-word';
+                            e.style.overflow = 'visible';
+                        });
+
+                        const tempRow = clonedDoc.getElementById('input-name-new')?.closest('tr'); if(tempRow) tempRow.style.display = 'none';
+                        const cloneTable = clonedDoc.getElementById('mainTable');
+                        if(cloneTable) {
+                            cloneTable.style.width = 'max-content';
+                            cloneTable.style.tableLayout = 'auto';
+                        }
+                    }
+                });
+
+                const pdfW = canvas.width / 2; 
+                const pdfH = canvas.height / 2;
+
+                const opt = {
+                    margin: 0, 
+                    filename: `Escala_${currentSector}_${monthText}.pdf`, 
+                    image: { type: 'jpeg', quality: 1.0 },
+                    jsPDF: { unit: 'px', format: [pdfW + 20, pdfH + 20], orientation: pdfW > pdfH ? 'landscape' : 'portrait', compress: true }
+                };
+
+                await html2pdf().set(opt).from(canvas).save();
+                
+                window.setLoading(false); window.showToast("PDF Descarregado"); 
+            } catch(e) { 
+                window.setLoading(false); window.showToast("Falha no PDF"); console.error(e);
+            } finally {
+                container.style.overflow = originalOverflow;
+            }
+        }
+
+        // MAPEAR FUNÇÕES PARA O WINDOW OBJECT PARA USO INLINE HTML
+        Object.assign(window, {
+            openModal, closeModal, showToast, setLoading, updateStatus, showViolation,
+            loadCachedData, saveToCache, setupSelectors, switchPanel, promptAddSector, selectSector, renderSectors, requestSectorAccess, logoutSector,
+            checkAdminPassword, protectAction, handleAdminPanelAccess,
+            initSupabaseBackground, loadAllData, initCalendar, getEmployeeViolations,
+            renderScale, renameCurrentSector, changeSectorPassword, changeSectorColabPassword, renderEmployeesAdmin, adminAddNewEmployee, saveAdminEmployeeEdit,
+            removeEmployee, handleClearEmployeeMonth, handleClearMonth,
+            handleDeleteShiftRecord, calculateAutoOut, setEditMode, saveShift,
+            openShiftModal, exportJPG, exportPDF, startRoleEdit, saveRoleInline,
+            startNameEditInline, saveNameInline, startAddInline, saveNewMemberInline, loadSectorsFromDB
+        });
+    </script>
+</body>
+</html>
