@@ -213,7 +213,7 @@
                     </div>
                     <div>
                         <h1 class="font-black text-xl text-slate-900 tracking-tighter leading-none uppercase text-blue-600">EscalaPro</h1>
-                        <p id="connection-status" class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Ligar Cloud...</p>
+                        <p id="connection-status" class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">A Ligar...</p>
                     </div>
                 </div>
 
@@ -237,7 +237,6 @@
                     </button>
                 </div>
 
-                <!-- Painel de Ações Contextuais -->
                 <div id="actions-scale" class="flex items-center gap-2">
                     <button onclick="handleClearMonth()" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm hover:bg-red-50 transition-all active:scale-95">
                         <i data-lucide="eraser" class="w-3.5 h-3.5"></i> Limpar Mês
@@ -263,9 +262,9 @@
                                 <th class="col-action"></th>
                             </tr>
                             <tr id="header-row-numbers">
-                                <th class="sticky-header-name text-left px-4 text-[9px] font-black uppercase text-white/70">Funcionário</th>
-                                <th class="col-role text-left px-4 text-[9px] font-black uppercase text-white/70">Cargo</th>
-                                <th class="col-action text-center text-[9px] font-black uppercase text-white/70"><i data-lucide="trash-2" class="w-3 h-3 mx-auto"></i></th>
+                                <th class="sticky-header-name header-label-static text-left px-4 uppercase">Funcionário</th>
+                                <th class="col-role header-label-static text-left px-4 uppercase">Cargo</th>
+                                <th class="col-action header-label-static text-center uppercase"><i data-lucide="trash-2" class="w-3 h-3 mx-auto opacity-50"></i></th>
                             </tr>
                         </thead>
                         <tbody id="scaleBody"></tbody>
@@ -293,7 +292,6 @@
             </div>
         </main>
 
-        <!-- RODAPÉ DE COPYRIGHT -->
         <footer class="mt-auto py-8 border-t border-slate-200">
             <div class="content-container text-center">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
@@ -309,29 +307,42 @@
     </div>
 
     <!-- MODAIS -->
+
+    <!-- Modal Confirmação (CENTRALIZADO E ROBUSTO) -->
+    <div id="confirmModal" class="fixed inset-0 z-[600] hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-white rounded-[40px] w-full max-w-sm p-10 shadow-2xl flex flex-col items-center text-center space-y-6 animate-in zoom-in duration-200">
+            <div class="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center text-red-500 mb-2">
+                <i data-lucide="alert-triangle" class="w-10 h-10"></i>
+            </div>
+            <div class="space-y-3">
+                <h3 id="confirmModalTitle" class="text-2xl font-black text-slate-900 uppercase tracking-tighter">Confirmar</h3>
+                <p id="confirmModalText" class="text-slate-500 text-sm font-bold uppercase leading-relaxed px-4"></p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 w-full pt-4">
+                <button onclick="closeModal('confirmModal')" class="flex-1 font-black text-slate-400 py-5 uppercase text-[10px] tracking-widest order-2 sm:order-1">Voltar</button>
+                <button id="confirmModalBtn" class="flex-[2] bg-red-500 text-white font-black py-5 rounded-2xl shadow-xl shadow-red-100 active:scale-95 transition-all uppercase text-[10px] tracking-widest order-1 sm:order-2">Sim, Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Turno -->
     <div id="shiftModal" class="fixed inset-0 z-[100] hidden bg-slate-900/70 backdrop-blur-md items-center justify-center p-4">
         <div class="bg-white rounded-[48px] w-full max-w-sm shadow-2xl p-10 space-y-8 animate-in zoom-in duration-200">
             <div class="flex justify-between items-start">
                 <div><h3 id="modalEmpName" class="text-2xl font-black text-slate-900 tracking-tighter leading-none uppercase"></h3><p id="modalDateLabel" class="text-blue-600 font-bold text-[11px] uppercase mt-2"></p></div>
                 <button onclick="closeModal('shiftModal')" class="p-3 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50"><i data-lucide="x"></i></button>
             </div>
-            
             <div class="space-y-8">
                 <div id="timeInputArea" class="space-y-2">
-                    <div class="flex justify-around px-2">
-                        <span class="seq-label-tiny">Entrada</span>
-                        <span class="seq-label-tiny">Almoço</span>
-                        <span class="seq-label-tiny">Saída</span>
-                    </div>
+                    <div class="flex justify-around px-2"><span class="seq-label-tiny">Entrada</span><span class="seq-label-tiny">Almoço</span><span class="seq-label-tiny">Saída</span></div>
                     <div class="time-input-sequence">
                         <input type="time" id="field-in" oninput="calculateAutoOut()" class="seq-input">
                         <div class="input-divider"></div>
-                        <input type="number" id="field-lunch" step="0.5" value="2" oninput="calculateAutoOut()" class="seq-input seq-input-small">
+                        <input type="number" id="field-lunch" step="0.5" value="2" oninput="calculateAutoOut()" class="seq-input w-[60px] text-slate-400">
                         <div class="input-divider"></div>
                         <input type="time" id="field-out" class="seq-input">
                     </div>
                 </div>
-
                 <div class="space-y-3">
                     <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Tipo de Registo</label>
                     <div class="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 gap-1">
@@ -341,12 +352,10 @@
                         <button onclick="setEditMode('FERIAS')" id="btn-mode-vacation" class="mode-button">FÉRIAS</button>
                     </div>
                 </div>
-
                 <div class="p-6 bg-slate-50 rounded-[32px] border border-slate-100 space-y-4">
                     <label class="flex items-center gap-4 cursor-pointer group"><input type="checkbox" id="field-repeat" class="w-6 h-6 rounded-lg text-blue-600 border-slate-300 transition-all"><span class="text-xs font-bold uppercase text-slate-600">Replicar horários</span></label>
                     <label id="label-propagate" class="hidden flex items-center gap-4 cursor-pointer group"><input type="checkbox" id="field-propagate" class="w-6 h-6 rounded-lg text-green-600 border-slate-300 transition-all"><span class="text-xs font-bold uppercase text-green-700">Projetar Ciclo 6x1</span></label>
                 </div>
-
                 <div class="flex gap-3">
                     <button onclick="handleDeleteShiftRecord()" class="px-6 bg-red-50 text-red-500 rounded-[24px] border border-red-100 hover:bg-red-100 transition-all"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                     <button onclick="saveShift()" class="flex-1 bg-slate-900 text-white font-black py-6 rounded-[28px] shadow-2xl active:scale-95 text-sm uppercase tracking-widest uppercase">Sincronizar Cloud</button>
@@ -357,31 +366,16 @@
 
     <!-- Modal Funcionário -->
     <div id="employeeModal" class="fixed inset-0 z-[100] hidden bg-slate-900/60 backdrop-blur-md items-center justify-center p-4">
-        <div class="bg-white rounded-[48px] w-full max-w-md p-12 shadow-2xl space-y-8 animate-in zoom-in duration-300">
+        <div class="bg-white rounded-[48px] w-full max-w-md p-10 shadow-2xl space-y-8 animate-in zoom-in duration-300">
             <h3 id="employeeModalTitle" class="text-2xl font-black text-slate-900 text-center uppercase tracking-tighter">Dados do Membro</h3>
             <div class="space-y-4">
                 <input type="text" id="new-emp-name" placeholder="NOME COMPLETO" class="w-full p-5 bg-slate-50 border-2 border-transparent rounded-[24px] font-bold outline-none focus:border-blue-500 uppercase">
                 <input type="text" id="new-emp-role" placeholder="CARGO / POSTO" class="w-full p-5 bg-slate-50 border-2 border-transparent rounded-[24px] font-bold outline-none focus:border-blue-500 uppercase">
             </div>
-            <div class="flex gap-4 pt-4">
-                <button onclick="closeModal('employeeModal')" class="flex-1 font-bold text-slate-400">Cancelar</button>
+            <div class="flex gap-4 pt-2">
+                <button onclick="closeModal('employeeModal')" class="flex-1 font-black text-slate-400 uppercase text-xs">Cancelar</button>
                 <button onclick="saveEmployee()" class="flex-[2] bg-blue-600 text-white font-black py-5 rounded-[24px] shadow-xl hover:bg-blue-700 transition-all uppercase text-sm">Confirmar</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal Confirmação -->
-    <div id="confirmModal" class="fixed inset-0 z-[600] hidden bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
-        <div class="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-red-500 mb-4">
-            <i data-lucide="alert-triangle" class="w-10 h-10"></i>
-        </div>
-        <div>
-            <h3 id="confirmModalTitle" class="text-xl font-black text-slate-900 leading-tight uppercase">Confirmar</h3>
-            <p id="confirmModalText" class="text-slate-500 text-sm mt-3 font-medium uppercase">Ação irreversível.</p>
-        </div>
-        <div class="flex gap-3 pt-4">
-            <button onclick="closeModal('confirmModal')" class="flex-1 font-bold text-slate-400 py-4 cursor-pointer">Voltar</button>
-            <button id="confirmModalBtn" class="flex-[2] bg-red-500 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all cursor-pointer uppercase">Eliminar</button>
         </div>
     </div>
 
@@ -400,11 +394,9 @@
 
         const RULES = { WORK_NORMAL: 440, MAX_CONSECUTIVE: 6 };
         const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-        
         let employees = [], shifts = {}; 
         let currentMode = 'TRABALHO', editingEmployeeId = null, editingContext = null;
-        let deleteTargetId = null;
-        let deleteTargetType = null;
+        let deleteTargetId = null, deleteTargetType = null;
 
         function setupPWA() {
             const manifest = { name: "EscalaPro Cloud", short_name: "EscalaPro", start_url: ".", display: "standalone", background_color: "#ffffff", theme_color: "#f07556", icons: [{ src: "https://cdn-icons-png.flaticon.com/512/2693/2693507.png", sizes: "512x512", type: "image/png" }] };
@@ -418,28 +410,28 @@
         }
 
         window.onload = async () => {
-            setupPWA();
-            setupSelectors();
-            await initSupabase();
-            lucide.createIcons();
+            setupPWA(); setupSelectors(); await initSupabase(); lucide.createIcons();
         };
 
         async function initSupabase() {
-            if (typeof supabase === 'undefined' && !window.supabase) {
-                setTimeout(initSupabase, 300);
-                return;
-            }
+            if (typeof supabase === 'undefined' && !window.supabase) { setTimeout(initSupabase, 300); return; }
             try {
                 const lib = window.supabase || supabase;
                 sbClient = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                document.getElementById('connection-status').innerText = 'Online';
-                document.getElementById('connection-status').classList.replace('text-slate-400', 'text-green-500');
-                await loadAllData();
+                try {
+                    await loadAllData();
+                    document.getElementById('connection-status').innerText = 'Online';
+                    document.getElementById('connection-status').classList.replace('text-slate-400', 'text-green-500');
+                } catch (dataErr) {
+                    console.error("Data fetch error:", dataErr);
+                    document.getElementById('connection-status').innerText = 'Erro SQL';
+                }
                 initCalendar();
                 document.getElementById('loadingOverlay').classList.add('hidden');
             } catch(e) { 
+                console.error("Supabase Init Error:", e);
                 showToast("Falha na ligação.");
-                document.getElementById('loadingText').innerText = "Erro. Recarregue.";
+                document.getElementById('loadingText').innerText = "Erro de Rede. Recarregue.";
             }
         }
 
@@ -462,25 +454,43 @@
 
         async function loadAllData() {
             if(!sbClient) return;
-            try {
-                const { data: empData } = await sbClient.from('employees').select('*').order('name');
-                employees = empData || [];
-                const { data: shiftData } = await sbClient.from('shifts').select('*');
-                shifts = {};
-                shiftData?.forEach(item => {
-                    if(!shifts[item.employee_id]) shifts[item.employee_id] = {};
-                    shifts[item.employee_id][item.day_key] = item.shift_data;
-                });
-                renderEmployees(); renderScale();
-            } catch (err) { console.error(err); }
+            const { data: empData, error: empErr } = await sbClient.from('employees').select('*').order('name');
+            if(empErr) throw empErr;
+            employees = empData || [];
+            const { data: shiftData, error: shiftErr } = await sbClient.from('shifts').select('*');
+            if(shiftErr) throw shiftErr;
+            shifts = {};
+            shiftData?.forEach(item => { if(!shifts[item.employee_id]) shifts[item.employee_id] = {}; shifts[item.employee_id][item.day_key] = item.shift_data; });
+            renderEmployees(); renderScale();
+        }
+
+        function renderEmployees() {
+            const list = document.getElementById('employeeList');
+            if(!list) return;
+            list.innerHTML = employees.map(emp => `
+                <div class="bg-white p-4 rounded-3xl border flex justify-between items-center group hover:border-blue-600 shadow-sm transition-all">
+                    <div>
+                        <h4 class="font-extrabold text-slate-900 text-sm leading-tight uppercase">${emp.name}</h4>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">${emp.role || 'Geral'}</p>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="openEditEmployeeModal('${emp.id}')" class="p-3 text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                        <button onclick="removeEmployee('${emp.id}')" class="p-3 text-red-400 hover:bg-red-50 rounded-xl transition-all cursor-pointer"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
+                    </div>
+                </div>`).join('');
+            lucide.createIcons();
         }
 
         async function saveEmployee() {
-            const name = document.getElementById('new-emp-name').value.trim(), role = document.getElementById('new-emp-role').value.trim();
+            const nameInput = document.getElementById('new-emp-name');
+            const roleInput = document.getElementById('new-emp-role');
+            const name = nameInput ? nameInput.value.trim() : "";
+            const role = roleInput ? roleInput.value.trim() : "";
+            
             if (!name) return showToast("Nome é obrigatório!");
             setLoading(true);
             try {
-                const payload = { name, role };
+                const payload = { name: name.toUpperCase(), role: role.toUpperCase() };
                 if (editingEmployeeId) await sbClient.from('employees').update(payload).eq('id', editingEmployeeId);
                 else await sbClient.from('employees').insert([payload]);
                 closeModal('employeeModal'); await loadAllData(); showToast("Guardado!");
@@ -491,37 +501,26 @@
             const emp = employees.find(e => e.id === id);
             if (!emp) return;
             deleteTargetId = id; deleteTargetType = 'employee';
-            document.getElementById('confirmModalTitle').innerText = "Eliminar";
-            document.getElementById('confirmModalText').innerText = `Eliminar ${emp.name.toUpperCase()} permanentemente?`;
-            document.getElementById('confirmModalBtn').onclick = executeDelete;
-            openModal('confirmModal');
-        }
-
-        function handleDeleteShiftRecord() {
-            deleteTargetType = 'shift';
-            document.getElementById('confirmModalTitle').innerText = "Limpar Dia";
-            document.getElementById('confirmModalText').innerText = "Deseja limpar este registo?";
-            document.getElementById('confirmModalBtn').onclick = executeDelete;
+            const modalText = document.getElementById('confirmModalText');
+            if(modalText) modalText.innerText = `Eliminar ${emp.name.toUpperCase()} permanentemente da Cloud?`;
             openModal('confirmModal');
         }
 
         function handleClearMonth() {
             deleteTargetType = 'clear_month';
-            document.getElementById('confirmModalTitle').innerText = "Limpar Mês";
-            document.getElementById('confirmModalText').innerText = "Apagar horários de todos?";
-            document.getElementById('confirmModalBtn').onclick = executeDelete;
+            const modalText = document.getElementById('confirmModalText');
+            if(modalText) modalText.innerText = "Apagar horários de todos no mês selecionado?";
             openModal('confirmModal');
         }
 
         function handleClearEmployeeMonth(empId) {
             const emp = employees.find(e => e.id === empId);
             if(!emp) return;
-            deleteTargetId = empId;
-            deleteTargetType = 'clear_employee_month';
-            const monthText = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
-            document.getElementById('confirmModalTitle').innerText = "Limpar Escala";
-            document.getElementById('confirmModalText').innerText = `Apagar todos os horários de ${emp.name.toUpperCase()} em ${monthText.toUpperCase()}?`;
-            document.getElementById('confirmModalBtn').onclick = executeDelete;
+            deleteTargetId = empId; deleteTargetType = 'clear_employee_month';
+            const monthSelect = document.getElementById('monthSelect');
+            const mText = monthSelect ? monthSelect.options[monthSelect.selectedIndex].text : "este mês";
+            const modalText = document.getElementById('confirmModalText');
+            if(modalText) modalText.innerText = `Apagar horários de ${emp.name.toUpperCase()} em ${mText.toUpperCase()}?`;
             openModal('confirmModal');
         }
 
@@ -543,8 +542,7 @@
                     await sbClient.from('shifts').delete().eq('employee_id', deleteTargetId).like('day_key', `${pattern}%`);
                 }
                 await loadAllData(); showToast("Sucesso!");
-            } catch (err) { console.error(err); showToast("Erro ao eliminar."); }
-            finally { setLoading(false); deleteTargetId = null; deleteTargetType = null; }
+            } catch (err) { showToast("Erro."); } finally { setLoading(false); deleteTargetId = null; deleteTargetType = null; }
         }
 
         async function saveShift() {
@@ -555,27 +553,25 @@
             const upserts = [{ employee_id: empId, day_key: `${year}-${month}-${day}`, shift_data: shiftData }];
             if (repeat) {
                 const dMax = new Date(year, parseInt(month) + 1, 0).getDate();
-                for (let d = day + 1; d <= dMax; d++) {
-                    const targetKey = `${year}-${month}-${d}`;
-                    if (shifts[empId]?.[targetKey]?.isFolga) continue; 
-                    upserts.push({ employee_id: empId, day_key: targetKey, shift_data: shiftData });
-                }
+                for (let d = day + 1; d <= dMax; d++) { if (!shifts[empId]?.[`${year}-${month}-${d}`]?.isFolga) upserts.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: shiftData }); }
             }
             if (currentMode === 'DSR' && propagate) {
                 const dMax = new Date(year, parseInt(month) + 1, 0).getDate();
                 for (let d = day + 7; d <= dMax; d += 7) upserts.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: { ...shiftData, isFolga: true, tipoFolga: 'DSR' } });
             }
             setLoading(true);
-            const { error } = await sbClient.from('shifts').upsert(upserts, { onConflict: 'employee_id, day_key' });
-            setLoading(false);
-            if(!error) { await loadAllData(); closeModal('shiftModal'); showToast("Sincronizado!"); }
+            await sbClient.from('shifts').upsert(upserts, { onConflict: 'employee_id, day_key' });
+            setLoading(false); await loadAllData(); closeModal('shiftModal'); showToast("Sincronizado!");
         }
 
         function initCalendar() {
-            const month = parseInt(document.getElementById('monthSelect').value), year = parseInt(document.getElementById('yearSelect').value), dMax = new Date(year, month + 1, 0).getDate();
+            const monthSelect = document.getElementById('monthSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            if(!monthSelect || !yearSelect) return;
+            const month = parseInt(monthSelect.value), year = parseInt(yearSelect.value), dMax = new Date(year, month + 1, 0).getDate();
             const rowW = document.getElementById('header-row-weekdays'), rowN = document.getElementById('header-row-numbers');
-            while (rowW.cells.length > 3) rowW.deleteCell(3);
-            while (rowN.cells.length > 3) rowN.deleteCell(3);
+            if(!rowW || !rowN) return;
+            while (rowW.cells.length > 3) rowW.deleteCell(3); while (rowN.cells.length > 3) rowN.deleteCell(3);
             for (let d = 1; d <= dMax; d++) {
                 const date = new Date(year, month, d), isSun = date.getDay() === 0, isToday = d === new Date().getDate() && month === new Date().getMonth();
                 const thW = document.createElement('th'); thW.className = `day-col weekday-label ${isSun ? 'header-sun' : ''}`; thW.innerText = WEEKDAYS[date.getDay()]; rowW.appendChild(thW);
@@ -585,21 +581,24 @@
         }
 
         function renderScale() {
-            const body = document.getElementById('scaleBody'), monthSelect = document.getElementById('monthSelect').value, yearSelect = document.getElementById('yearSelect').value;
-            const daysInMonthCalculated = new Date(yearSelect, parseInt(monthSelect) + 1, 0).getDate();
+            const body = document.getElementById('scaleBody'), monthSelect = document.getElementById('monthSelect'), yearSelect = document.getElementById('yearSelect');
+            if(!body || !monthSelect || !yearSelect) return;
+            const mVal = monthSelect.value;
+            const yVal = yearSelect.value;
+            const dMax = new Date(yVal, parseInt(mVal) + 1, 0).getDate();
             if (employees.length === 0) { body.innerHTML = `<tr><td colspan="40" class="p-12 text-center text-slate-300 font-bold italic uppercase text-[10px]">Vazio</td></tr>`; return; }
             body.innerHTML = employees.map(emp => {
-                const violations = getEmployeeViolationDays(emp.id, monthSelect, yearSelect, daysInMonthCalculated);
+                const violations = getEmployeeViolationDays(emp.id, mVal, yVal, dMax);
                 let cells = '';
-                for (let d = 1; d <= daysInMonthCalculated; d++) {
-                    const key = `${yearSelect}-${monthSelect}-${d}`, shift = shifts[emp.id]?.[key], isSun = new Date(yearSelect, parseInt(monthSelect), d).getDay() === 0;
+                for (let d = 1; d <= dMax; d++) {
+                    const key = `${yVal}-${mVal}-${d}`, shift = shifts[emp.id]?.[key], isSun = new Date(yVal, parseInt(mVal), d).getDay() === 0;
                     let content = '<span class="empty-time text-[10px] font-bold tracking-tighter opacity-30">--:--</span>';
                     let bg = isSun ? "sun-col" : "";
                     if (violations.has(d) && shift && !shift.isFolga) bg += isSun ? " cell-violation-sun" : " cell-violation";
                     if (shift) {
                         if (shift.isFolga) {
-                            if (shift.tipoFolga === 'FERIAS') content = `<div class="badge-vacation">FÉRIAS</div>`;
-                            else content = (shift.tipoFolga === 'DSR') ? `<div class="badge-dsr">DSR</div>` : `<div class="badge-bh">BH</div>`; 
+                            const cls = shift.tipoFolga === 'FERIAS' ? 'vacation' : shift.tipoFolga.toLowerCase();
+                            content = `<div class="badge-${cls}">${shift.tipoFolga === 'FERIAS' ? 'FÉRIAS' : shift.tipoFolga}</div>`;
                         } else { content = `<div class="time-text">${shift.in}</div><div class="time-subtext">${shift.out}</div>`; }
                     }
                     cells += `<td class="day-col ${bg}"><div class="cell-interactive" onclick="openShiftModal('${emp.id}', ${d})">${content}</div></td>`;
@@ -607,11 +606,7 @@
                 return `<tr>
                     <td class="sticky-col-name p-2"><span class="emp-name-clickable text-[13px] truncate-cell leading-none uppercase" onclick="openEditEmployeeModal('${emp.id}')">${emp.name}</span></td>
                     <td class="col-role p-2"><span class="text-[10px] font-bold text-slate-400 uppercase truncate-cell">${emp.role || '---'}</span></td>
-                    <td class="col-action p-2 text-center">
-                        <button onclick="handleClearEmployeeMonth('${emp.id}')" class="btn-clear-row">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </td>
+                    <td class="col-action p-2 text-center"><button onclick="handleClearEmployeeMonth('${emp.id}')" class="btn-clear-row"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
                     ${cells}
                 </tr>`;
             }).join('');
@@ -620,78 +615,52 @@
 
         function setupSelectors() { 
             const mS = document.getElementById('monthSelect'), yS = document.getElementById('yearSelect'), n = new Date(); 
+            if(!mS || !yS) return;
             ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"].forEach((m, i) => mS.innerHTML += `<option value="${i}" ${i === n.getMonth() ? 'selected' : ''}>${m}</option>`); 
             for(let y = 2025; y <= 2026; y++) yS.innerHTML += `<option value="${y}" ${y === n.getFullYear() ? 'selected' : ''}>${y}</option>`; 
         }
-        function openModal(id) { document.getElementById(id).classList.add('modal-active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('modal-active'); }
-        function setLoading(s, t = "Sincronizando...") { 
-            if(s) { document.getElementById('loadingOverlay').classList.remove('hidden'); document.getElementById('loadingText').innerText = t; }
-            else { document.getElementById('loadingOverlay').classList.add('hidden'); }
-        }
-        function showToast(m) { const c = document.getElementById('toastContainer'), t = document.createElement('div'); t.className = "bg-slate-900 text-white px-6 py-3 rounded-2xl text-[10px] font-black shadow-2xl animate-bounce"; t.innerText = m.toUpperCase(); c.appendChild(t); setTimeout(() => t.remove(), 4000); }
-
-        async function exportAndShare() {
-            const area = document.getElementById('capture-container'), mainBody = document.body; mainBody.classList.add('exporting'); setLoading(true, "A gerar imagem...");
-            try {
-                const canvas = await html2canvas(area, { scale: 2.5, useCORS: true, backgroundColor: "#ffffff", width: area.scrollWidth, height: area.scrollHeight, onclone: (doc) => {
-                    const el = doc.querySelector('.table-container'); el.style.maxHeight = 'none'; el.style.width = area.scrollWidth + 'px';
-                    doc.querySelectorAll('.sticky-col-name, thead tr th').forEach(s => {
-                        if (s.classList.contains('sticky-col-name')) s.style.position = 'static';
-                    });
-                }});
-                canvas.toBlob(async (blob) => {
-                    const file = new File([blob], `Escala.jpg`, { type: 'image/jpeg' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: `Escala Mensal` });
-                    else { const a = document.createElement('a'); a.download = `Escala.jpg`; a.href = URL.createObjectURL(blob); a.click(); }
-                }, 'image/jpeg', 0.95);
-            } catch (err) { console.error(err); } finally { setLoading(false); mainBody.classList.remove('exporting'); }
-        }
-        
-        function calculateAutoOut() {
-            const v = document.getElementById('field-in').value, l = parseFloat(document.getElementById('field-lunch').value || 0);
-            if(v) { const [h, m] = v.split(':').map(Number), t = (h*60+m+440+(l*60))%1440; document.getElementById('field-out').value = `${String(Math.floor(t/60)).padStart(2, '0')}:${String(t%60).padStart(2, '0')}`; }
-        }
+        function openModal(id) { const el = document.getElementById(id); if(el) { el.classList.remove('hidden'); el.classList.add('flex'); } lucide.createIcons(); }
+        function closeModal(id) { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('flex'); } }
+        function setLoading(s, t = "Sincronizando...") { const el = document.getElementById('loadingOverlay'); if(!el) return; if(s) { el.classList.remove('hidden'); el.classList.add('flex'); document.getElementById('loadingText').innerText = t; } else { el.classList.add('hidden'); el.classList.remove('flex'); } }
+        function showToast(m) { const c = document.getElementById('toastContainer'), t = document.createElement('div'); if(!c) return; t.className = "bg-slate-900 text-white px-6 py-3 rounded-2xl text-[10px] font-black shadow-2xl animate-bounce"; t.innerText = m.toUpperCase(); c.appendChild(t); setTimeout(() => t.remove(), 4000); }
+        function calculateAutoOut() { const inField = document.getElementById('field-in'); const lunchField = document.getElementById('field-lunch'); if(!inField) return; const v = inField.value, l = parseFloat(lunchField ? lunchField.value : 2); if(v) { const [h, m] = v.split(':').map(Number), t = (h*60+m+440+(l*60))%1440; const outField = document.getElementById('field-out'); if(outField) outField.value = `${String(Math.floor(t/60)).padStart(2, '0')}:${String(t%60).padStart(2, '0')}`; } }
         function setEditMode(m) {
-            currentMode = m;
-            const bW = document.getElementById('btn-mode-work'), bD = document.getElementById('btn-mode-dsr'), bB = document.getElementById('btn-mode-bh'), bF = document.getElementById('btn-mode-vacation');
+            currentMode = m; const bW = document.getElementById('btn-mode-work'), bD = document.getElementById('btn-mode-dsr'), bB = document.getElementById('btn-mode-bh'), bF = document.getElementById('btn-mode-vacation');
             const inputArea = document.getElementById('timeInputArea'), labelPropagate = document.getElementById('label-propagate');
+            if(!bW) return;
             [bW, bD, bB, bF].forEach(b => b.className = 'mode-button');
-            labelPropagate.classList.toggle('hidden', m !== 'DSR');
-            if(m === 'TRABALHO') { bW.classList.add('active-work'); inputArea.classList.remove('hidden'); calculateAutoOut(); }
-            else { if(m === 'DSR') bD.classList.add('active-dsr'); else if(m === 'BH') bB.classList.add('active-bh'); else bF.classList.add('active-vacation'); inputArea.classList.add('hidden'); }
+            if(labelPropagate) labelPropagate.classList.toggle('hidden', m !== 'DSR');
+            if(m === 'TRABALHO') { bW.classList.add('active-work'); if(inputArea) inputArea.classList.remove('hidden'); calculateAutoOut(); }
+            else { if(m === 'DSR') bD.classList.add('active-dsr'); else if(m === 'BH') bB.classList.add('active-bh'); else bF.classList.add('active-vacation'); if(inputArea) inputArea.classList.add('hidden'); }
         }
         function getEmployeeViolationDays(empId, month, year, dMax) {
             let violatingDays = new Set(), streak = [];
             for (let d = 1; d <= dMax; d++) {
                 const shift = shifts[empId]?.[`${year}-${month}-${d}`];
-                const isBreak = shift && shift.isFolga && (shift.tipoFolga === 'DSR' || shift.tipoFolga === 'FERIAS');
-                if (isBreak) { if (streak.length > 6) streak.forEach(day => violatingDays.add(day)); streak = []; }
+                if (shift && shift.isFolga && (shift.tipoFolga === 'DSR' || shift.tipoFolga === 'FERIAS')) { if (streak.length > 6) streak.forEach(day => violatingDays.add(day)); streak = []; }
                 else streak.push(d);
             }
-            if (streak.length > 6) streak.forEach(day => violatingDays.add(day));
-            return violatingDays;
+            if (streak.length > 6) streak.forEach(day => violatingDays.add(day)); return violatingDays;
         }
-        function openAddEmployeeModal() { editingEmployeeId = null; document.getElementById('employeeModalTitle').innerText = "Novo Membro"; document.getElementById('new-emp-name').value = ""; document.getElementById('new-emp-role').value = ""; openModal('employeeModal'); }
-        function openEditEmployeeModal(id) { const emp = employees.find(e => String(e.id) === String(id)); if (!emp) return; if(document.getElementById('panel-admin').classList.contains('hidden')) switchPanel('admin'); editingEmployeeId = id; document.getElementById('employeeModalTitle').innerText = "Editar Membro"; document.getElementById('new-emp-name').value = emp.name.toUpperCase(); document.getElementById('new-emp-role').value = (emp.role || "").toUpperCase(); openModal('employeeModal'); }
+        function openAddEmployeeModal() { editingEmployeeId = null; const t = document.getElementById('employeeModalTitle'); if(t) t.innerText = "Novo Membro"; const n = document.getElementById('new-emp-name'); const r = document.getElementById('new-emp-role'); if(n) n.value = ""; if(r) r.value = ""; openModal('employeeModal'); }
+        function openEditEmployeeModal(id) { const emp = employees.find(e => String(e.id) === String(id)); if (!emp) return; switchPanel('admin'); editingEmployeeId = id; const t = document.getElementById('employeeModalTitle'); if(t) t.innerText = "Editar Membro"; const n = document.getElementById('new-emp-name'); const r = document.getElementById('new-emp-role'); if(n) n.value = emp.name.toUpperCase(); if(r) r.value = (emp.role || "").toUpperCase(); openModal('employeeModal'); }
         function openShiftModal(empId, d) { 
-            const key = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
-            editingContext = { empId, day: d, month: document.getElementById('monthSelect').value, year: document.getElementById('yearSelect').value }; 
-            document.getElementById('modalEmpName').innerText = employees.find(e => e.id === empId).name.toUpperCase(); 
-            document.getElementById('modalDateLabel').innerText = `DIA ${d} • TURNO`; 
-            document.getElementById('field-in').value = shift.in; document.getElementById('field-out').value = shift.out; document.getElementById('field-lunch').value = shift.lunch; 
-            document.getElementById('field-repeat').checked = false; document.getElementById('field-propagate').checked = false; 
-            setEditMode(shift.isFolga ? (shift.tipoFolga || 'DSR') : 'TRABALHO'); 
-            openModal('shiftModal'); 
+            const yearSelect = document.getElementById('yearSelect');
+            const monthSelect = document.getElementById('monthSelect');
+            if(!yearSelect || !monthSelect) return;
+            const key = `${yearSelect.value}-${monthSelect.value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
+            editingContext = { empId, day: d, month: monthSelect.value, year: yearSelect.value }; 
+            const empNameEl = document.getElementById('modalEmpName');
+            const dateLabelEl = document.getElementById('modalDateLabel');
+            if(empNameEl) empNameEl.innerText = employees.find(e => e.id === empId).name.toUpperCase(); 
+            if(dateLabelEl) dateLabelEl.innerText = `DIA ${d} • TURNO`; 
+            const fin = document.getElementById('field-in'), fout = document.getElementById('field-out'), flunch = document.getElementById('field-lunch');
+            if(fin) fin.value = shift.in; if(fout) fout.value = shift.out; if(flunch) flunch.value = shift.lunch; 
+            const frep = document.getElementById('field-repeat'), fprop = document.getElementById('field-propagate');
+            if(frep) frep.checked = false; if(fprop) fprop.checked = false; 
+            setEditMode(shift.isFolga ? (shift.tipoFolga || 'DSR') : 'TRABALHO'); openModal('shiftModal'); 
         }
-        function renderEmployees() { const list = document.getElementById('employeeList'); list.innerHTML = employees.map(emp => `
-            <div class="bg-white p-4 rounded-3xl border flex justify-between items-center group hover:border-blue-600 shadow-sm">
-                <div><h4 class="font-extrabold text-slate-900 text-sm leading-tight uppercase">${emp.name}</h4><p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">${emp.role || 'Geral'}</p></div>
-                <div class="flex gap-1">
-                    <button onclick="openEditEmployeeModal('${emp.id}')" class="p-3 text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                    <button onclick="removeEmployee('${emp.id}')" class="p-3 text-red-400 hover:bg-red-50 rounded-xl transition-all cursor-pointer"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
-                </div>
-            </div>`).join(''); lucide.createIcons(); }
+        function handleDeleteShiftRecord() { deleteTargetType = 'shift'; const mt = document.getElementById('confirmModalText'); if(mt) mt.innerText = "Deseja limpar este registo?"; openModal('confirmModal'); }
     </script>
 </body>
 </html>
