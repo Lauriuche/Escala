@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EscalaPro Cloud - Gestão Profissional</title>
     
-    <!-- Meta tags para PWA e Mobile -->
     <meta name="theme-color" content="#f07556">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,20 +15,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Supabase Lib -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         :root {
             --cell-width: 95px;
-            --name-col-width: 170px; 
+            --name-col-width: 180px; 
             --role-col-width: 110px;
             --action-col-width: 50px;
-            --row-height: 10px;
-            --sun-red: #f07556;
-            --header-gray: #64748b;
+            --row-height: 48px;
+            --sun-red: #ff8b73;
+            --header-gray: #1e293b;
             --page-padding: 1rem; 
         }
         @media (min-width: 768px) { :root { --page-padding: 2rem; } }
@@ -42,229 +39,204 @@
             overscroll-behavior-y: contain;
         }
 
-        /* --- Scrollbar --- */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        /* Scrollbar Premium */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid #f8fafc; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        .content-container {
-            padding-left: var(--page-padding);
-            padding-right: var(--page-padding);
-        }
+        .content-container { padding-left: var(--page-padding); padding-right: var(--page-padding); }
 
-        /* --- Tabela --- */
+        /* Tabela Premium */
         .table-container {
             overflow: auto;
-            max-height: calc(100vh - 150px);
+            max-height: calc(100vh - 180px);
             border-radius: 16px;
             background: white;
-            box-shadow: 0 4px 15px -3px rgba(0,0,0,0.05);
-            border: 1px solid var(--header-gray);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
             position: relative;
         }
 
-        table { 
-            border-collapse: separate; 
-            border-spacing: 0; 
-            width: max-content;
-            background-color: white;
-        }
+        table { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; background-color: white; }
 
-        /* COLUNA DO NOME (FIXA) - MEMBRANA DE BLOQUEIO */
+        /* Coluna do Nome - Sombra Suave */
         .sticky-col-name { 
-            position: sticky; 
-            left: 0;
-            z-index: 40; 
+            position: sticky; left: 0; z-index: 40; 
             background-color: white !important;
-            width: var(--name-col-width); 
-            min-width: var(--name-col-width);
-            vertical-align: middle;
-            background-clip: padding-box;
-            border-right: none;
+            width: var(--name-col-width); min-width: var(--name-col-width);
+            vertical-align: middle; background-clip: padding-box; border-right: none;
+            transition: background-color 0.2s;
         }
-
-        /* A "Membrana" que impede o vazamento de cor */
         .sticky-col-name::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 1px;
-            background-color: #e2e8f0;
-            box-shadow: 8px 0 12px -2px rgba(0,0,0,0.2);
-            z-index: 41;
+            content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px;
+            background-color: transparent; box-shadow: 10px 0 15px -3px rgba(0,0,0,0.1); z-index: 41;
         }
 
-        /* Colunas móveis que recolhem-se por trás do nome */
         .col-role { width: var(--role-col-width); min-width: var(--role-col-width); border-right: 1px solid #f1f5f9; z-index: 10; }
         .col-action { width: var(--action-col-width); min-width: var(--action-col-width); text-align: center; border-right: 1px solid #e2e8f0; z-index: 10; }
         
-        /* CABEÇALHO SÓLIDO */
+        /* Cabeçalho Glassmorphism */
         thead tr th { 
-            position: sticky; 
-            top: 0; 
-            z-index: 20; 
-            background-color: var(--header-gray) !important; 
-            border-bottom: 1px solid rgba(0,0,0,0.1); 
-            border-right: 1px solid rgba(255,255,255,0.1); 
-            padding: 10px 14px; 
-            color: white;
-            height: 42px;
-            font-weight: 800;
+            position: sticky; top: 0; z-index: 20; 
+            background-color: rgba(30, 41, 59, 0.85) !important; 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.1); border-right: 1px solid rgba(255,255,255,0.05); 
+            padding: 10px 14px; color: white; height: 42px; font-weight: 800;
         }
         thead tr:nth-child(2) th { top: 42px; }
-
-        /* Canto Superior Fixo do Nome */
         .sticky-header-name { 
-            z-index: 60 !important; 
-            background-color: var(--header-gray) !important; 
-            left: 0;
-            position: sticky;
-            border-right: 1px solid rgba(255,255,255,0.2) !important;
+            z-index: 60 !important; left: 0; position: sticky;
+            border-right: 1px solid rgba(255,255,255,0.1) !important;
         }
 
-        .day-col { width: var(--cell-width); min-width: var(--cell-width); text-align: center; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background: white; }
-        .weekday-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.9); }
+        .day-col { width: var(--cell-width); min-width: var(--cell-width); text-align: center; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; background: white; transition: all 0.2s; }
+        .weekday-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.8); }
         .day-label { font-size: 14px; font-weight: 800; color: white; }
+        .header-label-static { color: rgba(255,255,255,0.6) !important; font-size: 10px; }
 
-        .header-label-static { color: rgba(255,255,255,0.7) !important; font-size: 9px; }
-
-        /* Domingo Unificado - Vermelho Forte */
-        .sun-col { background-color: var(--sun-red) !important; color: white !important; border-right: 1px solid rgba(0,0,0,0.05) !important; } 
-        .header-sun { background-color: var(--sun-red) !important; border-right: 1px solid rgba(255,255,255,0.1) !important; }
+        /* Domingo e Erros */
+        .sun-col { background-color: #fff1f2 !important; border-right: 1px solid #ffe4e6 !important; } 
+        .header-sun { background-color: var(--sun-red) !important; border-right: 1px solid rgba(255,255,255,0.2) !important; }
         
-        .sun-col .time-text { color: white !important; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .sun-col .time-subtext { color: rgba(255, 255, 255, 0.85) !important; }
-
-        /* Badges */
-        .badge-dsr { background: #2563eb; color: white; font-size: 11px; font-weight: 900; padding: 4px 2px; width: 90%; border-radius: 6px; text-align: center; text-transform: uppercase; }
-        .badge-bh { background: #f97316; color: white; font-size: 11px; font-weight: 900; padding: 4px 2px; width: 90%; border-radius: 6px; text-align: center; text-transform: uppercase; }
-        .badge-vacation { background: #10b981; color: white; font-size: 11px; font-weight: 900; padding: 4px 2px; width: 90%; border-radius: 6px; text-align: center; text-transform: uppercase; }
-
-        .sun-col .badge-dsr, .sun-col .badge-bh, .sun-col .badge-vacation {
-            border: 1.5px solid white !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
-
+        /* Células interativas */
         .cell-interactive {
-            cursor: pointer;
-            height: var(--row-height);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 5;
+            cursor: pointer; height: var(--row-height); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; position: relative; z-index: 5;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px; margin: 2px;
+        }
+        .day-col:hover .cell-interactive {
+            background-color: white; transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 10;
         }
 
-        /* Alerta 6x1 */
-        .cell-violation { background-color: #fef08a !important; border: 2px solid #eab308 !important; }
-        .cell-violation-sun {
-            background-color: var(--sun-red) !important;
-            border: 2.5px solid #fef08a !important;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.15);
-        }
+        /* Alertas */
+        .cell-violation { background-color: #fef9c3 !important; border: 1.5px dashed #facc15 !important; }
+        .cell-violation-sun { background-color: #ffedd5 !important; border: 1.5px dashed #fb923c !important; }
 
-        .time-text { font-size: 13px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; line-height: 1; }
-        .time-subtext { font-size: 9px; font-weight: 600; color: #64748b; }
+        /* Textos e Badges */
+        .time-text { font-size: 14px; font-weight: 800; color: #1e293b; letter-spacing: -0.03em; line-height: 1; }
+        .time-subtext { font-size: 10px; font-weight: 600; color: #64748b; margin-top: 2px; }
+        
+        /* Badges atualizadas para preenchimento e centralização perfeitos */
+        .badge-dsr { display: flex; align-items: center; justify-content: center; background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 800; padding: 4px; width: 90%; border-radius: 8px; border: 1px solid #bfdbfe; }
+        .badge-bh { display: flex; align-items: center; justify-content: center; background: #fff7ed; color: #ea580c; font-size: 11px; font-weight: 800; padding: 4px; width: 90%; border-radius: 8px; border: 1px solid #fed7aa; }
+        .badge-vacation { display: flex; align-items: center; justify-content: center; background: #ecfdf5; color: #059669; font-size: 11px; font-weight: 800; padding: 4px; width: 90%; border-radius: 8px; border: 1px solid #a7f3d0; }
 
-        .btn-clear-row { color: #94a3b8; transition: all 0.2s; padding: 6px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
-        .btn-clear-row:hover { color: #ef4444; background-color: #fef2f2; }
+        .btn-clear-row { color: #cbd5e1; transition: all 0.2s; padding: 6px; border-radius: 8px; }
+        .btn-clear-row:hover { color: #ef4444; background-color: #fef2f2; transform: scale(1.1); }
 
-        /* Input Sequencial */
+        /* Modais Animados */
         .time-input-sequence {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #ffffff;
-            padding: 4px;
-            border-radius: 20px;
-            border: 2px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: space-between;
+            background: #f8fafc; padding: 6px; border-radius: 24px; border: 2px solid #e2e8f0;
+            transition: all 0.2s;
         }
-        .input-divider { width: 1px; height: 24px; background-color: #e2e8f0; }
-        .seq-input { background: transparent; border: none; font-weight: 800; font-size: 18px; color: #1e293b; text-align: center; outline: none; width: 100px; padding: 8px 0; cursor: pointer; }
+        .time-input-sequence:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+        .input-divider { width: 2px; height: 24px; background-color: #e2e8f0; }
+        .seq-input { background: transparent; border: none; font-weight: 800; font-size: 18px; color: #1e293b; text-align: center; outline: none; width: 100px; padding: 8px 0; }
 
-        .modal-active { display: flex !important; animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes modalIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-active { display: flex !important; animation: modalBgIn 0.3s forwards; }
+        @keyframes modalBgIn { from { opacity: 0; backdrop-filter: blur(0px); } to { opacity: 1; backdrop-filter: blur(8px); } }
+        .modal-content-in { animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
-        .mode-button { flex: 1; padding: 12px 4px; border-radius: 12px; font-weight: 800; font-size: 10px; text-transform: uppercase; transition: 0.2s; cursor: pointer; text-align: center; color: #64748b; }
-        .active-work { background-color: white; color: #2563eb; box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.1); }
-        .active-dsr { background-color: #2563eb; color: white; box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.3); }
-        .active-bh { background-color: #f97316; color: white; box-shadow: 0 4px 12px -2px rgba(249, 115, 22, 0.3); }
-        .active-vacation { background-color: #10b981; color: white; box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.3); }
+        .mode-button { flex: 1; padding: 14px 4px; border-radius: 16px; font-weight: 800; font-size: 11px; text-transform: uppercase; transition: 0.2s; cursor: pointer; text-align: center; color: #64748b; border: 2px solid transparent; }
+        .active-work { background-color: white; color: #2563eb; box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.15); border-color: #bfdbfe; }
+        .active-dsr { background-color: #2563eb; color: white; box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.4); border-color: #2563eb; }
+        .active-bh { background-color: #ea580c; color: white; box-shadow: 0 4px 15px -3px rgba(234, 88, 12, 0.4); border-color: #ea580c; }
+        .active-vacation { background-color: #059669; color: white; box-shadow: 0 4px 15px -3px rgba(5, 150, 105, 0.4); border-color: #059669; }
 
         .nav-active { color: #2563eb !important; background-color: white !important; box-shadow: 0 4px 12px -2px rgba(0,0,0,0.05); }
         .emp-name-clickable { cursor: pointer; transition: color 0.2s; font-weight: 800; text-transform: uppercase; }
-        .emp-name-clickable:hover { color: #2563eb; text-decoration: underline; }
+        .emp-name-clickable:hover { color: #2563eb; }
         
-        .toolbar-pill { background-color: #f1f5f9; padding: 4px; border-radius: 14px; display: flex; align-items: center; gap: 2px; border: 1px solid #e2e8f0; }
+        .toolbar-pill { background-color: #f1f5f9; padding: 6px; border-radius: 16px; display: flex; align-items: center; gap: 4px; border: 1px solid #e2e8f0; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .toast-enter { animation: slideUpToast 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUpToast { 0% { opacity: 0; transform: translateY(100%) scale(0.9); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Modo Visualização (Somente Leitura) */
+        .view-only-mode .col-action { display: none !important; }
+        .view-only-mode .cell-interactive { cursor: default !important; pointer-events: none !important; transform: none !important; box-shadow: none !important; }
+        .view-only-mode .day-col:hover .cell-interactive { background-color: transparent !important; transform: none !important; box-shadow: none !important; z-index: 5 !important; }
+        .view-only-mode .emp-name-clickable { cursor: default !important; pointer-events: none !important; text-decoration: none !important; }
+        .view-only-mode .emp-name-clickable:hover { color: inherit !important; }
+        .view-only-mode .btn-clear-row { display: none !important; }
+        
+        /* Destaque do Dia de Hoje */
+        .col-today { background-color: #eff6ff !important; border-left: 2px solid #bfdbfe !important; border-right: 2px solid #bfdbfe !important; }
+        .col-today-sun { background-color: #fef2f2 !important; border-left: 2px solid #fecaca !important; border-right: 2px solid #fecaca !important; }
     </style>
 </head>
 <body class="antialiased">
 
     <div id="view-main" class="flex flex-col min-h-screen">
-        <header class="bg-white border-b border-slate-200 py-4 sticky top-0 z-50">
+        <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 sticky top-0 z-50 transition-all">
             <div class="content-container flex flex-wrap justify-between items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg rotate-3">
+                <div class="flex items-center gap-4 group">
+                    <div class="bg-blue-600 p-2.5 rounded-2xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] group-hover:rotate-6 transition-all duration-300">
                         <i data-lucide="cloud" class="text-white w-5 h-5"></i>
                     </div>
                     <div>
                         <h1 class="font-black text-xl text-slate-900 tracking-tighter leading-none uppercase text-blue-600">EscalaPro</h1>
-                        <p id="connection-status" class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">A Ligar...</p>
+                        <p id="connection-status" class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75" id="ping-dot"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-slate-400" id="solid-dot"></span></span>
+                            <span id="status-text">A Ligar...</span>
+                        </p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <div class="flex bg-slate-50 p-1 rounded-xl border border-slate-200">
-                        <select id="monthSelect" onchange="initCalendar()" class="bg-transparent font-bold text-[11px] px-2 outline-none text-slate-700"></select>
-                        <select id="yearSelect" onchange="initCalendar()" class="bg-transparent font-bold text-[11px] px-2 outline-none text-slate-700 border-l border-slate-200"></select>
+                    <div class="flex bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+                        <select id="monthSelect" onchange="initCalendar()" class="bg-transparent font-bold text-xs px-3 py-1 outline-none text-slate-700 cursor-pointer"></select>
+                        <select id="yearSelect" onchange="initCalendar()" class="bg-transparent font-bold text-xs px-3 py-1 outline-none text-slate-700 border-l border-slate-300 cursor-pointer"></select>
                     </div>
                 </div>
             </div>
         </header>
 
-        <section class="bg-slate-50/50 py-3 border-b border-slate-200">
-            <div class="content-container flex flex-wrap items-center gap-4">
+        <section class="bg-slate-50 py-4 border-b border-slate-200">
+            <div class="content-container flex flex-wrap items-center justify-between gap-4">
                 <div class="toolbar-pill">
-                    <button onclick="switchPanel('scale')" id="nav-scale" class="flex items-center gap-2 px-5 py-2 rounded-lg text-[11px] font-black uppercase transition-all nav-active">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Escala
+                    <button onclick="switchPanel('scale')" id="nav-scale" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase transition-all nav-active">
+                        <i data-lucide="calendar" class="w-4 h-4"></i> Escala
                     </button>
-                    <button onclick="switchPanel('admin')" id="nav-admin" class="flex items-center gap-2 px-5 py-2 rounded-lg text-[11px] font-black uppercase transition-all text-slate-500 hover:text-blue-600">
-                        <i data-lucide="users" class="w-3.5 h-3.5"></i> Admin
-                    </button>
-                </div>
-
-                <div id="actions-scale" class="flex items-center gap-2">
-                    <button onclick="handleClearMonth()" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm hover:bg-red-50 transition-all active:scale-95">
-                        <i data-lucide="eraser" class="w-3.5 h-3.5"></i> Limpar Mês
+                    <button onclick="switchPanel('admin')" id="nav-admin" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase transition-all text-slate-500 hover:text-blue-600">
+                        <i data-lucide="users" class="w-4 h-4"></i> Admin
                     </button>
                 </div>
 
-                <div id="actions-admin" class="hidden flex items-center gap-2">
-                    <button onclick="openAddEmployeeModal()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-md hover:bg-blue-700 transition-all active:scale-95">
-                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Novo Funcionário
+                <div id="actions-scale" class="flex items-center gap-3">
+                    <button onclick="handleClearMonth()" class="flex items-center gap-2 bg-white border border-red-200 text-red-500 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase shadow-sm hover:bg-red-50 hover:border-red-300 transition-all active:scale-95">
+                        <i data-lucide="eraser" class="w-4 h-4"></i> Limpar Mês
+                    </button>
+                </div>
+
+                <div id="actions-admin" class="hidden flex items-center gap-3">
+                    <button onclick="openAddEmployeeModal()" class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:bg-blue-700 hover:-translate-y-0.5 transition-all active:scale-95">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> Novo Funcionário
                     </button>
                 </div>
             </div>
         </section>
 
-        <main id="panel-scale" class="py-6 space-y-4">
+        <main id="panel-scale" class="py-6 space-y-6">
             <div class="content-container">
                 <div id="capture-container" class="table-container no-scrollbar">
                     <table id="mainTable">
                         <thead>
                             <tr id="header-row-weekdays">
-                                <th class="sticky-header-name text-left px-4 text-[10px] font-black uppercase tracking-tighter">Equipa Cloud</th>
+                                <th class="sticky-header-name text-left px-5 text-[11px] font-black uppercase tracking-tighter">Equipa Cloud</th>
                                 <th class="col-role"></th>
                                 <th class="col-action"></th>
                             </tr>
                             <tr id="header-row-numbers">
-                                <th class="sticky-header-name header-label-static text-left px-4 uppercase">Funcionário</th>
-                                <th class="col-role header-label-static text-left px-4 uppercase">Cargo</th>
-                                <th class="col-action header-label-static text-center uppercase"><i data-lucide="trash-2" class="w-3 h-3 mx-auto opacity-50"></i></th>
+                                <th class="sticky-header-name header-label-static text-left px-5 uppercase tracking-widest">Funcionário</th>
+                                <th class="col-role header-label-static text-left px-4 uppercase tracking-widest">Cargo</th>
+                                <th class="col-action header-label-static text-center uppercase"><i data-lucide="trash-2" class="w-3.5 h-3.5 mx-auto opacity-50"></i></th>
                             </tr>
                         </thead>
                         <tbody id="scaleBody"></tbody>
@@ -272,277 +244,484 @@
                 </div>
             </div>
 
-            <div class="content-container flex flex-wrap justify-between items-center gap-4 pt-2">
-                <div class="flex items-center gap-3 text-[9px] font-bold text-slate-400 uppercase">
-                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-[#f07556] rounded-sm"></span> DOMINGO</span>
-                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-yellow-400 rounded-sm border border-yellow-600"></span> ERRO 6X1</span>
-                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-blue-600 rounded-sm"></span> DSR</span>
-                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-orange-400 rounded-sm"></span> BH</span>
-                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-sm"></span> FÉRIAS</span>
+            <div class="content-container flex flex-wrap justify-between items-center gap-6 pt-2">
+                <div class="flex flex-wrap items-center gap-4 text-[10px] font-bold text-slate-500 uppercase">
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-[#fff1f2] border border-[#ffe4e6] rounded-md shadow-sm"></span> DOMINGO</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-[#fef9c3] border border-[#facc15] rounded-md shadow-sm"></span> ERRO 6X1</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-[#eff6ff] border border-[#bfdbfe] rounded-md shadow-sm"></span> DSR</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-[#fff7ed] border border-[#fed7aa] rounded-md shadow-sm"></span> BH</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-[#ecfdf5] border border-[#a7f3d0] rounded-md shadow-sm"></span> FÉRIAS</span>
                 </div>
-                <button onclick="exportAndShare()" class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-green-700 transition-all active:scale-95 shadow-lg">
-                    <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Exportar JPG
-                </button>
+                <div class="flex items-center gap-3">
+                    <button onclick="copyViewLink()" id="btn-share-link" class="flex items-center gap-2 bg-blue-50 text-blue-600 border border-blue-200 px-7 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 shadow-sm">
+                        <i data-lucide="link" class="w-4 h-4"></i> Partilhar Link
+                    </button>
+                    <button onclick="exportAndShare()" class="flex items-center gap-2 bg-slate-900 text-white px-7 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-800 hover:shadow-xl transition-all active:scale-95 shadow-lg">
+                        <i data-lucide="image" class="w-4 h-4"></i> Exportar Escala
+                    </button>
+                </div>
             </div>
         </main>
 
-        <main id="panel-admin" class="hidden py-6 animate-in slide-in-from-bottom-4 duration-300">
+        <main id="panel-admin" class="hidden py-8">
             <div class="content-container">
-                <div id="employeeList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="employeeList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
             </div>
         </main>
 
-        <footer class="mt-auto py-8 border-t border-slate-200">
+        <footer class="mt-auto py-8 border-t border-slate-200 bg-white">
             <div class="content-container text-center">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                    © 2026 EscalaPro Cloud. Todos os direitos reservados.
-                </p>
-                <div class="flex justify-center gap-4 mt-2">
-                    <span class="w-8 h-0.5 bg-slate-200 rounded-full"></span>
-                    <span class="w-2 h-0.5 bg-blue-400 rounded-full"></span>
-                    <span class="w-8 h-0.5 bg-slate-200 rounded-full"></span>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">© 2026 EscalaPro Cloud. Powered by Firebase.</p>
+                <div class="flex justify-center gap-4 mt-3 opacity-50">
+                    <span class="w-12 h-1 bg-slate-200 rounded-full"></span>
+                    <span class="w-3 h-1 bg-blue-400 rounded-full"></span>
+                    <span class="w-12 h-1 bg-slate-200 rounded-full"></span>
                 </div>
             </div>
         </footer>
     </div>
 
-    <!-- MODAIS -->
-
-    <!-- Modal Confirmação (CENTRALIZADO E ROBUSTO) -->
-    <div id="confirmModal" class="fixed inset-0 z-[600] hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
-        <div class="bg-white rounded-[40px] w-full max-w-sm p-10 shadow-2xl flex flex-col items-center text-center space-y-6 animate-in zoom-in duration-200">
-            <div class="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center text-red-500 mb-2">
-                <i data-lucide="alert-triangle" class="w-10 h-10"></i>
+    <!-- Modal Confirmação -->
+    <div id="confirmModal" class="fixed inset-0 z-[600] hidden bg-slate-950/40 items-center justify-center p-4">
+        <div class="bg-white rounded-[32px] w-full max-w-sm p-10 shadow-2xl flex flex-col items-center text-center space-y-6 modal-content-in">
+            <div class="bg-red-50 w-20 h-20 rounded-full flex items-center justify-center text-red-500 mb-2 border-4 border-red-100">
+                <i data-lucide="alert-triangle" class="w-8 h-8"></i>
             </div>
-            <div class="space-y-3">
-                <h3 id="confirmModalTitle" class="text-2xl font-black text-slate-900 uppercase tracking-tighter">Confirmar</h3>
-                <p id="confirmModalText" class="text-slate-500 text-sm font-bold uppercase leading-relaxed px-4"></p>
+            <div class="space-y-2">
+                <h3 id="confirmModalTitle" class="text-xl font-black text-slate-900 uppercase tracking-tighter">Atenção</h3>
+                <p id="confirmModalText" class="text-slate-500 text-[13px] font-bold uppercase leading-relaxed px-2"></p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3 w-full pt-4">
-                <button onclick="closeModal('confirmModal')" class="flex-1 font-black text-slate-400 py-5 uppercase text-[10px] tracking-widest order-2 sm:order-1">Voltar</button>
-                <button id="confirmModalBtn" class="flex-[2] bg-red-500 text-white font-black py-5 rounded-2xl shadow-xl shadow-red-100 active:scale-95 transition-all uppercase text-[10px] tracking-widest order-1 sm:order-2">Sim, Eliminar</button>
+                <button onclick="closeModal('confirmModal')" class="flex-1 font-black text-slate-400 py-4 uppercase text-[11px] tracking-widest order-2 sm:order-1 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">Cancelar</button>
+                <button id="confirmModalBtn" onclick="executeDelete()" class="flex-[2] bg-red-500 text-white font-black py-4 rounded-xl shadow-[0_4px_14px_rgba(239,68,68,0.3)] hover:bg-red-600 active:scale-95 transition-all uppercase text-[11px] tracking-widest order-1 sm:order-2">Sim, Eliminar</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Turno -->
-    <div id="shiftModal" class="fixed inset-0 z-[100] hidden bg-slate-900/70 backdrop-blur-md items-center justify-center p-4">
-        <div class="bg-white rounded-[48px] w-full max-w-sm shadow-2xl p-10 space-y-8 animate-in zoom-in duration-200">
+    <div id="shiftModal" class="fixed inset-0 z-[100] hidden bg-slate-950/40 items-center justify-center p-4">
+        <div class="bg-white rounded-[32px] w-full max-w-sm shadow-2xl p-8 space-y-8 modal-content-in border border-slate-100">
             <div class="flex justify-between items-start">
-                <div><h3 id="modalEmpName" class="text-2xl font-black text-slate-900 tracking-tighter leading-none uppercase"></h3><p id="modalDateLabel" class="text-blue-600 font-bold text-[11px] uppercase mt-2"></p></div>
-                <button onclick="closeModal('shiftModal')" class="p-3 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50"><i data-lucide="x"></i></button>
+                <div>
+                    <h3 id="modalEmpName" class="text-xl font-black text-slate-900 tracking-tighter leading-none uppercase"></h3>
+                    <p id="modalDateLabel" class="text-blue-600 font-bold text-[10px] uppercase tracking-widest mt-2"></p>
+                </div>
+                <button onclick="closeModal('shiftModal')" class="p-2.5 bg-slate-50 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="space-y-8">
-                <div id="timeInputArea" class="space-y-2">
-                    <div class="flex justify-around px-2"><span class="seq-label-tiny">Entrada</span><span class="seq-label-tiny">Almoço</span><span class="seq-label-tiny">Saída</span></div>
+            <div class="space-y-6">
+                <div id="timeInputArea" class="space-y-3">
+                    <div class="flex justify-around px-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                        <span>Entrada</span><span>Pausa</span><span>Saída</span>
+                    </div>
                     <div class="time-input-sequence">
                         <input type="time" id="field-in" oninput="calculateAutoOut()" class="seq-input">
                         <div class="input-divider"></div>
-                        <input type="number" id="field-lunch" step="0.5" value="2" oninput="calculateAutoOut()" class="seq-input w-[60px] text-slate-400">
+                        <input type="number" id="field-lunch" step="0.5" value="2" oninput="calculateAutoOut()" class="seq-input w-[60px] text-slate-400 text-sm">
                         <div class="input-divider"></div>
                         <input type="time" id="field-out" class="seq-input">
                     </div>
                 </div>
-                <div class="space-y-3">
-                    <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Tipo de Registo</label>
-                    <div class="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 gap-1">
-                        <button onclick="setEditMode('TRABALHO')" id="btn-mode-work" class="mode-button">TRABALHO</button>
+                
+                <div class="space-y-3 pt-2 border-t border-slate-100">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Registo</label>
+                    <div class="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
+                        <button onclick="setEditMode('TRABALHO')" id="btn-mode-work" class="mode-button">Work</button>
                         <button onclick="setEditMode('DSR')" id="btn-mode-dsr" class="mode-button">DSR</button>
                         <button onclick="setEditMode('BH')" id="btn-mode-bh" class="mode-button">BH</button>
-                        <button onclick="setEditMode('FERIAS')" id="btn-mode-vacation" class="mode-button">FÉRIAS</button>
+                        <button onclick="setEditMode('FERIAS')" id="btn-mode-vacation" class="mode-button">Férias</button>
                     </div>
                 </div>
-                <div class="p-6 bg-slate-50 rounded-[32px] border border-slate-100 space-y-4">
-                    <label class="flex items-center gap-4 cursor-pointer group"><input type="checkbox" id="field-repeat" class="w-6 h-6 rounded-lg text-blue-600 border-slate-300 transition-all"><span class="text-xs font-bold uppercase text-slate-600">Replicar horários</span></label>
-                    <label id="label-propagate" class="hidden flex items-center gap-4 cursor-pointer group"><input type="checkbox" id="field-propagate" class="w-6 h-6 rounded-lg text-green-600 border-slate-300 transition-all"><span class="text-xs font-bold uppercase text-green-700">Projetar Ciclo 6x1</span></label>
+
+                <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                    <label class="flex items-center gap-4 cursor-pointer group">
+                        <div class="relative w-6 h-6 flex items-center justify-center">
+                            <input type="checkbox" id="field-repeat" class="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-lg checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer">
+                            <i data-lucide="check" class="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-all scale-50 peer-checked:scale-100"></i>
+                        </div>
+                        <span class="text-[11px] font-bold uppercase text-slate-700 tracking-wide">Clonar para a frente</span>
+                    </label>
+                    <label id="label-propagate" class="hidden flex items-center gap-4 cursor-pointer group">
+                        <div class="relative w-6 h-6 flex items-center justify-center">
+                            <input type="checkbox" id="field-propagate" class="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-lg checked:bg-green-500 checked:border-green-500 transition-all cursor-pointer">
+                            <i data-lucide="check" class="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-all scale-50 peer-checked:scale-100"></i>
+                        </div>
+                        <span class="text-[11px] font-bold uppercase text-green-700 tracking-wide">Projetar DSR (6x1)</span>
+                    </label>
                 </div>
-                <div class="flex gap-3">
-                    <button onclick="handleDeleteShiftRecord()" class="px-6 bg-red-50 text-red-500 rounded-[24px] border border-red-100 hover:bg-red-100 transition-all"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
-                    <button onclick="saveShift()" class="flex-1 bg-slate-900 text-white font-black py-6 rounded-[28px] shadow-2xl active:scale-95 text-sm uppercase tracking-widest uppercase">Sincronizar Cloud</button>
+
+                <div class="flex gap-3 pt-4">
+                    <button onclick="handleDeleteShiftRecord()" class="px-5 bg-red-50 text-red-500 rounded-xl border border-red-100 hover:bg-red-500 hover:text-white transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    <button onclick="saveShift()" class="flex-1 bg-slate-900 text-white font-black py-4 rounded-xl shadow-[0_8px_20px_rgba(15,23,42,0.3)] hover:bg-slate-800 active:scale-95 transition-all text-xs tracking-widest uppercase">Gravar Cloud</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal Funcionário -->
-    <div id="employeeModal" class="fixed inset-0 z-[100] hidden bg-slate-900/60 backdrop-blur-md items-center justify-center p-4">
-        <div class="bg-white rounded-[48px] w-full max-w-md p-10 shadow-2xl space-y-8 animate-in zoom-in duration-300">
-            <h3 id="employeeModalTitle" class="text-2xl font-black text-slate-900 text-center uppercase tracking-tighter">Dados do Membro</h3>
+    <div id="employeeModal" class="fixed inset-0 z-[100] hidden bg-slate-950/40 items-center justify-center p-4">
+        <div class="bg-white rounded-[32px] w-full max-w-sm p-10 shadow-2xl space-y-8 modal-content-in">
+            <h3 id="employeeModalTitle" class="text-xl font-black text-slate-900 text-center uppercase tracking-tighter">Dados do Membro</h3>
             <div class="space-y-4">
-                <input type="text" id="new-emp-name" placeholder="NOME COMPLETO" class="w-full p-5 bg-slate-50 border-2 border-transparent rounded-[24px] font-bold outline-none focus:border-blue-500 uppercase">
-                <input type="text" id="new-emp-role" placeholder="CARGO / POSTO" class="w-full p-5 bg-slate-50 border-2 border-transparent rounded-[24px] font-bold outline-none focus:border-blue-500 uppercase">
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Nome Completo</label>
+                    <input type="text" id="new-emp-name" placeholder="EX: JOÃO SILVA" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all uppercase text-sm">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Função / Cargo</label>
+                    <input type="text" id="new-emp-role" placeholder="EX: GESTOR" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all uppercase text-sm">
+                </div>
             </div>
-            <div class="flex gap-4 pt-2">
-                <button onclick="closeModal('employeeModal')" class="flex-1 font-black text-slate-400 uppercase text-xs">Cancelar</button>
-                <button onclick="saveEmployee()" class="flex-[2] bg-blue-600 text-white font-black py-5 rounded-[24px] shadow-xl hover:bg-blue-700 transition-all uppercase text-sm">Confirmar</button>
+            <div class="flex flex-col gap-3 pt-4">
+                <button onclick="saveEmployee()" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-[0_6px_15px_rgba(37,99,235,0.3)] hover:bg-blue-700 hover:-translate-y-0.5 active:translate-y-0 transition-all uppercase text-[11px] tracking-widest">Confirmar</button>
+                <button onclick="closeModal('employeeModal')" class="w-full font-black text-slate-400 uppercase text-[11px] py-3 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <!-- Overlay Carregamento -->
-    <div id="loadingOverlay" class="fixed inset-0 z-[700] flex flex-col items-center justify-center bg-white text-slate-900 text-center p-6">
-        <div class="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-        <p id="loadingText" class="font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">Sincronizando Cloud...</p>
+    <!-- Overlay Carregamento Premium -->
+    <div id="loadingOverlay" class="fixed inset-0 z-[700] hidden bg-slate-900/60 backdrop-blur-sm flex-col items-center justify-center text-white">
+        <div class="relative w-16 h-16 flex items-center justify-center mb-6">
+            <div class="absolute inset-0 border-4 border-white/20 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <i data-lucide="cloud" class="w-6 h-6 animate-pulse"></i>
+        </div>
+        <p id="loadingText" class="font-black text-[11px] uppercase tracking-[0.2em] animate-pulse">Sincronizando Cloud...</p>
     </div>
 
-    <div id="toastContainer" class="fixed bottom-10 right-10 z-[800] space-y-4 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed bottom-8 right-8 z-[800] space-y-4 pointer-events-none flex flex-col items-end"></div>
 
-    <script>
-        const SUPABASE_URL = 'https://cjcnqvdrztnhepxtlgju.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'sb_publishable_3amBXdvUsQWYvf2qP4Ljbg_d3GDqglr';
-        var sbClient;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // Importando as bibliotecas do REALTIME DATABASE
+        import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        const RULES = { WORK_NORMAL: 440, MAX_CONSECUTIVE: 6 };
+        // SUA CONFIGURAÇÃO DO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0tMLlC1B5KCjWbSVwnR1xVkv1UCo37cs",
+            authDomain: "escalas-d9186.firebaseapp.com",
+            databaseURL: "https://escalas-d9186-default-rtdb.firebaseio.com",
+            projectId: "escalas-d9186",
+            storageBucket: "escalas-d9186.firebasestorage.app",
+            messagingSenderId: "541203696650",
+            appId: "1:541203696650:web:c5da6618804923d9f223f3",
+            measurementId: "G-5C9VJ364QE"
+        };
+
+        let app, db;
         const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
         let employees = [], shifts = {}; 
         let currentMode = 'TRABALHO', editingEmployeeId = null, editingContext = null;
         let deleteTargetId = null, deleteTargetType = null;
+        let isOfflineMode = false;
+        let unsubEmployees = null, unsubShifts = null;
+        
+        const isViewOnly = new URLSearchParams(window.location.search).get('view') === 'true';
 
-        function setupPWA() {
-            const manifest = { name: "EscalaPro Cloud", short_name: "EscalaPro", start_url: ".", display: "standalone", background_color: "#ffffff", theme_color: "#f07556", icons: [{ src: "https://cdn-icons-png.flaticon.com/512/2693/2693507.png", sizes: "512x512", type: "image/png" }] };
-            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-            const link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(blob); document.head.appendChild(link);
-            if ('serviceWorker' in navigator) {
-                const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request)));`;
-                const swBlob = new Blob([swCode], {type: 'application/javascript'});
-                navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
-            }
-        }
+        window.switchPanel = switchPanel;
+        window.initCalendar = initCalendar;
+        window.handleClearMonth = handleClearMonth;
+        window.openAddEmployeeModal = openAddEmployeeModal;
+        window.openEditEmployeeModal = openEditEmployeeModal;
+        window.exportAndShare = exportAndShare;
+        window.closeModal = closeModal;
+        window.executeDelete = executeDelete;
+        window.calculateAutoOut = calculateAutoOut;
+        window.setEditMode = setEditMode;
+        window.handleDeleteShiftRecord = handleDeleteShiftRecord;
+        window.saveShift = saveShift;
+        window.saveEmployee = saveEmployee;
+        window.removeEmployee = removeEmployee;
+        window.handleClearEmployeeMonth = handleClearEmployeeMonth;
+        window.openShiftModal = openShiftModal;
+        window.copyViewLink = copyViewLink;
 
         window.onload = async () => {
-            setupPWA(); setupSelectors(); await initSupabase(); lucide.createIcons();
+            if (isViewOnly) {
+                document.body.classList.add('view-only-mode');
+                document.getElementById('nav-admin').classList.add('hidden');
+                document.getElementById('actions-scale').classList.add('hidden');
+                document.getElementById('btn-share-link').classList.add('hidden');
+                document.documentElement.style.setProperty('--action-col-width', '0px');
+            }
+            
+            setupSelectors(); 
+            lucide.createIcons();
+            await initFirebase(); 
         };
 
-        async function initSupabase() {
-            if (typeof supabase === 'undefined' && !window.supabase) { setTimeout(initSupabase, 300); return; }
+        async function initFirebase() {
+            setLoading(true, "A Ligar à Cloud...");
             try {
-                const lib = window.supabase || supabase;
-                sbClient = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                try {
-                    await loadAllData();
-                    document.getElementById('connection-status').innerText = 'Online';
-                    document.getElementById('connection-status').classList.replace('text-slate-400', 'text-green-500');
-                } catch (dataErr) {
-                    console.error("Data fetch error:", dataErr);
-                    document.getElementById('connection-status').innerText = 'Erro SQL';
-                }
-                initCalendar();
-                document.getElementById('loadingOverlay').classList.add('hidden');
+                app = initializeApp(firebaseConfig);
+                db = getDatabase(app); // Inicializa Realtime Database
+                
+                const timeoutLimit = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Timeout de Ligação")), 10000)
+                );
+                
+                const realTimePromise = new Promise((resolve, reject) => {
+                    setupRealtimeListeners(resolve, reject);
+                });
+                
+                await Promise.race([realTimePromise, timeoutLimit]);
+                updateConnectionStatus(true);
             } catch(e) { 
-                console.error("Supabase Init Error:", e);
-                showToast("Falha na ligação.");
-                document.getElementById('loadingText').innerText = "Erro de Rede. Recarregue.";
+                console.warn("Firebase Indisponível. Iniciando Modo Offline:", e.message);
+                isOfflineMode = true;
+                updateConnectionStatus(false);
+                loadLocalData(); 
+                
+                if (e.message === "Timeout de Ligação") {
+                    showToast("Cloud não respondeu. A usar armazenamento local.", "error");
+                } else {
+                    showToast("Erro na Base de Dados. A usar armazenamento local.", "error");
+                }
+            } finally {
+                initCalendar();
+                setLoading(false);
             }
         }
 
+        function updateConnectionStatus(isOnline) {
+            const txt = document.getElementById('status-text');
+            const dotSolid = document.getElementById('solid-dot');
+            const dotPing = document.getElementById('ping-dot');
+            if (isOnline) {
+                txt.innerText = 'Online (Realtime)';
+                txt.classList.add('text-blue-600');
+                dotSolid.classList.replace('bg-slate-400', 'bg-blue-500');
+                dotPing.classList.replace('bg-slate-400', 'bg-blue-400');
+            } else {
+                txt.innerText = 'Modo Local (Offline)';
+                txt.classList.add('text-orange-500');
+                dotSolid.classList.replace('bg-slate-400', 'bg-orange-500');
+                dotPing.classList.replace('bg-slate-400', 'bg-orange-400');
+            }
+        }
+
+        function loadLocalData() {
+            const lEmp = localStorage.getItem('escala_emp');
+            const lShifts = localStorage.getItem('escala_shifts');
+            if(lEmp) employees = JSON.parse(lEmp);
+            if(lShifts) shifts = JSON.parse(lShifts);
+            employees.sort((a,b) => a.name.localeCompare(b.name));
+        }
+
+        function saveLocalData() {
+            localStorage.setItem('escala_emp', JSON.stringify(employees));
+            localStorage.setItem('escala_shifts', JSON.stringify(shifts));
+        }
+
+        // LISNETERS DO REALTIME DATABASE
+        function setupRealtimeListeners(resolveInit, rejectInit) {
+            if (!db) return;
+            let empLoaded = false, shiftsLoaded = false;
+
+            const checkInit = () => {
+                if (empLoaded && shiftsLoaded && resolveInit) {
+                    resolveInit();
+                    resolveInit = null;
+                }
+            };
+
+            unsubEmployees = onValue(ref(db, 'employees'), (snapshot) => {
+                const data = snapshot.val();
+                employees = [];
+                if (data) {
+                    for (let key in data) {
+                        employees.push({ id: key, ...data[key] });
+                    }
+                }
+                employees.sort((a,b) => a.name.localeCompare(b.name));
+                empLoaded = true; 
+                checkInit();
+                
+                if (!resolveInit) {
+                    if (!document.getElementById('panel-admin').classList.contains('hidden')) {
+                        renderEmployees();
+                    } else {
+                        renderScale();
+                    }
+                }
+            }, (err) => {
+                console.error("Erro Realtime (Funcionários):", err);
+                if (rejectInit) rejectInit(err);
+            });
+
+            unsubShifts = onValue(ref(db, 'shifts'), (snapshot) => {
+                const data = snapshot.val();
+                shifts = {};
+                if (data) {
+                    for (let key in data) {
+                        const item = data[key];
+                        if(!shifts[item.employee_id]) shifts[item.employee_id] = {};
+                        shifts[item.employee_id][item.day_key] = item.shift_data;
+                    }
+                }
+                shiftsLoaded = true; 
+                checkInit();
+                
+                if (!resolveInit) renderScale();
+            }, (err) => {
+                console.error("Erro Realtime (Horários):", err);
+                if (rejectInit) rejectInit(err);
+            });
+        }
+        
         function switchPanel(panelId) {
             const pScale = document.getElementById('panel-scale'), pAdmin = document.getElementById('panel-admin');
             const nScale = document.getElementById('nav-scale'), nAdmin = document.getElementById('nav-admin');
             const aScale = document.getElementById('actions-scale'), aAdmin = document.getElementById('actions-admin');
             
-            if(pScale) pScale.classList.toggle('hidden', panelId !== 'scale');
-            if(pAdmin) pAdmin.classList.toggle('hidden', panelId !== 'admin');
-            if(aScale) aScale.classList.toggle('hidden', panelId !== 'scale');
-            if(aAdmin) aAdmin.classList.toggle('hidden', panelId !== 'admin');
+            pScale.classList.toggle('hidden', panelId !== 'scale');
+            pAdmin.classList.toggle('hidden', panelId !== 'admin');
+            aScale.classList.toggle('hidden', panelId !== 'scale');
+            aAdmin.classList.toggle('hidden', panelId !== 'admin');
 
-            if(nScale) nScale.className = panelId === 'scale' ? 'flex items-center gap-2 px-5 py-2 rounded-lg text-[11px] font-black uppercase transition-all nav-active' : 'flex items-center gap-2 px-5 py-2 rounded-lg text-[11px] font-black uppercase transition-all text-slate-500';
-            if(nAdmin) nAdmin.className = panelId === 'admin' ? 'flex items-center gap-2 px-5 py-2 rounded-lg text-[11px] font-black uppercase transition-all nav-active' : 'flex items-center gap-2 px-5 py-2 rounded-lg text-[11px] font-black uppercase transition-all text-slate-500';
+            const activeClass = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase transition-all bg-white text-blue-600 shadow-sm border border-slate-200';
+            const inactiveClass = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase transition-all text-slate-500 hover:text-blue-600';
+
+            nScale.className = panelId === 'scale' ? activeClass : inactiveClass;
+            nAdmin.className = panelId === 'admin' ? activeClass : inactiveClass;
             
             if(panelId === 'admin') renderEmployees(); else renderScale();
             lucide.createIcons();
         }
 
-        async function loadAllData() {
-            if(!sbClient) return;
-            const { data: empData, error: empErr } = await sbClient.from('employees').select('*').order('name');
-            if(empErr) throw empErr;
-            employees = empData || [];
-            const { data: shiftData, error: shiftErr } = await sbClient.from('shifts').select('*');
-            if(shiftErr) throw shiftErr;
-            shifts = {};
-            shiftData?.forEach(item => { if(!shifts[item.employee_id]) shifts[item.employee_id] = {}; shifts[item.employee_id][item.day_key] = item.shift_data; });
-            renderEmployees(); renderScale();
-        }
-
         function renderEmployees() {
             const list = document.getElementById('employeeList');
             if(!list) return;
-            list.innerHTML = employees.map(emp => `
-                <div class="bg-white p-4 rounded-3xl border flex justify-between items-center group hover:border-blue-600 shadow-sm transition-all">
-                    <div>
-                        <h4 class="font-extrabold text-slate-900 text-sm leading-tight uppercase">${emp.name}</h4>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">${emp.role || 'Geral'}</p>
+            list.innerHTML = employees.map((emp, index) => `
+                <div class="bg-white p-6 rounded-[24px] border border-slate-100 flex justify-between items-center group hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300" style="animation: popIn 0.4s ease ${index * 0.05}s both;">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-slate-900 text-[13px] leading-tight uppercase tracking-tight">${emp.name}</h4>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">${emp.role || 'Geral'}</p>
+                        </div>
                     </div>
-                    <div class="flex gap-1">
-                        <button onclick="openEditEmployeeModal('${emp.id}')" class="p-3 text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                        <button onclick="removeEmployee('${emp.id}')" class="p-3 text-red-400 hover:bg-red-50 rounded-xl transition-all cursor-pointer"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
+                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="openEditEmployeeModal('${emp.id}')" class="p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                        <button onclick="removeEmployee('${emp.id}')" class="p-2.5 text-red-400 hover:bg-red-50 rounded-xl transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
                     </div>
                 </div>`).join('');
             lucide.createIcons();
         }
 
         async function saveEmployee() {
-            const nameInput = document.getElementById('new-emp-name');
-            const roleInput = document.getElementById('new-emp-role');
-            const name = nameInput ? nameInput.value.trim() : "";
-            const role = roleInput ? roleInput.value.trim() : "";
+            const name = document.getElementById('new-emp-name').value.trim();
+            const role = document.getElementById('new-emp-role').value.trim();
+            if (!name) return showToast("Nome é obrigatório!", "error");
             
-            if (!name) return showToast("Nome é obrigatório!");
-            setLoading(true);
+            setLoading(true, "Guardando...");
             try {
                 const payload = { name: name.toUpperCase(), role: role.toUpperCase() };
-                if (editingEmployeeId) await sbClient.from('employees').update(payload).eq('id', editingEmployeeId);
-                else await sbClient.from('employees').insert([payload]);
-                closeModal('employeeModal'); await loadAllData(); showToast("Guardado!");
-            } catch (err) { showToast("Falha."); } finally { setLoading(false); }
+                
+                if (isOfflineMode) {
+                    if (editingEmployeeId) {
+                        const idx = employees.findIndex(e => e.id === editingEmployeeId);
+                        if(idx > -1) employees[idx] = { ...employees[idx], ...payload };
+                    } else {
+                        employees.push({ id: 'local_' + Date.now(), ...payload });
+                    }
+                    saveLocalData();
+                    if(!document.getElementById('panel-admin').classList.contains('hidden')) renderEmployees();
+                } else {
+                    if (editingEmployeeId) {
+                        // Atualiza no Realtime DB
+                        await update(ref(db, 'employees/' + editingEmployeeId), payload);
+                    } else {
+                        // Cria novo no Realtime DB
+                        await push(ref(db, 'employees'), payload);
+                    }
+                }
+                
+                closeModal('employeeModal'); 
+                showToast("Guardado na Cloud!", "success");
+            } catch (err) { 
+                console.error(err); 
+                showToast("Acesso Negado: Verifique as Regras!", "error"); 
+            } finally { setLoading(false); }
         }
 
         function removeEmployee(id) {
             const emp = employees.find(e => e.id === id);
-            if (!emp) return;
             deleteTargetId = id; deleteTargetType = 'employee';
-            const modalText = document.getElementById('confirmModalText');
-            if(modalText) modalText.innerText = `Eliminar ${emp.name.toUpperCase()} permanentemente da Cloud?`;
+            document.getElementById('confirmModalText').innerText = `Eliminar ${emp.name} e todos os seus horários?`;
             openModal('confirmModal');
         }
 
         function handleClearMonth() {
             deleteTargetType = 'clear_month';
-            const modalText = document.getElementById('confirmModalText');
-            if(modalText) modalText.innerText = "Apagar horários de todos no mês selecionado?";
+            document.getElementById('confirmModalText').innerText = "Apagar horários de toda a equipa neste mês?";
             openModal('confirmModal');
         }
 
         function handleClearEmployeeMonth(empId) {
             const emp = employees.find(e => e.id === empId);
-            if(!emp) return;
             deleteTargetId = empId; deleteTargetType = 'clear_employee_month';
-            const monthSelect = document.getElementById('monthSelect');
-            const mText = monthSelect ? monthSelect.options[monthSelect.selectedIndex].text : "este mês";
-            const modalText = document.getElementById('confirmModalText');
-            if(modalText) modalText.innerText = `Apagar horários de ${emp.name.toUpperCase()} em ${mText.toUpperCase()}?`;
+            document.getElementById('confirmModalText').innerText = `Apagar horários de ${emp.name} neste mês?`;
             openModal('confirmModal');
         }
 
         async function executeDelete() {
-            closeModal('confirmModal'); setLoading(true, "A apagar...");
+            closeModal('confirmModal'); setLoading(true, "Limpando Dados...");
             try {
-                if (deleteTargetType === 'employee') {
-                    await sbClient.from('shifts').delete().eq('employee_id', deleteTargetId);
-                    await sbClient.from('employees').delete().eq('id', deleteTargetId);
-                } else if (deleteTargetType === 'shift') {
-                    const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`;
-                    await sbClient.from('shifts').delete().match({ employee_id: editingContext.empId, day_key: key });
-                    closeModal('shiftModal');
-                } else if (deleteTargetType === 'clear_month') {
-                    const pattern = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`;
-                    await sbClient.from('shifts').delete().like('day_key', `${pattern}%`);
-                } else if (deleteTargetType === 'clear_employee_month') {
-                    const pattern = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`;
-                    await sbClient.from('shifts').delete().eq('employee_id', deleteTargetId).like('day_key', `${pattern}%`);
+                const pattern = `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}-`;
+                
+                if (isOfflineMode) {
+                    if (deleteTargetType === 'employee') {
+                        employees = employees.filter(e => e.id !== deleteTargetId);
+                        delete shifts[deleteTargetId];
+                    } else if (deleteTargetType === 'shift') {
+                        const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`;
+                        if(shifts[editingContext.empId]) delete shifts[editingContext.empId][key];
+                        closeModal('shiftModal');
+                    } else if (deleteTargetType === 'clear_month') {
+                        Object.keys(shifts).forEach(empId => {
+                            Object.keys(shifts[empId]).forEach(key => { if (key.startsWith(pattern)) delete shifts[empId][key]; });
+                        });
+                    } else if (deleteTargetType === 'clear_employee_month') {
+                        if (shifts[deleteTargetId]) {
+                            Object.keys(shifts[deleteTargetId]).forEach(key => { if (key.startsWith(pattern)) delete shifts[deleteTargetId][key]; });
+                        }
+                    }
+                    saveLocalData();
+                    renderScale();
+                } else {
+                    // Update Atômico em Lote no Realtime DB (Deletando = setando null)
+                    const updates = {};
+                    let hasOps = false;
+
+                    if (deleteTargetType === 'employee') {
+                        updates['employees/' + deleteTargetId] = null;
+                        Object.keys(shifts[deleteTargetId] || {}).forEach(key => updates['shifts/' + deleteTargetId + '_' + key] = null);
+                        hasOps = true;
+                    } else if (deleteTargetType === 'shift') {
+                        const key = `${editingContext.year}-${editingContext.month}-${editingContext.day}`;
+                        updates['shifts/' + editingContext.empId + '_' + key] = null;
+                        hasOps = true;
+                        closeModal('shiftModal');
+                    } else if (deleteTargetType === 'clear_month') {
+                        Object.keys(shifts).forEach(empId => {
+                            Object.keys(shifts[empId]).forEach(key => {
+                                if (key.startsWith(pattern)) { updates['shifts/' + empId + '_' + key] = null; hasOps = true; }
+                            });
+                        });
+                    } else if (deleteTargetType === 'clear_employee_month') {
+                        if (shifts[deleteTargetId]) {
+                            Object.keys(shifts[deleteTargetId]).forEach(key => {
+                                if (key.startsWith(pattern)) { updates['shifts/' + deleteTargetId + '_' + key] = null; hasOps = true; }
+                            });
+                        }
+                    }
+                    if(hasOps) await update(ref(db), updates);
                 }
-                await loadAllData(); showToast("Sucesso!");
-            } catch (err) { showToast("Erro."); } finally { setLoading(false); deleteTargetId = null; deleteTargetType = null; }
+                
+                showToast("Dados eliminados!", "success");
+            } catch (err) { console.error(err); showToast("Erro.", "error"); } finally { setLoading(false); deleteTargetId = null; deleteTargetType = null; }
         }
 
         async function saveShift() {
@@ -550,18 +729,46 @@
             const repeat = document.getElementById('field-repeat').checked, propagate = document.getElementById('field-propagate').checked;
             const isFolga = (currentMode !== 'TRABALHO');
             const shiftData = { in: document.getElementById('field-in').value, out: document.getElementById('field-out').value, lunch: document.getElementById('field-lunch').value, isFolga, tipoFolga: isFolga ? currentMode : null };
-            const upserts = [{ employee_id: empId, day_key: `${year}-${month}-${day}`, shift_data: shiftData }];
+            
+            let payloadArr = [{ employee_id: empId, day_key: `${year}-${month}-${day}`, shift_data: shiftData }];
+            
             if (repeat) {
                 const dMax = new Date(year, parseInt(month) + 1, 0).getDate();
-                for (let d = day + 1; d <= dMax; d++) { if (!shifts[empId]?.[`${year}-${month}-${d}`]?.isFolga) upserts.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: shiftData }); }
+                for (let d = day + 1; d <= dMax; d++) { 
+                    if (!shifts[empId]?.[`${year}-${month}-${d}`]?.isFolga) {
+                        payloadArr.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: shiftData });
+                    }
+                }
             }
             if (currentMode === 'DSR' && propagate) {
                 const dMax = new Date(year, parseInt(month) + 1, 0).getDate();
-                for (let d = day + 7; d <= dMax; d += 7) upserts.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: { ...shiftData, isFolga: true, tipoFolga: 'DSR' } });
+                for (let d = day + 7; d <= dMax; d += 7) {
+                    payloadArr.push({ employee_id: empId, day_key: `${year}-${month}-${d}`, shift_data: { ...shiftData, isFolga: true, tipoFolga: 'DSR' } });
+                }
             }
-            setLoading(true);
-            await sbClient.from('shifts').upsert(upserts, { onConflict: 'employee_id, day_key' });
-            setLoading(false); await loadAllData(); closeModal('shiftModal'); showToast("Sincronizado!");
+            
+            setLoading(true, "Guardando...");
+            try {
+                if(isOfflineMode) {
+                    if(!shifts[empId]) shifts[empId] = {};
+                    payloadArr.forEach(u => shifts[empId][u.day_key] = u.shift_data);
+                    saveLocalData();
+                    renderScale();
+                } else {
+                    // Update em Massa no Realtime DB
+                    const updates = {};
+                    payloadArr.forEach(u => {
+                        updates['shifts/' + u.employee_id + '_' + u.day_key] = u;
+                    });
+                    await update(ref(db), updates);
+                }
+                
+                closeModal('shiftModal'); 
+                showToast("Horários na Cloud!", "success");
+            } catch (err) { 
+                console.error(err); 
+                showToast("Erro ao gravar: Verifique Regras.", "error"); 
+            } finally { setLoading(false); }
         }
 
         function initCalendar() {
@@ -570,12 +777,13 @@
             if(!monthSelect || !yearSelect) return;
             const month = parseInt(monthSelect.value), year = parseInt(yearSelect.value), dMax = new Date(year, month + 1, 0).getDate();
             const rowW = document.getElementById('header-row-weekdays'), rowN = document.getElementById('header-row-numbers');
-            if(!rowW || !rowN) return;
+            
             while (rowW.cells.length > 3) rowW.deleteCell(3); while (rowN.cells.length > 3) rowN.deleteCell(3);
+            
             for (let d = 1; d <= dMax; d++) {
                 const date = new Date(year, month, d), isSun = date.getDay() === 0, isToday = d === new Date().getDate() && month === new Date().getMonth();
                 const thW = document.createElement('th'); thW.className = `day-col weekday-label ${isSun ? 'header-sun' : ''}`; thW.innerText = WEEKDAYS[date.getDay()]; rowW.appendChild(thW);
-                const thN = document.createElement('th'); thN.className = `day-col day-label ${isSun ? 'header-sun' : ''} ${isToday ? 'bg-blue-600 text-white rounded-t-xl' : ''}`; thN.innerText = String(d).padStart(2, '0'); rowN.appendChild(thN);
+                const thN = document.createElement('th'); thN.className = `day-col day-label ${isSun ? 'header-sun' : ''} ${isToday ? 'bg-blue-500 text-white rounded-t-xl' : ''}`; thN.innerText = String(d).padStart(2, '0'); rowN.appendChild(thN);
             }
             renderScale();
         }
@@ -583,17 +791,25 @@
         function renderScale() {
             const body = document.getElementById('scaleBody'), monthSelect = document.getElementById('monthSelect'), yearSelect = document.getElementById('yearSelect');
             if(!body || !monthSelect || !yearSelect) return;
-            const mVal = monthSelect.value;
-            const yVal = yearSelect.value;
-            const dMax = new Date(yVal, parseInt(mVal) + 1, 0).getDate();
-            if (employees.length === 0) { body.innerHTML = `<tr><td colspan="40" class="p-12 text-center text-slate-300 font-bold italic uppercase text-[10px]">Vazio</td></tr>`; return; }
+            const mVal = monthSelect.value, yVal = yearSelect.value, dMax = new Date(yVal, parseInt(mVal) + 1, 0).getDate();
+            
+            const today = new Date();
+            const isCurrentMonthYear = today.getFullYear() === parseInt(yVal) && today.getMonth() === parseInt(mVal);
+            
+            if (employees.length === 0) { body.innerHTML = `<tr><td colspan="40" class="py-16 text-center"><i data-lucide="folder-open" class="mx-auto w-10 h-10 text-slate-200 mb-3"></i><p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">A tabela está vazia.<br>Vá a Admin e adicione membros.</p></td></tr>`; lucide.createIcons(); return; }
+            
             body.innerHTML = employees.map(emp => {
                 const violations = getEmployeeViolationDays(emp.id, mVal, yVal, dMax);
                 let cells = '';
                 for (let d = 1; d <= dMax; d++) {
                     const key = `${yVal}-${mVal}-${d}`, shift = shifts[emp.id]?.[key], isSun = new Date(yVal, parseInt(mVal), d).getDay() === 0;
-                    let content = '<span class="empty-time text-[10px] font-bold tracking-tighter opacity-30">--:--</span>';
+                    const isToday = isCurrentMonthYear && d === today.getDate();
+                    
+                    let content = '<span class="empty-time text-[10px] font-bold tracking-widest text-slate-300">--:--</span>';
                     let bg = isSun ? "sun-col" : "";
+                    
+                    if (isToday) bg += isSun ? " col-today-sun" : " col-today";
+                    
                     if (violations.has(d) && shift && !shift.isFolga) bg += isSun ? " cell-violation-sun" : " cell-violation";
                     if (shift) {
                         if (shift.isFolga) {
@@ -603,10 +819,11 @@
                     }
                     cells += `<td class="day-col ${bg}"><div class="cell-interactive" onclick="openShiftModal('${emp.id}', ${d})">${content}</div></td>`;
                 }
+                
                 return `<tr>
-                    <td class="sticky-col-name p-2"><span class="emp-name-clickable text-[13px] truncate-cell leading-none uppercase" onclick="openEditEmployeeModal('${emp.id}')">${emp.name}</span></td>
-                    <td class="col-role p-2"><span class="text-[10px] font-bold text-slate-400 uppercase truncate-cell">${emp.role || '---'}</span></td>
-                    <td class="col-action p-2 text-center"><button onclick="handleClearEmployeeMonth('${emp.id}')" class="btn-clear-row"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                    <td class="sticky-col-name py-2"><span class="emp-name-clickable text-[12px] whitespace-nowrap overflow-hidden text-ellipsis px-4 block leading-none uppercase" style="max-width: calc(var(--name-col-width) - 10px);" onclick="openEditEmployeeModal('${emp.id}')">${emp.name}</span></td>
+                    <td class="col-role py-2 text-left"><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 mx-3 px-2 py-1.5 rounded-lg border border-slate-100 block text-left whitespace-nowrap overflow-hidden text-ellipsis" style="max-width: calc(var(--role-col-width) - 20px);">${emp.role || '---'}</span></td>
+                    <td class="col-action py-2 text-center"><button onclick="handleClearEmployeeMonth('${emp.id}')" class="btn-clear-row"><i data-lucide="eraser" class="w-4 h-4 mx-auto"></i></button></td>
                     ${cells}
                 </tr>`;
             }).join('');
@@ -615,24 +832,33 @@
 
         function setupSelectors() { 
             const mS = document.getElementById('monthSelect'), yS = document.getElementById('yearSelect'), n = new Date(); 
-            if(!mS || !yS) return;
             ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"].forEach((m, i) => mS.innerHTML += `<option value="${i}" ${i === n.getMonth() ? 'selected' : ''}>${m}</option>`); 
             for(let y = 2025; y <= 2026; y++) yS.innerHTML += `<option value="${y}" ${y === n.getFullYear() ? 'selected' : ''}>${y}</option>`; 
         }
-        function openModal(id) { const el = document.getElementById(id); if(el) { el.classList.remove('hidden'); el.classList.add('flex'); } lucide.createIcons(); }
-        function closeModal(id) { const el = document.getElementById(id); if(el) { el.classList.add('hidden'); el.classList.remove('flex'); } }
-        function setLoading(s, t = "Sincronizando...") { const el = document.getElementById('loadingOverlay'); if(!el) return; if(s) { el.classList.remove('hidden'); el.classList.add('flex'); document.getElementById('loadingText').innerText = t; } else { el.classList.add('hidden'); el.classList.remove('flex'); } }
-        function showToast(m) { const c = document.getElementById('toastContainer'), t = document.createElement('div'); if(!c) return; t.className = "bg-slate-900 text-white px-6 py-3 rounded-2xl text-[10px] font-black shadow-2xl animate-bounce"; t.innerText = m.toUpperCase(); c.appendChild(t); setTimeout(() => t.remove(), 4000); }
-        function calculateAutoOut() { const inField = document.getElementById('field-in'); const lunchField = document.getElementById('field-lunch'); if(!inField) return; const v = inField.value, l = parseFloat(lunchField ? lunchField.value : 2); if(v) { const [h, m] = v.split(':').map(Number), t = (h*60+m+440+(l*60))%1440; const outField = document.getElementById('field-out'); if(outField) outField.value = `${String(Math.floor(t/60)).padStart(2, '0')}:${String(t%60).padStart(2, '0')}`; } }
+
+        function openModal(id) { const el = document.getElementById(id); el.classList.remove('hidden'); el.classList.add('modal-active'); lucide.createIcons(); }
+        function closeModal(id) { const el = document.getElementById(id); el.classList.add('hidden'); el.classList.remove('modal-active'); }
+        function setLoading(s, t = "Aguarde...") { const el = document.getElementById('loadingOverlay'); if(s) { el.classList.remove('hidden'); el.classList.add('flex'); document.getElementById('loadingText').innerText = t; } else { el.classList.add('hidden'); el.classList.remove('flex'); } }
+        
+        function showToast(m, type="success") { 
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast-enter text-white px-5 py-4 rounded-2xl text-[11px] font-black shadow-2xl flex items-center gap-3 border ${type === 'error' ? 'bg-red-500 border-red-400 shadow-red-500/20' : 'bg-slate-900 border-slate-700 shadow-slate-900/20'}`; 
+            t.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-octagon' : 'check-circle-2'}" class="w-5 h-5 ${type==='error'?'text-red-200':'text-emerald-400'}"></i> ${m.toUpperCase()}`;
+            c.appendChild(t); lucide.createIcons();
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(20px)'; setTimeout(()=>t.remove(),300); }, 3500); 
+        }
+
+        function calculateAutoOut() { const v = document.getElementById('field-in').value, l = parseFloat(document.getElementById('field-lunch').value || 2); if(v) { const [h, m] = v.split(':').map(Number), t = (h*60+m+440+(l*60))%1440; document.getElementById('field-out').value = `${String(Math.floor(t/60)).padStart(2, '0')}:${String(t%60).padStart(2, '0')}`; } }
+        
         function setEditMode(m) {
             currentMode = m; const bW = document.getElementById('btn-mode-work'), bD = document.getElementById('btn-mode-dsr'), bB = document.getElementById('btn-mode-bh'), bF = document.getElementById('btn-mode-vacation');
-            const inputArea = document.getElementById('timeInputArea'), labelPropagate = document.getElementById('label-propagate');
-            if(!bW) return;
             [bW, bD, bB, bF].forEach(b => b.className = 'mode-button');
-            if(labelPropagate) labelPropagate.classList.toggle('hidden', m !== 'DSR');
-            if(m === 'TRABALHO') { bW.classList.add('active-work'); if(inputArea) inputArea.classList.remove('hidden'); calculateAutoOut(); }
-            else { if(m === 'DSR') bD.classList.add('active-dsr'); else if(m === 'BH') bB.classList.add('active-bh'); else bF.classList.add('active-vacation'); if(inputArea) inputArea.classList.add('hidden'); }
+            document.getElementById('label-propagate').classList.toggle('hidden', m !== 'DSR');
+            if(m === 'TRABALHO') { bW.classList.add('active-work'); document.getElementById('timeInputArea').classList.remove('hidden'); calculateAutoOut(); }
+            else { if(m === 'DSR') bD.classList.add('active-dsr'); else if(m === 'BH') bB.classList.add('active-bh'); else bF.classList.add('active-vacation'); document.getElementById('timeInputArea').classList.add('hidden'); }
         }
+
         function getEmployeeViolationDays(empId, month, year, dMax) {
             let violatingDays = new Set(), streak = [];
             for (let d = 1; d <= dMax; d++) {
@@ -642,25 +868,54 @@
             }
             if (streak.length > 6) streak.forEach(day => violatingDays.add(day)); return violatingDays;
         }
-        function openAddEmployeeModal() { editingEmployeeId = null; const t = document.getElementById('employeeModalTitle'); if(t) t.innerText = "Novo Membro"; const n = document.getElementById('new-emp-name'); const r = document.getElementById('new-emp-role'); if(n) n.value = ""; if(r) r.value = ""; openModal('employeeModal'); }
-        function openEditEmployeeModal(id) { const emp = employees.find(e => String(e.id) === String(id)); if (!emp) return; switchPanel('admin'); editingEmployeeId = id; const t = document.getElementById('employeeModalTitle'); if(t) t.innerText = "Editar Membro"; const n = document.getElementById('new-emp-name'); const r = document.getElementById('new-emp-role'); if(n) n.value = emp.name.toUpperCase(); if(r) r.value = (emp.role || "").toUpperCase(); openModal('employeeModal'); }
+
+        function openAddEmployeeModal() { editingEmployeeId = null; document.getElementById('employeeModalTitle').innerText = "Novo Membro"; document.getElementById('new-emp-name').value = ""; document.getElementById('new-emp-role').value = ""; openModal('employeeModal'); }
+        function openEditEmployeeModal(id) { const emp = employees.find(e => e.id === id); if (!emp) return; editingEmployeeId = id; document.getElementById('employeeModalTitle').innerText = "Editar Membro"; document.getElementById('new-emp-name').value = emp.name; document.getElementById('new-emp-role').value = emp.role || ""; openModal('employeeModal'); }
+        
         function openShiftModal(empId, d) { 
-            const yearSelect = document.getElementById('yearSelect');
-            const monthSelect = document.getElementById('monthSelect');
-            if(!yearSelect || !monthSelect) return;
-            const key = `${yearSelect.value}-${monthSelect.value}-${d}`, shift = shifts[empId]?.[key] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
-            editingContext = { empId, day: d, month: monthSelect.value, year: yearSelect.value }; 
-            const empNameEl = document.getElementById('modalEmpName');
-            const dateLabelEl = document.getElementById('modalDateLabel');
-            if(empNameEl) empNameEl.innerText = employees.find(e => e.id === empId).name.toUpperCase(); 
-            if(dateLabelEl) dateLabelEl.innerText = `DIA ${d} • TURNO`; 
-            const fin = document.getElementById('field-in'), fout = document.getElementById('field-out'), flunch = document.getElementById('field-lunch');
-            if(fin) fin.value = shift.in; if(fout) fout.value = shift.out; if(flunch) flunch.value = shift.lunch; 
-            const frep = document.getElementById('field-repeat'), fprop = document.getElementById('field-propagate');
-            if(frep) frep.checked = false; if(fprop) fprop.checked = false; 
+            const y = document.getElementById('yearSelect').value, m = document.getElementById('monthSelect').value;
+            const shift = shifts[empId]?.[`${y}-${m}-${d}`] || { in: '08:00', out: '17:20', lunch: 2, isFolga: false }; 
+            editingContext = { empId, day: d, month: m, year: y }; 
+            document.getElementById('modalEmpName').innerText = employees.find(e => e.id === empId).name; 
+            document.getElementById('modalDateLabel').innerText = `DIA ${d} • MÊS ATUAL`; 
+            document.getElementById('field-in').value = shift.in; document.getElementById('field-out').value = shift.out; document.getElementById('field-lunch').value = shift.lunch; 
+            document.getElementById('field-repeat').checked = false; document.getElementById('field-propagate').checked = false; 
             setEditMode(shift.isFolga ? (shift.tipoFolga || 'DSR') : 'TRABALHO'); openModal('shiftModal'); 
         }
-        function handleDeleteShiftRecord() { deleteTargetType = 'shift'; const mt = document.getElementById('confirmModalText'); if(mt) mt.innerText = "Deseja limpar este registo?"; openModal('confirmModal'); }
+
+        function handleDeleteShiftRecord() { deleteTargetType = 'shift'; document.getElementById('confirmModalText').innerText = "Remover horário deste dia?"; openModal('confirmModal'); }
+        
+        function copyViewLink() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('view', 'true');
+            
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = url.toString();
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            showToast("Link de leitura copiado com sucesso!", "success");
+        }
+
+        async function exportAndShare() {
+            const container = document.getElementById('capture-container');
+            if (!container) return;
+            setLoading(true, "A gerar imagem de alta qualidade...");
+            try {
+                const originalStyle = container.style.cssText;
+                container.style.maxHeight = 'none'; container.style.overflow = 'visible';
+                const canvas = await window.html2canvas(container, { scale: 2, backgroundColor: '#ffffff', windowWidth: container.scrollWidth, windowHeight: container.scrollHeight });
+                container.style.cssText = originalStyle;
+
+                const link = document.createElement('a');
+                const mText = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
+                link.download = `EscalaPro_${mText}_${document.getElementById('yearSelect').value}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
+                showToast("Imagem exportada!", "success");
+            } catch (err) { console.error(err); showToast("Falha na exportação.", "error"); } finally { setLoading(false); }
+        }
     </script>
 </body>
 </html>
